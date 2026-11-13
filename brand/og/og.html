@@ -1,0 +1,49 @@
+<!doctype html>
+<!--
+  Plantilla de la imagen para redes (Open Graph, 1200x630).
+  Regenerar:  python brand/og/render_og.py   (usa Microsoft Edge/Chrome en modo headless)
+  Idioma por parámetro: og.html?lang=es | og.html?lang=en
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: 'Space Grotesk'; font-weight: 700; src: url('../../site/node_modules/@fontsource/space-grotesk/files/space-grotesk-latin-700-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 400; src: url('../../site/node_modules/@fontsource/inter/files/inter-latin-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'JetBrains Mono'; font-weight: 400; src: url('../../site/node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2') format('woff2'); }
+  * { margin: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; background: #0B0B0F; }
+  .card { position: relative; width: 1200px; height: 630px; padding: 64px 72px; display: flex; flex-direction: column; }
+  .logo { height: 56px; width: auto; align-self: flex-start; }
+  .label { margin-top: auto; font-family: 'JetBrains Mono', monospace; font-size: 24px; color: #F2B33D; letter-spacing: .02em; }
+  h1 { margin-top: 18px; max-width: 700px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 66px; line-height: 1.05; letter-spacing: -0.02em; color: #F4F2EE; }
+  .foot { margin-top: 36px; display: flex; gap: 28px; align-items: center; font-family: 'Inter', sans-serif; font-size: 24px; color: #B4B4BC; }
+  .foot b { color: #F4F2EE; font-weight: 400; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: #3A3A45; }
+  .mark { position: absolute; right: -150px; top: 50%; transform: translateY(-50%); width: 520px; height: 520px; }
+  .rule { position: absolute; left: 0; right: 0; bottom: 0; height: 8px; background: #F2B33D; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <img class="logo" src="../logo/final/kuska-horizontal-color-dark-transparent.svg" alt="">
+    <p class="label" id="label"></p>
+    <h1 id="title"></h1>
+    <div class="foot"><b id="url"></b><span class="dot"></span><span id="sub"></span></div>
+    <img class="mark" src="../logo/final/kuska-symbol-gold.svg" alt="">
+    <div class="rule"></div>
+  </div>
+  <script>
+    const T = {
+      es: { label: '// desarrollo de software a medida', title: 'Software hecho en equipo, desde Perú para el mundo.', sub: 'Diagnóstico gratis de 30 min', where: 'Perú · Latinoamérica · España · EE. UU.' },
+      en: { label: '// custom software development', title: 'Software built together, from Peru to the world.', sub: 'Free 30-min discovery call', where: 'Peru · Latin America · Spain · US' },
+    };
+    const lang = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'es';
+    const t = T[lang];
+    document.documentElement.lang = lang;
+    label.textContent = t.label; title.textContent = t.title; sub.textContent = t.sub;
+    // Con dominio propio, pasar ?url=kuskalabs.com para mostrarlo en lugar de la cobertura
+    url.textContent = new URLSearchParams(location.search).get('url') || t.where;
+  </script>
+</body>
+</html>

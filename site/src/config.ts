@@ -3,8 +3,9 @@
  * están pendientes de decisión del equipo.
  */
 
-// TODO: confirmar dominio (kuskalabs.com / kuskalabs.pe)
-export const SITE_URL = 'https://kuskalabs.com';
+// URL pública del sitio (canonical, sitemap, imágenes para redes).
+// TODO: al tener dominio, cambiar a 'https://kuskalabs.com' (o .pe).
+export const SITE_URL = 'https://kuska-labs-web.renatovr25.workers.dev';
 
 export const BRAND = 'Kuska Labs';
 

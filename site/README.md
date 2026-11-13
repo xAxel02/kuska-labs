@@ -139,7 +139,7 @@ Para medir un botón nuevo, agrégale `data-umami-event="nombre"` y `data-umami-
 
 ## Pendientes (decisiones del equipo)
 
-- [ ] Dominio definitivo → `SITE_URL` en `src/config.ts`
+- [ ] Dominio definitivo → `SITE_URL` en `src/config.ts` (hoy apunta a la URL de workers.dev)
 - [x] Correo del equipo: `kuskalabs.pe@gmail.com`
 - [ ] Número de WhatsApp → `src/config.ts`
 - [ ] Mostrar precios o no → `SHOW_PRICES`
@@ -147,4 +147,4 @@ Para medir un botón nuevo, agrégale `data-umami-event="nombre"` y `data-umami-
 - [ ] Revisión legal de la política de privacidad (`src/components/Privacy.astro`): Ley 29733 y, de ser necesario, inscripción del banco de datos ante la ANPD
 - [ ] Textos finales (los actuales son borrador)
 - [ ] Integrantes del equipo y sus fotos
-- [ ] Imagen para redes 1200×630 (`og:image`)
+- [x] Imagen para redes 1200×630 (`brand/og/`, se regenera con `python brand/og/render_og.py`)

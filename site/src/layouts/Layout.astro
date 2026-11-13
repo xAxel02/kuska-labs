@@ -29,7 +29,8 @@ const site = Astro.site!;
 const canonical = new URL(lang === 'es' ? esPath : enPath, site).href;
 const altEs = new URL(esPath, site).href;
 const altEn = new URL(enPath, site).href;
-const ogImage = new URL('/brand/kuska-avatar.png', site).href; // TODO: imagen social 1200x630
+// Imagen para redes 1200x630 por idioma (se regenera con brand/og/render_og.py)
+const ogImage = new URL(`/brand/og-${lang}.png`, site).href;
 ---
 
 <!doctype html>
@@ -61,9 +62,13 @@ const ogImage = new URL('/brand/kuska-avatar.png', site).href; // TODO: imagen s
     <meta property="og:description" content={pageDescription} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={t('meta.title')} />
     <meta property="og:locale" content={lang === 'es' ? 'es_PE' : 'en_US'} />
     <meta property="og:locale:alternate" content={lang === 'es' ? 'en_US' : 'es_PE'} />
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImage} />
 
     <meta name="generator" content={Astro.generator} />
 
