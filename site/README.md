@@ -79,15 +79,16 @@ wrangler.jsonc              ← configuración de Cloudflare
 3. Abre un pull request. Cloudflare genera una URL de vista previa del PR.
 4. Al menos una persona revisa y aprueba. Luego se hace merge a `main`, y Cloudflare publica automáticamente.
 
-## Publicar en Cloudflare (configuración única)
+## Publicación (automática)
 
-1. Sube el repositorio a GitHub (organización del equipo).
-2. En el panel de Cloudflare entra a **Workers & Pages → Create → Import a repository** y elige el repo.
-3. Configura:
-   - **Root directory:** `site`
-   - **Build command:** `npm run build`
-   - **Deploy command:** `npx wrangler deploy`
-4. Cuando tengamos el dominio, agrégalo en **Settings → Domains & Routes** y actualiza `SITE_URL` en `src/config.ts`.
+El repositorio `xAxel02/kuska-labs` está conectado a **Cloudflare Workers Builds** (Worker `kuska-labs-web`):
+
+- **Push o merge a `main`:** Cloudflare corre `npm run build` y `npx wrangler deploy` dentro de `site/`, y publica en https://kuskalabs.com.
+- **Otras ramas y pull requests:** corre `npx wrangler versions upload`, que genera una URL de vista previa sin tocar producción.
+- **Variables:** las públicas están en `.env.production`. El secreto `TURNSTILE_SECRET` vive en el Worker (`npx wrangler secret put`).
+- **Node:** se usa la versión de `.node-version` (24).
+- **Estado de cada build:** en el panel, Workers & Pages → `kuska-labs-web` → Deployments.
+- **Cambios en la base de datos:** no se aplican solos. Después de mergear una migración nueva, corre `npm run db:migrate:remote`.
 
 ## Demos
 
