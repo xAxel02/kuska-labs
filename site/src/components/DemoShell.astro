@@ -1,0 +1,48 @@
+---
+/**
+ * Marco común de las demos: aviso de datos ficticios, volver al portafolio y CTA a WhatsApp.
+ * La app de cada demo va en el <slot />.
+ */
+import Layout from '../layouts/Layout.astro';
+import { whatsappLink } from '../config';
+import { homePath } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+import '../styles/demos.css';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  business: string; // negocio ficticio de la demo
+  ctaMessage: string; // mensaje prellenado de WhatsApp
+}
+const { lang, title, description, business, ctaMessage } = Astro.props;
+const t = {
+  es: { back: 'Volver al portafolio', demo: 'Demo', note: 'Datos ficticios. Lo que hagas se guarda solo en tu navegador.', cta: 'Quiero esto para mi negocio', of: 'Negocio de ejemplo' },
+  en: { back: 'Back to portfolio', demo: 'Demo', note: 'Sample data. Anything you do is saved only in your browser.', cta: 'I want this for my business', of: 'Sample business' },
+}[lang];
+---
+
+<Layout lang={lang} title={`${title} · Demo · Kuska Labs`} description={description}>
+  <section class="dm-hero">
+    <div class="container">
+      <a class="dm-back" href={`${homePath(lang)}#portafolio`}>{t.back}</a>
+      <div class="dm-head">
+        <div>
+          <span class="dm-tag">{t.demo}</span>
+          <h1>{title}</h1>
+          <p class="dm-lead">{description}</p>
+          <p class="dm-note">{t.of}: <strong>{business}</strong>. {t.note}</p>
+        </div>
+        <a class="btn btn-primary" href={whatsappLink(ctaMessage)} target="_blank" rel="noopener" data-umami-event="whatsapp" data-umami-event-location="demo">
+          {t.cta}
+        </a>
+      </div>
+    </div>
+  </section>
+  <section class="dm-stage">
+    <div class="container">
+      <slot />
+    </div>
+  </section>
+</Layout>

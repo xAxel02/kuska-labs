@@ -40,6 +40,8 @@ npm run dev        # http://localhost:4321
 | Integrantes del equipo | `src/content/team/<nombre>.md` (copiar `_ejemplo.md`) |
 | WhatsApp, correo, dominio, mostrar precios | `src/config.ts` |
 | Formulario (backend) | `worker/index.ts` + `wrangler.jsonc` |
+| Demos del portafolio (citas, inventario, chatbot) | `src/demos/*.tsx` (apps en Preact) + `src/pages/demos/` y `src/pages/en/demos/` |
+| Estilos de las demos | `src/styles/demos.css` (prefijo `dm-`) |
 | Política de privacidad | `src/components/Privacy.astro` |
 | Colores, tipografía y tamaños | `src/styles/tokens.css` (fuente de verdad de la marca) |
 | Logo e íconos | `public/brand/` y `public/*.png|ico|svg` (generados desde `../brand/logo`) |
@@ -86,6 +88,14 @@ wrangler.jsonc              ← configuración de Cloudflare
    - **Build command:** `npm run build`
    - **Deploy command:** `npx wrangler deploy`
 4. Cuando tengamos el dominio, agrégalo en **Settings → Domains & Routes** y actualiza `SITE_URL` en `src/config.ts`.
+
+## Demos
+
+Tres apps de ejemplo que el visitante puede usar (`/demos/citas/`, `/demos/inventario/` y `/demos/chatbot/`, más su versión `/en/…`):
+
+- Están hechas en **Preact** como islas de Astro (`client:load`). Solo esas páginas cargan JavaScript de Preact.
+- Usan datos ficticios que se guardan en el `localStorage` del visitante. No envían nada a ningún servidor, y cada una tiene un botón para reiniciarla.
+- El chatbot es un **asistente guiado**: responde según palabras clave y sigue un flujo de reserva, sin IA real. En un proyecto real se conecta a la API de WhatsApp Business y, si el cliente lo quiere, a un modelo de IA.
 
 ## Formulario y analítica
 

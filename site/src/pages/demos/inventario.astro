@@ -1,0 +1,8 @@
+---
+import DemoShell from '../../components/DemoShell.astro';
+import Inventario from '../../demos/Inventario';
+---
+
+<DemoShell lang="es" title="Control de inventario" description="Stock en tiempo real con alertas de reposición, registro de ventas y entradas, pedido al proveedor y reportes de ventas." business="Ferretería El Constructor" ctaMessage="Hola Kuska Labs, probé la demo de control de inventario y quiero algo así para mi negocio.">
+  <Inventario client:load lang="es" />
+</DemoShell>

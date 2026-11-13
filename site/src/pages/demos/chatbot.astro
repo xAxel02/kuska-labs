@@ -1,0 +1,8 @@
+---
+import DemoShell from '../../components/DemoShell.astro';
+import Chatbot from '../../demos/Chatbot';
+---
+
+<DemoShell lang="es" title="Chatbot de WhatsApp" description="Un asistente que responde preguntas frecuentes, agenda citas y avisa al negocio cuando un cliente quiere hablar con una persona." business="Salón Inti" ctaMessage="Hola Kuska Labs, probé la demo del chatbot de WhatsApp y quiero algo así para mi negocio.">
+  <Chatbot client:load lang="es" />
+</DemoShell>

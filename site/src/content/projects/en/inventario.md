@@ -2,8 +2,8 @@
 title: "Inventory management"
 summary: "Stock, inbound, outbound and alerts for a hardware store or distributor."
 order: 2
-tags: ["ERPNext", "Python"]
-status: building
+tags: ["Stock alerts", "Sales and purchases", "Reports"]
+status: live
 kind: demo
-# url: "https://citas.kuskalabs.com"  # agregar cuando la demo esté publicada (y cambiar status: live)
+url: "/en/demos/inventario/"
 ---

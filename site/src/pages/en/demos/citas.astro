@@ -1,0 +1,14 @@
+---
+import DemoShell from '../../../components/DemoShell.astro';
+import Citas from '../../../demos/Citas';
+---
+
+<DemoShell
+  lang="en"
+  title="Appointment system"
+  description="Your patients book online in three steps, and you see the schedule, occupancy and daily revenue in one dashboard."
+  business="Bright Smile Dental"
+  ctaMessage="Hi Kuska Labs, I tried the appointment system demo and I want something like it for my business."
+>
+  <Citas client:load lang="en" />
+</DemoShell>

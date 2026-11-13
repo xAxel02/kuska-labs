@@ -1,9 +1,9 @@
 ---
 title: "Chatbot de WhatsApp"
-summary: "Asistente con IA que responde preguntas frecuentes y agenda citas por WhatsApp."
+summary: "Asistente de WhatsApp que responde preguntas frecuentes, agenda citas y avisa al negocio cuando un cliente quiere hablar con una persona."
 order: 3
-tags: ["WhatsApp", "IA", "n8n"]
-status: building
+tags: ["Respuestas 24/7", "Reservas por chat", "Derivación a una persona"]
+status: live
 kind: demo
-# url: "https://citas.kuskalabs.com"  # agregar cuando la demo esté publicada (y cambiar status: live)
+url: "/demos/chatbot/"
 ---

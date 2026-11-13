@@ -142,7 +142,7 @@ const stock = {
                 <p>{data.summary}</p>
                 <div class="demo-foot">
                   {data.status === 'live' && data.url ? (
-                    <a class="btn btn-secondary" href={data.url} target="_blank" rel="noopener">{t('portfolio.live')}</a>
+                    <a class="btn btn-secondary" href={data.url} {...(data.url.startsWith('http') ? { target: '_blank', rel: 'noopener' } : {})} data-umami-event="demo-open" data-umami-event-demo={slug}>{t('portfolio.live')}</a>
                   ) : (
                     <span class="badge">{t('portfolio.building')}</span>
                   )}

@@ -61,6 +61,17 @@
   /* WhatsApp: solo el ícono, el botón es neutro */
   --color-whatsapp: #25D366;
 
+  /* Imitación de la interfaz de WhatsApp (solo en las demos de chat; no es un acento de marca) */
+  --wa-bg: #0B141A;
+  --wa-panel: #1F2C34;
+  --wa-input: #2A3942;
+  --wa-text: #E9EDEF;
+  --wa-muted: #8696A0;
+  --wa-out: #005C4B;
+  --wa-bubble: #1F2C24;
+  --wa-green: #00A884;
+  --wa-green-text: #00D6A6;
+
   /* ---------- Forma ---------- */
   --radius-sm: 6px;
   --radius-md: 8px;   /* botones, inputs */

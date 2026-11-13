@@ -1,0 +1,14 @@
+---
+import DemoShell from '../../components/DemoShell.astro';
+import Citas from '../../demos/Citas';
+---
+
+<DemoShell
+  lang="es"
+  title="Sistema de citas"
+  description="Tus pacientes reservan en línea en tres pasos y tú ves la agenda, la ocupación y los ingresos del día en un panel."
+  business="Sonrisa Dental"
+  ctaMessage="Hola Kuska Labs, probé la demo del sistema de citas y quiero algo así para mi negocio."
+>
+  <Citas client:load lang="es" />
+</DemoShell>

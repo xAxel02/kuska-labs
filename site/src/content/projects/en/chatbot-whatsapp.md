@@ -1,9 +1,9 @@
 ---
 title: "WhatsApp chatbot"
-summary: "AI assistant that answers FAQs and books appointments on WhatsApp."
+summary: "WhatsApp assistant that answers common questions, books appointments and alerts the business when a customer wants a person."
 order: 3
-tags: ["WhatsApp", "IA", "n8n"]
-status: building
+tags: ["24/7 answers", "Bookings in the chat", "Hand-off to a person"]
+status: live
 kind: demo
-# url: "https://citas.kuskalabs.com"  # agregar cuando la demo esté publicada (y cambiar status: live)
+url: "/en/demos/chatbot/"
 ---

@@ -35,7 +35,7 @@ const projects = defineCollection({
     // client: proyecto real para un cliente · demo: demo propia del equipo
     kind: z.enum(['client', 'demo']).default('demo'),
     status: z.enum(['live', 'building']).default('building'),
-    url: z.url().optional(), // sitio publicado o demo en línea
+    url: z.string().optional(), // sitio publicado (https://…) o demo interna (/demos/…)
     // Imágenes en src/assets (Astro genera tamaños y formatos optimizados)
     image: image().optional(), // captura 16:9
     imageFull: image().optional(), // captura de página completa (se desplaza en el marco del navegador)

@@ -2,8 +2,8 @@
 title: "Control de inventario"
 summary: "Stock, entradas, salidas y alertas para una ferretería o distribuidora."
 order: 2
-tags: ["ERPNext", "Python"]
-status: building
+tags: ["Alertas de stock", "Ventas y compras", "Reportes"]
+status: live
 kind: demo
-# url: "https://citas.kuskalabs.com"  # agregar cuando la demo esté publicada (y cambiar status: live)
+url: "/demos/inventario/"
 ---
