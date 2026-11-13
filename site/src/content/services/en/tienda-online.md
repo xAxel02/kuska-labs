@@ -1,6 +1,7 @@
 ---
 title: "Online store"
 summary: "Sell 24/7 with a catalog, cart and online payments."
+group: web
 order: 2
 priceFrom:
   pen: 1500

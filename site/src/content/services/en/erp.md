@@ -1,6 +1,7 @@
 ---
 title: "ERP for small businesses"
 summary: "Sales, purchasing, inventory and invoicing in one place."
+group: systems
 order: 4
 priceFrom:
   pen: 4000

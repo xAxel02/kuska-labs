@@ -37,6 +37,14 @@ export const ui = {
 
     'services.title': 'Lo que construimos',
     'services.lead': 'Desde tu primera web hasta el sistema que ordena todo tu negocio, con precios claros desde el inicio.',
+    'services.group.web': 'Tu presencia en internet',
+    'services.group.web.text': 'Para que te encuentren en Google y te escriban.',
+    'services.group.systems': 'Sistemas para tu operación',
+    'services.group.systems.text': 'Para dejar el Excel y ver tu negocio en tiempo real.',
+    'services.group.ai': 'IA y automatización',
+    'services.group.ai.text': 'Para responder, agendar y vender sin estar pegado al celular.',
+    'services.group.care': 'Siempre funcionando',
+    'services.group.care.text': 'Para que lo que construimos siga al día después de la entrega.',
     'services.from': 'desde',
     'services.monthly': '+ mensualidad',
     'services.perMonth': '/ mes',
@@ -53,6 +61,8 @@ export const ui = {
 
     'process.title': 'Cómo trabajamos',
     'process.lead': 'En cada etapa sabes qué estamos haciendo, cuánto falta y cuánto cuesta.',
+    'process.payNote': 'Pagas en dos partes: la mitad para empezar y la otra mitad cuando el proyecto ya funciona.',
+    'process.payBadge': 'Pago del 50 %',
 
     'team.title': 'Quién está detrás',
     'team.lead':
@@ -125,6 +135,14 @@ export const ui = {
 
     'services.title': 'What we build',
     'services.lead': 'From your first website to the system that runs your whole business, with clear pricing from day one.',
+    'services.group.web': 'Your online presence',
+    'services.group.web.text': 'So customers find you on Google and get in touch.',
+    'services.group.systems': 'Systems that run your operation',
+    'services.group.systems.text': 'Leave the spreadsheets behind and see your business in real time.',
+    'services.group.ai': 'AI and automation',
+    'services.group.ai.text': 'Answer, book and sell without being glued to your phone.',
+    'services.group.care': 'Always running',
+    'services.group.care.text': 'Keep what we built up to date long after launch.',
     'services.from': 'from',
     'services.monthly': '+ monthly fee',
     'services.perMonth': '/ month',
@@ -141,6 +159,8 @@ export const ui = {
 
     'process.title': 'How we work',
     'process.lead': 'At every stage you know what we are doing, what is left and what it costs.',
+    'process.payNote': 'You pay in two parts: half to get started and the other half once the project is working.',
+    'process.payBadge': '50 % payment',
 
     'team.title': "Who's behind it",
     'team.lead':

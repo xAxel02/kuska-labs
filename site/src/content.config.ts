@@ -13,6 +13,8 @@ const services = defineCollection({
   schema: z.object({
     title: z.string(),
     summary: z.string(), // una línea, orientada al beneficio
+    // web · systems (sistemas a medida) · ai (IA y automatización) · care (mantenimiento)
+    group: z.enum(['web', 'systems', 'ai', 'care']),
     order: z.number(),
     priceFrom: z.object({
       pen: z.number(), // Perú (S/)

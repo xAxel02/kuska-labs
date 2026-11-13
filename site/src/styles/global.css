@@ -80,8 +80,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 @media (prefers-reduced-motion: no-preference) {
   /* Estado inicial con opacity (no clip-path: IntersectionObserver no detecta elementos totalmente recortados) */
-  .js :is(.section-head, main .card, .steps, .flow-wrap):not(.is-in) { opacity: 0; }
-  .js :is(.section-head, main .card, .steps, .flow-wrap).is-in {
+  .js :is(.section-head, main .card, .flow-wrap, [data-reveal]):not(.is-in) { opacity: 0; }
+  .js :is(.section-head, main .card, .flow-wrap, [data-reveal]).is-in {
     animation: px-reveal 0.75s steps(6, end) both;
     animation-delay: calc(var(--reveal-i, 0) * 90ms);
   }

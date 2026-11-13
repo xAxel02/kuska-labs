@@ -1,6 +1,7 @@
 ---
 title: "Monthly maintenance"
 summary: "Your website or system always updated, secure and running."
+group: care
 order: 9
 priceFrom:
   pen: 150

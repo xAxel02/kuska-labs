@@ -1,0 +1,242 @@
+---
+/**
+ * Antes / después: cuadernos, Excel y chats sin responder  ->  un sistema ordenado con "reporte tejido".
+ * Control accesible: <input type="range"> (teclado y lector de pantalla) + botones Antes / Después.
+ * Al entrar en pantalla hace un pequeño vaivén para invitar a arrastrar (no con movimiento reducido).
+ */
+import type { Lang } from '../../i18n/ui';
+
+const { lang } = Astro.props as { lang: Lang };
+
+const c = {
+  es: {
+    title: 'De cuadernos, Excel y chats a un sistema que te responde',
+    lead: 'Arrastra la línea para ver la diferencia en un día cualquiera de una ferretería.',
+    range: 'Comparar antes y después',
+    srBefore: 'Antes: una hoja de cálculo con deudas y stock sin confirmar, notas sueltas para llamar al proveedor y 23 mensajes de WhatsApp sin responder.',
+    srAfter: 'Después: un panel con ventas de hoy por S/ 2,340, 18 pedidos y 3 productos con stock bajo, un gráfico de ventas de los últimos 12 días en aumento y la lista de pedidos con su estado.',
+    valueText: (v: number) => `${100 - v} % después`,
+    before: 'Antes',
+    after: 'Después',
+    cells: ['Cliente', 'Debe', 'Nota', 'Juan P.', 'S/ 50??', 'ver chat', 'Sra. Rosa', '¿?', 'pagó la mitad', 'Cemento', 'stock?', 'contar el lunes'],
+    sticky: 'llamar al proveedor!!',
+    chats: ['¿tienen tubos de 1/2?', '¿precio?', 'hola??'],
+    unread: '23 sin leer',
+    kpis: [['Ventas de hoy', 'S/ 2,340'], ['Pedidos', '18'], ['Stock bajo', '3 productos']],
+    chart: 'Ventas de los últimos 12 días',
+    orders: [['#214 · Cemento Sol x3', 'Entregado'], ['#215 · Tubos PVC 1/2 x10', 'En camino'], ['#216 · Pintura látex x2', 'Pagado']],
+  },
+  en: {
+    title: 'From notebooks, spreadsheets and chats to a system that answers you',
+    lead: 'Drag the line to see the difference on an ordinary day at a hardware store.',
+    range: 'Compare before and after',
+    srBefore: 'Before: a spreadsheet with unconfirmed debts and stock, loose notes to call the supplier, and 23 unanswered WhatsApp messages.',
+    srAfter: 'After: a dashboard showing $2,340 in sales today, 18 orders and 3 low-stock items, a rising 12-day sales chart, and the order list with each status.',
+    valueText: (v: number) => `${100 - v} % after`,
+    before: 'Before',
+    after: 'After',
+    cells: ['Customer', 'Owes', 'Note', 'John P.', '$50??', 'see chat', 'Mrs. Rose', '?', 'paid half', 'Cement', 'stock?', 'count on Monday'],
+    sticky: 'call the supplier!!',
+    chats: ['do you have 1/2" pipes?', 'price?', 'hello??'],
+    unread: '23 unread',
+    kpis: [['Sales today', '$2,340'], ['Orders', '18'], ['Low stock', '3 items']],
+    chart: 'Sales over the last 12 days',
+    orders: [['#214 · Cement x3', 'Delivered'], ['#215 · PVC pipe 1/2" x10', 'On the way'], ['#216 · Latex paint x2', 'Paid']],
+  },
+}[lang];
+const bars = [4, 6, 5, 7, 6, 8, 7, 9, 8, 10, 9, 11];
+---
+
+<section class="section ba-section" aria-labelledby="ba-title">
+  <div class="container">
+    <div class="section-head">
+      <h2 id="ba-title">{c.title}</h2>
+      <p>{c.lead}</p>
+    </div>
+
+    <div class="sr-only">
+      <p>{c.srBefore}</p>
+      <p>{c.srAfter}</p>
+    </div>
+
+    <div class="ba" data-ba style="--pos: 50%" data-reveal data-vt-es={lang === 'es' ? '1' : ''}>
+      <!-- ANTES -->
+      <div class="layer before" aria-hidden="true">
+        <div class="sheet">
+          {c.cells.map((cell, i) => <span class:list={{ head: i < 3 }}>{cell}</span>)}
+          {Array.from({ length: 9 }).map(() => <span />)}
+        </div>
+        <p class="sticky">{c.sticky}</p>
+        <div class="chats">
+          {c.chats.map((m) => <p class="bubble">{m}</p>)}
+          <p class="unread">{c.unread}</p>
+        </div>
+      </div>
+
+      <!-- DESPUÉS -->
+      <div class="layer after" aria-hidden="true">
+        <div class="kpis">
+          {c.kpis.map(([k, v]) => <div class="kpi"><span>{k}</span><strong>{v}</strong></div>)}
+        </div>
+        <div class="panel chart">
+          <span class="panel-title">{c.chart}</span>
+          <div class="woven">
+            {bars.map((h, i) => (
+              <span class="col" style={`--i:${i}`}>{Array.from({ length: h }).map(() => <b />)}</span>
+            ))}
+          </div>
+        </div>
+        <ul class="panel orders" role="list">
+          {c.orders.map(([o, s]) => <li><span>{o}</span><em>{s}</em></li>)}
+        </ul>
+      </div>
+
+      <span class="tag tag-before" aria-hidden="true">{c.before}</span>
+      <span class="tag tag-after" aria-hidden="true">{c.after}</span>
+      <span class="handle" aria-hidden="true"><span class="grip"></span></span>
+      <input class="range" type="range" min="0" max="100" value="50" step="1" aria-label={c.range} aria-valuetext={c.valueText(50)} />
+    </div>
+
+    <div class="switch">
+      <button type="button" data-set="96">{c.before}</button>
+      <button type="button" data-set="4">{c.after}</button>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-ba]').forEach((ba) => {
+    const range = ba.querySelector<HTMLInputElement>('.range')!;
+    const after = ba.dataset.vtEs ? 'después' : 'after';
+    const set = (v: number) => {
+      range.value = String(v);
+      range.setAttribute('aria-valuetext', `${100 - v} % ${after}`);
+      ba.style.setProperty('--pos', `${v}%`);
+    };
+    range.addEventListener('input', () => set(Number(range.value)));
+    ba.parentElement!.querySelectorAll<HTMLButtonElement>('[data-set]').forEach((b) =>
+      b.addEventListener('click', () => set(Number(b.dataset.set))),
+    );
+
+    // Vaivén de invitación, una sola vez, al entrar en pantalla
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !('IntersectionObserver' in window)) { ba.classList.add('is-woven'); return; }
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      ba.classList.add('is-woven');
+      const keys = [50, 32, 68, 50];
+      const dur = 1800;
+      let t0 = 0;
+      let touched = false;
+      range.addEventListener('pointerdown', () => (touched = true), { once: true });
+      range.addEventListener('keydown', () => (touched = true), { once: true });
+      const tick = (t: number) => {
+        if (touched) return;
+        t0 ||= t;
+        const p = Math.min((t - t0) / dur, 1);
+        const seg = Math.min(Math.floor(p * 3), 2);
+        const local = p * 3 - seg;
+        const ease = local < 0.5 ? 2 * local * local : 1 - Math.pow(-2 * local + 2, 2) / 2;
+        set(Math.round(keys[seg] + (keys[seg + 1] - keys[seg]) * ease));
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      setTimeout(() => requestAnimationFrame(tick), 700);
+    }, { threshold: 0.5 });
+    io.observe(ba);
+  });
+</script>
+
+<style>
+  .ba {
+    position: relative; aspect-ratio: 16 / 8.5; min-height: 380px; overflow: hidden; user-select: none;
+    border: 1px solid var(--color-border-strong); border-radius: var(--radius-lg); background: var(--color-surface-1);
+  }
+  .layer { position: absolute; inset: 0; padding: clamp(1rem, 0.5rem + 2vw, 2rem); }
+
+  /* ---------- Antes: desorden ---------- */
+  .before { background: #16161b; }
+  .sheet {
+    display: grid; grid-template-columns: 1.2fr 0.8fr 1.4fr; width: min(62%, 520px);
+    border: 1px solid #34343e; transform: rotate(-1.2deg);
+    font-size: clamp(0.7rem, 0.6rem + 0.3vw, 0.85rem); color: var(--color-text-2);
+  }
+  .sheet span { min-height: 2.1em; padding: 0.35em 0.5em; border-right: 1px solid #2a2a33; border-bottom: 1px solid #2a2a33; white-space: nowrap; overflow: hidden; }
+  .sheet .head { color: var(--color-text-3); background: #1d1d24; }
+  .sticky {
+    position: absolute; left: 34%; bottom: 14%; width: 9.5rem; padding: 0.8rem; transform: rotate(4deg);
+    background: #e9d98a; color: #3d3510; font-size: 0.85rem; line-height: 1.3; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  }
+  .chats { position: absolute; right: 6%; top: 12%; display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; }
+  .bubble { padding: 0.5rem 0.8rem; border-radius: 12px 12px 4px 12px; background: #23232b; color: var(--color-text-2); font-size: 0.85rem; }
+  .bubble:nth-child(2) { transform: translateX(-14px); }
+  .unread { margin-top: 0.25rem; padding: 2px 10px; border-radius: 999px; background: var(--color-error); color: #1a0806; font-size: 0.75rem; font-weight: var(--weight-medium); }
+
+  /* ---------- Después: orden ---------- */
+  .after {
+    background: var(--color-bg);
+    clip-path: inset(0 0 0 var(--pos));
+    display: grid; grid-template-columns: 1.4fr 1fr; grid-template-rows: auto 1fr; gap: 0.75rem;
+  }
+  .kpis { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+  .kpi { padding: 0.75rem 0.9rem; border-radius: var(--radius-md); background: var(--color-surface-1); border: 1px solid var(--color-border); }
+  .kpi span { display: block; font-size: 0.75rem; color: var(--color-text-3); }
+  .kpi strong { font-family: var(--font-display); font-weight: var(--weight-bold); font-size: clamp(1rem, 0.8rem + 0.8vw, 1.5rem); color: var(--color-text); }
+  .kpi:last-child strong { color: var(--color-accent); }
+  .panel { padding: 0.9rem; border-radius: var(--radius-md); background: var(--color-surface-1); border: 1px solid var(--color-border); }
+  .panel-title { display: block; margin-bottom: 0.6rem; font-size: 0.75rem; color: var(--color-text-3); }
+  .chart { display: flex; flex-direction: column; min-height: 0; }
+
+  /* Reporte tejido */
+  .woven { flex: 1; display: grid; grid-template-columns: repeat(12, 1fr); align-items: end; gap: 3px; min-height: 0; }
+  .col { display: flex; flex-direction: column-reverse; gap: 3px; }
+  .col b { height: clamp(8px, 1.25vw, 16px); border-radius: 1px; background: var(--color-accent); }
+  .col b:nth-child(odd) { background: color-mix(in srgb, var(--color-accent) 55%, var(--color-bg)); }
+  .col:nth-child(even) b:nth-child(odd) { background: var(--color-accent); }
+  .col:nth-child(even) b:nth-child(even) { background: color-mix(in srgb, var(--color-accent) 55%, var(--color-bg)); }
+  /* Solo se oculta si hay JS para mostrarlo después */
+  :global(.js) .ba:not(.is-woven) .col b { opacity: 0; }
+  .ba.is-woven .col b { animation: weave-up 0.3s steps(2, end) both; animation-delay: calc(var(--i) * 70ms); }
+  @keyframes weave-up { from { opacity: 0; transform: translateY(5px); } }
+
+  .orders { list-style: none; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.8125rem; }
+  .orders li { display: flex; justify-content: space-between; gap: 0.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--color-border); color: var(--color-text-2); }
+  .orders li:last-child { border-bottom: 0; }
+  .orders em { font-style: normal; color: var(--color-success); white-space: nowrap; }
+
+  /* ---------- Control ---------- */
+  .tag {
+    position: absolute; top: 0.75rem; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: var(--weight-medium);
+    background: rgba(11, 11, 15, 0.8); color: var(--color-text-2); pointer-events: none;
+  }
+  .tag-before { left: 0.75rem; }
+  .tag-after { right: 0.75rem; color: var(--color-accent); }
+  .handle { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 2px; margin-left: -1px; background: var(--color-accent); pointer-events: none; }
+  .grip {
+    position: absolute; top: 50%; left: 50%; width: 36px; height: 36px; transform: translate(-50%, -50%);
+    border-radius: var(--radius-sm); background: var(--color-accent);
+    background-image: linear-gradient(90deg, transparent 13px, var(--color-on-accent) 13px 15px, transparent 15px 21px, var(--color-on-accent) 21px 23px, transparent 23px);
+    background-size: 36px 14px; background-repeat: no-repeat; background-position: center;
+  }
+  .range { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; }
+  .range:focus-visible ~ .handle .grip, .ba:has(.range:focus-visible) .grip { box-shadow: var(--focus-ring); }
+
+  .switch { display: flex; gap: 0.5rem; margin-top: 1rem; }
+  .switch button {
+    min-height: 40px; padding: 0.5rem 1rem; cursor: pointer; font-size: var(--text-small);
+    color: var(--color-text-2); background: transparent; border: 1px solid var(--color-border-strong); border-radius: 999px;
+  }
+  .switch button:hover { color: var(--color-text); border-color: var(--color-text-3); }
+
+  @media (max-width: 720px) {
+    .ba { aspect-ratio: auto; height: 520px; }
+    .sheet { width: 92%; }
+    .sticky { left: 8%; bottom: 8%; }
+    .chats { top: auto; bottom: 30%; right: 5%; }
+    .after { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; }
+    .kpi { padding: 0.5rem 0.6rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ba .col b { animation: none !important; opacity: 1 !important; }
+  }
+</style>

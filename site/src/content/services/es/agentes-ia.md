@@ -1,6 +1,7 @@
 ---
 title: "Agentes de IA y chatbots"
 summary: "Un asistente que responde, agenda y vende por WhatsApp o en tu web."
+group: ai
 order: 6
 priceFrom:
   pen: 1500

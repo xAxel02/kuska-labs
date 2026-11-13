@@ -1,6 +1,7 @@
 ---
 title: "CRM"
 summary: "Ordena tus clientes y oportunidades y haz seguimiento a cada venta."
+group: systems
 order: 5
 priceFrom:
   pen: 2500

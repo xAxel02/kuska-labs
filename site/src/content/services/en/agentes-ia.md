@@ -1,6 +1,7 @@
 ---
 title: "AI agents and chatbots"
 summary: "An assistant that answers, books and sells on WhatsApp or your website."
+group: ai
 order: 6
 priceFrom:
   pen: 1500

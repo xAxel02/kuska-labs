@@ -1,6 +1,7 @@
 ---
 title: "Automations"
 summary: "Connect your tools and get rid of repetitive tasks."
+group: ai
 order: 7
 priceFrom:
   pen: 500

@@ -1,6 +1,7 @@
 ---
 title: "ERP para mypes"
 summary: "Ventas, compras, inventario y facturación en un solo lugar."
+group: systems
 order: 4
 priceFrom:
   pen: 4000

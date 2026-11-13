@@ -1,8 +1,13 @@
 ---
+/**
+ * Servicios agrupados en 4 bloques (web, sistemas, IA, mantenimiento) en filas, no tarjetas.
+ * En escritorio, un panel fijo a la izquierda muestra una mini escena del grupo que estás leyendo
+ * y se transforma al pasar al siguiente (IntersectionObserver). En móvil el panel se oculta.
+ */
 import { getCollection, render } from 'astro:content';
 import { SHOW_PRICES } from '../../config';
 import { useTranslations, formatPrice } from '../../i18n/utils';
-import type { Lang } from '../../i18n/ui';
+import type { Lang, UIKey } from '../../i18n/ui';
 
 const { lang } = Astro.props as { lang: Lang };
 const t = useTranslations(lang);
@@ -11,6 +16,18 @@ const services = (await getCollection('services', ({ id }) => id.startsWith(`${l
   (a, b) => a.data.order - b.data.order,
 );
 const items = await Promise.all(services.map(async (s) => ({ ...s, Content: (await render(s)).Content })));
+
+const groups = (['web', 'systems', 'ai', 'care'] as const).map((g) => ({
+  id: g,
+  title: t(`services.group.${g}` as UIKey),
+  text: t(`services.group.${g}.text` as UIKey),
+  items: items.filter((i) => i.data.group === g),
+}));
+
+const scene = {
+  es: { chatIn: '¿Atienden el sábado?', chatOut: 'Sí, de 9 a 1. ¿Te reservo una hora?', chatIn2: 'Sí, a las 10', ok: 'Reservado para el sábado 10:00', backup: 'Copia de seguridad', updates: 'Actualizaciones', uptime: 'En línea los últimos 30 días' },
+  en: { chatIn: 'Are you open on Saturday?', chatOut: 'Yes, 9 to 1. Shall I book you a slot?', chatIn2: 'Yes, at 10', ok: 'Booked for Saturday 10:00', backup: 'Backup', updates: 'Updates', uptime: 'Online for the last 30 days' },
+}[lang];
 ---
 
 <section id="servicios" class="section" aria-labelledby="services-title">
@@ -20,39 +37,206 @@ const items = await Promise.all(services.map(async (s) => ({ ...s, Content: (awa
       <p>{t('services.lead')}</p>
     </div>
 
-    <ul class="grid" role="list">
-      {
-        items.map(({ data, Content }) => (
-          <li class="card">
-            <h3>{data.title}</h3>
-            <p class="summary">{data.summary}</p>
-            <div class="body"><Content /></div>
-            {SHOW_PRICES && (
-              <p class="price">
-                <span class="from">{t('services.from')}</span> <strong>{formatPrice(lang, data.priceFrom)}</strong>
-                {data.billing === 'monthly' && ` ${t('services.perMonth')}`}
-                {data.billing === 'plus-monthly' && ` ${t('services.monthly')}`}
-              </p>
-            )}
-          </li>
-        ))
-      }
-    </ul>
-    {SHOW_PRICES && <p class="price-note">{t('services.priceNote')}</p>}
+    <div class="layout" data-services>
+      <!-- Panel que se transforma (decorativo) -->
+      <div class="stage-wrap" aria-hidden="true">
+        <div class="stage" data-active="web">
+          <div class="scene scene-web">
+            <div class="browser">
+              <div class="bar"><i></i><i></i><i></i><span class="url"></span></div>
+              <div class="page">
+                <span class="nav"></span>
+                <span class="h1"></span><span class="h1 short"></span>
+                <span class="btn-mock"></span>
+                <div class="tiles"><span></span><span></span><span></span></div>
+              </div>
+            </div>
+          </div>
+          <div class="scene scene-systems">
+            <div class="app">
+              <div class="side"><span></span><span></span><span></span><span></span></div>
+              <div class="main">
+                <div class="kpis"><span></span><span></span><span></span></div>
+                <div class="woven" style="--cols: 10">
+                  {[3, 5, 4, 6, 5, 7, 6, 8, 7, 9].map((h, i) => (
+                    <span class="col" style={`--h:${h}; --i:${i}`}>{Array.from({ length: h }).map(() => <b />)}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="scene scene-ai">
+            <div class="chat">
+              <p class="msg in">{scene.chatIn}</p>
+              <p class="msg out">{scene.chatOut}</p>
+              <p class="msg in">{scene.chatIn2}</p>
+              <p class="msg sys">{scene.ok}</p>
+            </div>
+          </div>
+          <div class="scene scene-care">
+            <ul class="checks">
+              <li><span class="ok"></span>{scene.backup}</li>
+              <li><span class="ok"></span>{scene.updates}</li>
+            </ul>
+            <div class="uptime">{Array.from({ length: 30 }).map((_, i) => <b style={`--i:${i}`} />)}</div>
+            <p class="uptime-label">{scene.uptime}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="groups">
+        {
+          groups.map((g) => (
+            <div class="group" data-group={g.id}>
+              <div class="group-head">
+                <h3>{g.title}</h3>
+                <p>{g.text}</p>
+              </div>
+              <ul class="rows" role="list">
+                {g.items.map(({ data, Content }) => (
+                  <li class="row">
+                    <div class="row-main">
+                      <h4>{data.title}</h4>
+                      <p class="summary">{data.summary}</p>
+                      <div class="body"><Content /></div>
+                    </div>
+                    {SHOW_PRICES && (
+                      <p class="price">
+                        <span class="from">{t('services.from')}</span>
+                        <strong>{formatPrice(lang, data.priceFrom)}</strong>
+                        {data.billing === 'monthly' && <span class="unit">{t('services.perMonth')}</span>}
+                        {data.billing === 'plus-monthly' && <span class="unit">{t('services.monthly')}</span>}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+        {SHOW_PRICES && <p class="price-note">{t('services.priceNote')}</p>}
+      </div>
+    </div>
   </div>
 </section>
 
+<script>
+  document.querySelectorAll<HTMLElement>('[data-services]').forEach((root) => {
+    const stage = root.querySelector<HTMLElement>('.stage')!;
+    const groups = root.querySelectorAll<HTMLElement>('[data-group]');
+    if (!('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          const id = (e.target as HTMLElement).dataset.group!;
+          stage.dataset.active = id;
+          groups.forEach((g) => g.classList.toggle('is-active', g === e.target));
+        }),
+      { rootMargin: '-40% 0px -55% 0px' }, // el grupo que cruza la franja central es el activo
+    );
+    groups.forEach((g) => io.observe(g));
+  });
+</script>
+
 <style>
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
-  .card { display: flex; flex-direction: column; }
-  .summary { color: var(--color-text); }
-  .body { margin-top: 0.5rem; font-size: var(--text-small); color: var(--color-text-3); }
-  .price {
-    margin-top: auto; padding-top: 1.25rem; border-top: 1px solid var(--color-border);
-    font-size: var(--text-small); color: var(--color-text-2); font-variant-numeric: tabular-nums;
+  .layout { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
+
+  /* ---------- Panel ---------- */
+  .stage-wrap { position: sticky; top: 110px; }
+  .stage {
+    position: relative; aspect-ratio: 4 / 3.4; overflow: hidden;
+    background: var(--color-surface-1); border: 1px solid var(--color-border); border-radius: var(--radius-lg);
   }
-  .price .from { color: var(--color-text-3); }
-  .price strong { color: var(--color-accent); font-weight: var(--weight-medium); font-size: 1rem; }
-  .body { margin-bottom: 1.25rem; }
-  .price-note { margin-top: 1.5rem; max-width: 62rem; font-size: var(--text-small); color: var(--color-text-3); }
+  .scene { position: absolute; inset: 0; padding: 1.5rem; display: grid; place-items: center; visibility: hidden; }
+  .stage[data-active='web'] .scene-web,
+  .stage[data-active='systems'] .scene-systems,
+  .stage[data-active='ai'] .scene-ai,
+  .stage[data-active='care'] .scene-care { visibility: visible; animation: px-reveal 0.6s steps(6, end) both; }
+
+  /* web */
+  .browser { width: 100%; border: 1px solid var(--color-border-strong); border-radius: var(--radius-md); overflow: hidden; background: var(--color-bg); }
+  .bar { display: flex; align-items: center; gap: 6px; padding: 8px 10px; border-bottom: 1px solid var(--color-border); }
+  .bar i { width: 8px; height: 8px; border-radius: 50%; background: var(--color-border-strong); }
+  .url { flex: 1; height: 10px; margin-left: 8px; border-radius: 4px; background: var(--color-surface-2); }
+  .page { display: flex; flex-direction: column; gap: 10px; padding: 16px; }
+  .page span { display: block; border-radius: 4px; background: var(--color-surface-2); }
+  .nav { height: 8px; width: 40%; }
+  .h1 { height: 18px; width: 85%; background: var(--color-text) !important; opacity: 0.85; }
+  .h1.short { width: 55%; }
+  .btn-mock { height: 22px; width: 38%; background: var(--color-accent) !important; }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 6px; }
+  .tiles span { height: 44px; }
+
+  /* sistemas */
+  .app { width: 100%; height: 100%; display: grid; grid-template-columns: 22% 1fr; gap: 10px; }
+  .side { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: var(--radius-md); background: var(--color-bg); }
+  .side span { height: 10px; border-radius: 3px; background: var(--color-surface-2); }
+  .side span:first-child { background: var(--color-accent); }
+  .main { display: flex; flex-direction: column; gap: 10px; }
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .kpis span { height: 42px; border-radius: var(--radius-sm); background: var(--color-bg); border: 1px solid var(--color-border); }
+
+  /* "Reporte tejido": barras hechas de cuadros en dos tonos de oro que se alternan como un textil */
+  .woven {
+    flex: 1; display: grid; grid-template-columns: repeat(var(--cols), 1fr); align-items: end; gap: 3px;
+    padding: 10px; border-radius: var(--radius-md); background: var(--color-bg);
+  }
+  .col { display: flex; flex-direction: column-reverse; gap: 3px; }
+  .col b { aspect-ratio: 1; background: var(--color-accent); border-radius: 1px; }
+  .col b:nth-child(odd) { background: color-mix(in srgb, var(--color-accent) 55%, var(--color-bg)); }
+  .col:nth-child(even) b:nth-child(odd) { background: var(--color-accent); }
+  .col:nth-child(even) b:nth-child(even) { background: color-mix(in srgb, var(--color-accent) 55%, var(--color-bg)); }
+  .stage[data-active='systems'] .col b { animation: weave-in 0.25s steps(2, end) both; animation-delay: calc(var(--i) * 60ms + 0.35s); }
+  @keyframes weave-in { from { opacity: 0; transform: translateY(4px); } }
+
+  /* IA */
+  .chat { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+  .msg { max-width: 80%; padding: 0.6rem 0.85rem; border-radius: 12px; font-size: var(--text-small); line-height: 1.4; }
+  .msg.in { align-self: flex-start; background: var(--color-surface-2); color: var(--color-text); border-bottom-left-radius: 4px; }
+  .msg.out { align-self: flex-end; background: var(--color-accent); color: var(--color-on-accent); border-bottom-right-radius: 4px; }
+  .msg.sys { align-self: center; font-size: 0.75rem; color: var(--color-accent); background: var(--color-accent-soft); }
+  .stage[data-active='ai'] .msg { animation: px-reveal 0.4s steps(4, end) both; }
+  .stage[data-active='ai'] .msg:nth-child(2) { animation-delay: 0.7s; }
+  .stage[data-active='ai'] .msg:nth-child(3) { animation-delay: 1.4s; }
+  .stage[data-active='ai'] .msg:nth-child(4) { animation-delay: 2.1s; }
+
+  /* mantenimiento */
+  .scene-care { align-content: center; gap: 1rem; }
+  .checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; justify-self: stretch; }
+  .checks li { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.8rem; border-radius: var(--radius-md); background: var(--color-bg); font-size: var(--text-small); color: var(--color-text); }
+  .ok { width: 14px; height: 14px; border-radius: 3px; background: var(--color-success); }
+  .uptime { justify-self: stretch; display: grid; grid-template-columns: repeat(30, 1fr); gap: 3px; }
+  .uptime b { aspect-ratio: 1 / 2.4; border-radius: 2px; background: var(--color-accent); }
+  .stage[data-active='care'] .uptime b { animation: weave-in 0.2s steps(2, end) both; animation-delay: calc(var(--i) * 25ms + 0.3s); }
+  .uptime-label { justify-self: start; font-size: 0.75rem; color: var(--color-text-3); }
+
+  /* ---------- Lista ---------- */
+  .group { padding-block: 0.5rem 2.5rem; }
+  .group-head { padding-bottom: 1rem; border-bottom: 1px solid var(--color-border-strong); }
+  .group-head h3 { font-size: var(--text-h3); color: var(--color-text-2); transition: color 0.3s; }
+  .group.is-active .group-head h3 { color: var(--color-accent); }
+  .group-head p { margin-top: 0.25rem; font-size: var(--text-small); color: var(--color-text-3); }
+  .rows { list-style: none; margin: 0; padding: 0; }
+  .row { display: flex; justify-content: space-between; gap: 1.5rem; padding-block: 1.25rem; border-bottom: 1px solid var(--color-border); }
+  .row h4 { font-family: var(--font-display); font-weight: var(--weight-medium); font-size: 1.125rem; color: var(--color-text); }
+  .summary { margin-top: 0.25rem; color: var(--color-text-2); }
+  .body { margin-top: 0.25rem; font-size: var(--text-small); color: var(--color-text-3); }
+  .price { flex: none; text-align: right; display: flex; flex-direction: column; align-items: flex-end; font-variant-numeric: tabular-nums; }
+  .price .from, .price .unit { font-size: 0.75rem; color: var(--color-text-3); }
+  .price strong { font-family: var(--font-display); font-weight: var(--weight-bold); font-size: 1.25rem; color: var(--color-accent); line-height: 1.2; }
+  .price-note { margin-top: 0.5rem; font-size: var(--text-small); color: var(--color-text-3); max-width: 60ch; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .stage-wrap { display: none; }
+  }
+  @media (max-width: 520px) {
+    .row { flex-direction: column; gap: 0.5rem; }
+    .price { align-items: flex-start; text-align: left; flex-direction: row; gap: 0.4rem; align-items: baseline; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .stage .scene, .stage .msg, .stage .col b, .stage .uptime b { animation: none !important; }
+    .group-head h3 { transition: none; }
+  }
 </style>

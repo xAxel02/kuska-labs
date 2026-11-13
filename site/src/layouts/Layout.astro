@@ -92,7 +92,7 @@ const ogImage = new URL(`/brand/og-${lang}.png`, site).href;
 
     <script>
       // Revelado en escalones de píxel (ver global.css): marca cada bloque al entrar en pantalla.
-      const targets = document.querySelectorAll<HTMLElement>('.section-head, main .card, .steps, .flow-wrap');
+      const targets = document.querySelectorAll<HTMLElement>('.section-head, main .card, .flow-wrap, [data-reveal]');
       // Escalonado entre hermanos de una misma cuadrícula (máx. 4 pasos)
       targets.forEach((el) => {
         const siblings = el.parentElement ? [...el.parentElement.children] : [];

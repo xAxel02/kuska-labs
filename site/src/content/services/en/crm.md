@@ -1,6 +1,7 @@
 ---
 title: "CRM"
 summary: "Organize your customers and deals and follow up on every sale."
+group: systems
 order: 5
 priceFrom:
   pen: 2500

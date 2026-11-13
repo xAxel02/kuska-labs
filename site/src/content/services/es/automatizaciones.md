@@ -1,6 +1,7 @@
 ---
 title: "Automatizaciones"
 summary: "Conecta tus herramientas y elimina tareas repetitivas."
+group: ai
 order: 7
 priceFrom:
   pen: 500

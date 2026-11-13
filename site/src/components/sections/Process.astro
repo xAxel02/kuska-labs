@@ -1,59 +1,135 @@
 ---
+/**
+ * Proceso como línea de tiempo vertical.
+ * - Una línea dorada se llena con el scroll (CSS scroll-driven animation; sin soporte: llena y quieta).
+ * - Cada paso se "enciende" al cruzar el centro de la pantalla (IntersectionObserver).
+ * - Los dos pagos del 50 % se marcan como hitos.
+ * Con prefers-reduced-motion: línea llena y todos los pasos encendidos.
+ */
 import { useTranslations } from '../../i18n/utils';
 import { processSteps, type Lang } from '../../i18n/ui';
 
 const { lang } = Astro.props as { lang: Lang };
 const t = useTranslations(lang);
 const steps = processSteps[lang];
+const payments = new Set([3, 6]); // índices de "Adelanto del 50 %" y "Pago final del 50 %"
 ---
 
 <section id="proceso" class="section" aria-labelledby="process-title">
-  <div class="container">
-    <div class="section-head">
-      <h2 id="process-title">{t('process.title')}</h2>
-      <p>{t('process.lead')}</p>
+  <div class="container layout">
+    <div class="intro">
+      <div class="section-head">
+        <h2 id="process-title">{t('process.title')}</h2>
+        <p>{t('process.lead')}</p>
+      </div>
+      <div class="pay" aria-hidden="true">
+        <div class="pay-bar"><span>50 %</span><span>50 %</span></div>
+        <p>{t('process.payNote')}</p>
+      </div>
     </div>
 
-    <ol class="steps" role="list">
+    <div class="timeline" data-timeline>
+    <span class="rail" aria-hidden="true"><span class="fill"></span></span>
+    <ol class="steps-list" role="list">
       {
         steps.map((s, i) => (
-          <li>
-            <span class="n">{String(i + 1).padStart(2, '0')}</span>
-            <h3>{s.title}</h3>
-            <p>{s.text}</p>
+          <li class:list={['step', { payment: payments.has(i) }]}>
+            <span class="dot" aria-hidden="true">{i + 1}</span>
+            <div class="text">
+              <h3>
+                {s.title}
+                {payments.has(i) && <span class="badge">{t('process.payBadge')}</span>}
+              </h3>
+              <p>{s.text}</p>
+            </div>
           </li>
         ))
       }
     </ol>
+    </div>
   </div>
 </section>
 
-<style>
-  .steps {
-    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0;
-    border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden;
-  }
-  .steps li { padding: 1.5rem; border-right: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); }
-  .steps li:nth-child(4n) { border-right: 0; }
-  .steps li:nth-last-child(-n + 4) { border-bottom: 0; }
-  .n {
-    display: inline-grid; place-items: center; width: 36px; height: 36px; margin-bottom: 1rem;
-    font-family: var(--font-display); font-weight: var(--weight-bold); font-size: var(--text-small); color: var(--color-on-accent);
-    background: var(--color-accent); border-radius: var(--radius-sm);
-  }
-  h3 { font-size: 1.125rem; margin-bottom: 0.375rem; }
-  p { font-size: var(--text-small); }
+<script>
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll<HTMLElement>('[data-timeline]').forEach((tl) => {
+    const steps = tl.querySelectorAll<HTMLElement>('.step');
+    if (reduce || !('IntersectionObserver' in window)) {
+      steps.forEach((s) => s.classList.add('is-lit'));
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => {
+          // Encendido si cruza la franja central o si ya quedó por encima (salto con el menú o scroll rápido)
+          const passed = e.rootBounds ? e.boundingClientRect.bottom < e.rootBounds.top : false;
+          if (e.isIntersecting || passed) {
+            e.target.classList.add('is-lit');
+            io.unobserve(e.target);
+          }
+        }),
+      { rootMargin: '-45% 0px -45% 0px' }, // se enciende al cruzar la franja central
+    );
+    steps.forEach((s) => io.observe(s));
+  });
+</script>
 
-  @media (max-width: 900px) {
-    .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .steps li:nth-child(4n) { border-right: 1px solid var(--color-border); }
-    .steps li:nth-child(2n) { border-right: 0; }
-    .steps li:nth-last-child(-n + 4) { border-bottom: 1px solid var(--color-border); }
-    .steps li:nth-last-child(-n + 2) { border-bottom: 0; }
+<style>
+  .layout { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
+  .intro { position: sticky; top: 110px; }
+  .pay { margin-top: 2rem; max-width: 26rem; }
+  .pay-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; height: 40px; }
+  .pay-bar span {
+    display: grid; place-items: center; border-radius: var(--radius-sm);
+    font-family: var(--font-display); font-weight: var(--weight-bold); color: var(--color-on-accent); background: var(--color-accent);
   }
-  @media (max-width: 520px) {
-    .steps { grid-template-columns: 1fr; }
-    .steps li { border-right: 0 !important; border-bottom: 1px solid var(--color-border) !important; }
-    .steps li:last-child { border-bottom: 0 !important; }
+  .pay-bar span:last-child { background: color-mix(in srgb, var(--color-accent) 55%, var(--color-bg)); }
+  .pay p { margin-top: 0.75rem; font-size: var(--text-small); color: var(--color-text-3); }
+
+  .timeline { position: relative; padding-left: 3.25rem; }
+  .steps-list { list-style: none; margin: 0; padding: 0; }
+  .rail { position: absolute; left: 17px; top: 18px; bottom: 18px; width: 2px; background: var(--color-border); }
+  .fill { position: absolute; inset: 0; background: var(--color-accent); transform-origin: top; }
+
+  .step { position: relative; padding-bottom: 2.25rem; }
+  .step:last-child { padding-bottom: 0; }
+  .dot {
+    position: absolute; left: -3.25rem; top: 0; width: 36px; height: 36px; display: grid; place-items: center;
+    font-family: var(--font-display); font-weight: var(--weight-bold); font-size: var(--text-small);
+    color: var(--color-text-3); background: var(--color-bg); border: 2px solid var(--color-border-strong); border-radius: var(--radius-sm);
+    transition: background-color 0.3s steps(3), color 0.3s steps(3), border-color 0.3s steps(3);
+  }
+  .text { padding-top: 0.25rem; }
+  .text h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: 1.125rem; margin-bottom: 0.375rem; color: var(--color-text-3); transition: color 0.3s; }
+  .text p { font-size: var(--text-small); color: var(--color-text-3); max-width: 46ch; transition: color 0.3s; }
+  .badge {
+    font-family: var(--font-body); font-size: 0.75rem; font-weight: var(--weight-medium);
+    color: var(--color-accent); background: var(--color-accent-soft); padding: 2px 8px; border-radius: 999px;
+  }
+
+  /* Paso encendido */
+  .step.is-lit .dot { color: var(--color-on-accent); background: var(--color-accent); border-color: var(--color-accent); }
+  .step.is-lit .text h3 { color: var(--color-text); }
+  .step.is-lit .text p { color: var(--color-text-2); }
+  .step.payment.is-lit .dot { box-shadow: 0 0 0 4px var(--color-accent-soft); }
+
+  /* Línea que se llena con el scroll */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .timeline { view-timeline-name: --process; }
+      .fill { animation: rail-fill linear both; animation-timeline: --process; animation-range: entry 40% exit 40%; }
+    }
+  }
+  @keyframes rail-fill { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  /* Sin JS los pasos se ven encendidos */
+  :global(html:not(.js)) .step .dot { color: var(--color-on-accent); background: var(--color-accent); border-color: var(--color-accent); }
+  :global(html:not(.js)) .step .text :is(h3, p) { color: var(--color-text-2); }
+
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+    .intro { position: static; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dot, .text h3, .text p { transition: none; }
   }
 </style>

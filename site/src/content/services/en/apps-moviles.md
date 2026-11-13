@@ -1,6 +1,7 @@
 ---
 title: "Mobile apps"
 summary: "Your Android and iOS app from a single codebase."
+group: systems
 order: 8
 priceFrom:
   pen: 6000

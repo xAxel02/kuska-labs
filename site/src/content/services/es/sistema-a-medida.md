@@ -1,6 +1,7 @@
 ---
 title: "Sistema web a medida"
 summary: "Citas, inventario, reservas o matrículas, sin depender de Excel."
+group: systems
 order: 3
 priceFrom:
   pen: 3000
