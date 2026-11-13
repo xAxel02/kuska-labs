@@ -64,8 +64,9 @@ async function handleContact(request: Request, env: Env, ctx: ExecutionContext):
     return json({ ok: false, error: 'bad_request' }, 400);
   }
 
-  // Honeypot: campo oculto que solo llenan los bots
-  if (str(form.get('website'))) return json({ ok: true });
+  // Honeypot: campo oculto que solo llenan los bots. No se descarta en silencio: si llega lleno,
+  // el lead se guarda como "spam" (sin aviso por correo) para que el equipo pueda revisarlo.
+  const suspicious = Boolean(str(form.get('kl_hp')));
 
   const lead: Lead = {
     name: str(form.get('name')).slice(0, LIMITS.name),
@@ -83,7 +84,10 @@ async function handleContact(request: Request, env: Env, ctx: ExecutionContext):
   // Antispam: Cloudflare Turnstile
   const ip = request.headers.get('CF-Connecting-IP') ?? '';
   const human = await verifyTurnstile(str(form.get('cf-turnstile-response')), ip, env.TURNSTILE_SECRET);
-  if (!human) return json({ ok: false, error: 'captcha' }, 403);
+  if (!human) {
+    console.warn(JSON.stringify({ event: 'lead-rejected', reason: 'captcha' }));
+    return json({ ok: false, error: 'captcha' }, 403);
+  }
 
   const country = (request as Request & { cf?: { country?: string } }).cf?.country ?? '';
   const userAgent = (request.headers.get('User-Agent') ?? '').slice(0, 300);
@@ -93,10 +97,10 @@ async function handleContact(request: Request, env: Env, ctx: ExecutionContext):
   if (env.DB) {
     try {
       const row = await env.DB.prepare(
-        `INSERT INTO leads (name, contact, business, message, lang, country, user_agent)
-         VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id`,
+        `INSERT INTO leads (name, contact, business, message, lang, country, user_agent, status)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
       )
-        .bind(lead.name, lead.contact, lead.business, lead.message, lead.lang, country, userAgent)
+        .bind(lead.name, lead.contact, lead.business, lead.message, lead.lang, country, userAgent, suspicious ? 'spam' : 'nuevo')
         .first<{ id: number }>();
       leadId = row?.id ?? null;
     } catch (err) {
@@ -106,7 +110,7 @@ async function handleContact(request: Request, env: Env, ctx: ExecutionContext):
 
   // 2) Avisar al equipo por correo
   let emailed = false;
-  if (env.EMAIL && env.MAIL_FROM && env.MAIL_TO) {
+  if (!suspicious && env.EMAIL && env.MAIL_FROM && env.MAIL_TO) {
     try {
       const raw = buildEmail(lead, country, env.MAIL_FROM, env.MAIL_TO);
       await env.EMAIL.send(new EmailMessage(env.MAIL_FROM, env.MAIL_TO, raw));
@@ -121,6 +125,8 @@ async function handleContact(request: Request, env: Env, ctx: ExecutionContext):
       env.DB.prepare('UPDATE leads SET email_sent = ? WHERE id = ?').bind(emailed ? 1 : 0, leadId).run().then(() => {}),
     );
   }
+
+  console.log(JSON.stringify({ event: 'lead', id: leadId, emailed, suspicious, lang: lead.lang, country }));
 
   // Si no se pudo guardar ni enviar, el visitante debe usar WhatsApp
   if (leadId === null && !emailed) return json({ ok: false, error: 'unavailable' }, 503);
