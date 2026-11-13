@@ -3,7 +3,7 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import WhatsAppFloat from '../components/WhatsAppFloat.astro';
-import { BRAND, UMAMI_WEBSITE_ID, UMAMI_SCRIPT_URL } from '../config';
+import { BRAND, UMAMI_WEBSITE_ID, UMAMI_SCRIPT_URL, UMAMI_DOMAINS, GOOGLE_SITE_VERIFICATION } from '../config';
 import { useTranslations } from '../i18n/utils';
 import type { Lang } from '../i18n/ui';
 
@@ -73,11 +73,12 @@ const ogImage = new URL(`/brand/og-${lang}.png`, site).href;
     <meta name="twitter:image" content={ogImage} />
 
     <meta name="generator" content={Astro.generator} />
+    {GOOGLE_SITE_VERIFICATION && <meta name="google-site-verification" content={GOOGLE_SITE_VERIFICATION} />}
 
     <!-- Analítica sin cookies (Umami): solo si hay ID configurado. Eventos: atributos data-umami-event -->
     {
       UMAMI_WEBSITE_ID && (
-        <script is:inline defer src={UMAMI_SCRIPT_URL} data-website-id={UMAMI_WEBSITE_ID} data-do-not-track="true" />
+        <script is:inline defer src={UMAMI_SCRIPT_URL} data-website-id={UMAMI_WEBSITE_ID} data-domains={UMAMI_DOMAINS} data-do-not-track="true" />
       )
     }
   </head>

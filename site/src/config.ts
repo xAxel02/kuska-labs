@@ -29,6 +29,11 @@ export const CONTACT_ENDPOINT = '/api/contacto';
 /** Analítica sin cookies (Umami). Sin ID, no se carga ningún script. */
 export const UMAMI_WEBSITE_ID: string = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID ?? '';
 export const UMAMI_SCRIPT_URL: string = import.meta.env.PUBLIC_UMAMI_SCRIPT_URL || 'https://cloud.umami.is/script.js';
+/** Umami solo cuenta visitas en el dominio público (no en localhost ni en vistas previas). */
+export const UMAMI_DOMAINS = new URL(SITE_URL).hostname;
+
+/** Código de verificación de Google Search Console (método "etiqueta HTML"). Vacío = no se agrega. */
+export const GOOGLE_SITE_VERIFICATION: string = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION ?? '';
 
 export const whatsappLink =(message: string) =>
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;

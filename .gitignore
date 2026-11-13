@@ -8,6 +8,7 @@ dist/
 .env
 .env.*
 !.env.example
+!.env.production
 
 # Configuración local personal de Claude Code
 .claude/settings.local.json
