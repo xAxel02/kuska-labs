@@ -21,47 +21,89 @@ const projects = (await getCollection('projects', ({ id }) => id.startsWith(`${l
 
     <ul class="grid" role="list">
       {
-        projects.map(({ data }) => (
-          <li class="card project">
-            <div class="thumb" aria-hidden="true">
-              <img src="/brand/kuska-symbol.svg" alt="" width="64" height="64" loading="lazy" />
-            </div>
-            <h3>{data.title}</h3>
-            <p>{data.summary}</p>
-            <ul class="tags" role="list">
-              {data.tags.map((tag) => <li>{tag}</li>)}
-            </ul>
-            {data.status === 'live' && data.demoUrl ? (
-              <a class="btn btn-secondary demo" href={data.demoUrl} target="_blank" rel="noopener">
-                {t('portfolio.live')} →
-              </a>
-            ) : (
-              <span class="badge">{t('portfolio.building')}</span>
-            )}
-          </li>
-        ))
+        projects.map(({ data }) => {
+          const live = data.status === 'live' && data.url;
+          return (
+            <li class:list={['card', 'project', { featured: data.kind === 'client' }]}>
+              <div class="thumb">
+                {data.image ? (
+                  <img src={data.image} alt={data.imageAlt ?? data.title} width="800" height="450" loading="lazy" decoding="async" />
+                ) : (
+                  <img class="placeholder" src="/brand/kuska-symbol.svg" alt="" width="64" height="64" loading="lazy" />
+                )}
+              </div>
+              <div class="body">
+                <span class:list={['kind', data.kind]}>
+                  {data.kind === 'client' ? t('portfolio.client') : t('portfolio.demo')}
+                </span>
+                <h3>{data.title}</h3>
+                <p>{data.summary}</p>
+                <ul class="tags" role="list">
+                  {data.tags.map((tag) => <li>{tag}</li>)}
+                </ul>
+                {live ? (
+                  <a
+                    class="btn btn-secondary visit"
+                    href={data.url}
+                    target="_blank"
+                    rel="noopener"
+                    data-umami-event="portfolio-visit"
+                    data-umami-event-project={data.title}
+                  >
+                    {data.kind === 'client' ? t('portfolio.visit') : t('portfolio.live')} →
+                  </a>
+                ) : (
+                  <span class="badge">{t('portfolio.building')}</span>
+                )}
+              </div>
+            </li>
+          );
+        })
       }
     </ul>
   </div>
 </section>
 
 <style>
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
-  .project { display: flex; flex-direction: column; gap: 0.5rem; }
+  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  .project { display: flex; flex-direction: column; padding: 0; overflow: hidden; }
   .thumb {
-    aspect-ratio: 16 / 9; margin-bottom: 1rem; border-radius: var(--radius-md);
-    background: var(--color-surface-2); border: 1px solid var(--color-border);
-    display: grid; place-items: center;
+    aspect-ratio: 16 / 9; background: var(--color-surface-2); border-bottom: 1px solid var(--color-border);
+    display: grid; place-items: center; overflow: hidden;
   }
-  .thumb img { width: 56px; opacity: 0.35; }
-  .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+  .thumb .placeholder { width: 56px; height: auto; opacity: 0.35; }
+  .body { display: flex; flex-direction: column; gap: 0.5rem; padding: 1.5rem; flex: 1; }
+  .kind {
+    align-self: flex-start; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: var(--tracking-label);
+    padding: 2px 8px; border-radius: var(--radius-sm); border: 1px solid var(--color-border-strong); color: var(--color-text-2);
+  }
+  .kind.client { color: var(--color-on-accent); background: var(--color-accent); border-color: var(--color-accent); }
+  .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.25rem; }
   .tags li {
     font-family: var(--font-mono); font-size: 0.75rem; color: var(--color-text-2);
     padding: 2px 8px; border: 1px solid var(--color-border); border-radius: var(--radius-sm);
   }
   .badge {
-    align-self: flex-start; margin-top: 1rem; font-family: var(--font-mono); font-size: var(--text-label);
+    align-self: flex-start; margin-top: auto; font-family: var(--font-mono); font-size: var(--text-label);
     color: var(--color-accent); background: var(--color-accent-soft); padding: 4px 10px; border-radius: var(--radius-sm);
   }
-  .demo { align-self: flex-start; margin-top: 1rem; }
+  .visit { align-self: flex-start; margin-top: auto; }
+
+  /* El proyecto real ocupa todo el ancho, con la captura a la izquierda */
+  .featured { grid-column: 1 / -1; flex-direction: row; }
+  .featured .thumb { flex: 0 0 55%; aspect-ratio: auto; min-height: 320px; border-bottom: 0; border-right: 1px solid var(--color-border); }
+  .featured .body { padding: clamp(1.5rem, 1rem + 2vw, 2.5rem); justify-content: center; }
+  .featured h3 { font-size: var(--text-h3); }
+
+  @media (max-width: 960px) {
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 760px) {
+    .featured { flex-direction: column; }
+    .featured .thumb { flex: none; aspect-ratio: 16 / 9; min-height: 0; border-right: 0; border-bottom: 1px solid var(--color-border); }
+  }
+  @media (max-width: 600px) {
+    .grid { grid-template-columns: 1fr; }
+  }
 </style>

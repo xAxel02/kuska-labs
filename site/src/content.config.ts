@@ -30,8 +30,12 @@ const projects = defineCollection({
     summary: z.string(),
     order: z.number(),
     tags: z.array(z.string()).default([]),
+    // client: proyecto real para un cliente · demo: demo propia del equipo
+    kind: z.enum(['client', 'demo']).default('demo'),
     status: z.enum(['live', 'building']).default('building'),
-    demoUrl: z.url().optional(),
+    url: z.url().optional(), // sitio publicado o demo en línea
+    image: z.string().optional(), // captura 16:9 en /public, ej. /portfolio/seyer-peru.webp
+    imageAlt: z.string().optional(),
   }),
 });
 

@@ -31,7 +31,7 @@ const items = await Promise.all(services.map(async (s) => ({ ...s, Content: (awa
             <div class="body"><Content /></div>
             {SHOW_PRICES && (
               <p class="price">
-                {t('services.from')} {formatPrice(lang, data.priceFrom)}
+                <span class="from">{t('services.from')}</span> <strong>{formatPrice(lang, data.priceFrom)}</strong>
                 {data.billing === 'monthly' && ` ${t('services.perMonth')}`}
                 {data.billing === 'plus-monthly' && ` ${t('services.monthly')}`}
               </p>
@@ -40,6 +40,7 @@ const items = await Promise.all(services.map(async (s) => ({ ...s, Content: (awa
         ))
       }
     </ul>
+    {SHOW_PRICES && <p class="price-note">{t('services.priceNote')}</p>}
   </div>
 </section>
 
@@ -49,5 +50,12 @@ const items = await Promise.all(services.map(async (s) => ({ ...s, Content: (awa
   .num { font-family: var(--font-mono); font-size: var(--text-label); color: var(--color-accent); margin-bottom: 1rem; }
   .summary { color: var(--color-text); }
   .body { margin-top: 0.5rem; font-size: var(--text-small); color: var(--color-text-3); }
-  .price { margin-top: auto; padding-top: 1.25rem; font-family: var(--font-mono); font-size: var(--text-small); color: var(--color-text); }
+  .price {
+    margin-top: auto; padding-top: 1.25rem; border-top: 1px solid var(--color-border);
+    font-family: var(--font-mono); font-size: var(--text-small); color: var(--color-text-2);
+  }
+  .price .from { color: var(--color-text-3); }
+  .price strong { color: var(--color-accent); font-weight: var(--weight-medium); font-size: 1rem; }
+  .body { margin-bottom: 1.25rem; }
+  .price-note { margin-top: 1.5rem; max-width: 62rem; font-size: var(--text-small); color: var(--color-text-3); }
 </style>

@@ -9,14 +9,14 @@ export const SITE_URL = 'https://kuska-labs-web.renatovr25.workers.dev';
 
 export const BRAND = 'Kuska Labs';
 
-// TODO: número real de WhatsApp en formato internacional, sin "+" ni espacios (ej. 51987654321)
-export const WHATSAPP_NUMBER = '51900000000';
+// WhatsApp del equipo en formato internacional, sin "+" ni espacios
+export const WHATSAPP_NUMBER = '51960098421'; // +51 960 098 421
 
 // Correo del equipo (Gmail compartido)
 export const CONTACT_EMAIL = 'kuskalabs.pe@gmail.com'; // cuando haya dominio: hola@kuskalabs.com (reenvía a este Gmail)
 
-// Decisión pendiente: ¿mostramos precios "desde ..."? Cambiar a true para mostrarlos.
-export const SHOW_PRICES = false;
+// Precios referenciales "desde ..." (soles en español, dólares en inglés). false = ocultarlos.
+export const SHOW_PRICES = true;
 
 /**
  * Formulario: si hay clave pública de Turnstile, el formulario se envía a /api/contacto

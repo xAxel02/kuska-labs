@@ -4,5 +4,6 @@ summary: "Online booking for clinics: reservations, reminders and a dashboard fo
 order: 1
 tags: ["Astro", "Supabase"]
 status: building
-# demoUrl: "https://citas.kuskalabs.com"  # agregar cuando la demo esté publicada
+kind: demo
+# url: "https://citas.kuskalabs.com"  # agregar cuando la demo esté publicada (y cambiar status: live)
 ---
