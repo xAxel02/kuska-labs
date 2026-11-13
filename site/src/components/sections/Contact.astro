@@ -1,6 +1,6 @@
 ---
 import WhatsAppIcon from '../WhatsAppIcon.astro';
-import Chakana from '../Chakana.astro';
+import Converge from '../Converge.astro';
 import { WHATSAPP_NUMBER, CONTACT_EMAIL, TURNSTILE_SITE_KEY, CONTACT_ENDPOINT, whatsappLink } from '../../config';
 import { useTranslations, privacyPath } from '../../i18n/utils';
 import type { Lang } from '../../i18n/ui';
@@ -20,7 +20,7 @@ const waHref = whatsappLink(t('whatsapp.message'));
 <section id="contacto" class="section" aria-labelledby="contact-title">
   <div class="container inner">
     <div class="section-head">
-      <Chakana mode="scroll" size="76px" class="contact-mark" />
+      <div class="contact-mark"><Converge /></div>
       <h2 id="contact-title">{t('contact.title')}</h2>
       <p>{t('contact.lead')}</p>
       <div class="direct">
@@ -43,6 +43,7 @@ const waHref = whatsappLink(t('whatsapp.message'));
         data-lang={lang}
         data-msg-required={t('form.required')}
         data-msg-consent={t('form.consentRequired')}
+        data-msg-contact={t('form.contactInvalid')}
         data-msg-captcha={t('form.errorCaptcha')}
         data-msg-generic={t('form.errorGeneric')}
         data-msg-sending={t('form.sending')}
@@ -56,11 +57,14 @@ const waHref = whatsappLink(t('whatsapp.message'));
 
         <div class="field">
           <label for="f-name">{t('form.name')}</label>
-          <input id="f-name" name="name" type="text" autocomplete="name" maxlength="120" required />
+          <input id="f-name" name="name" type="text" autocomplete="name" maxlength="120" required aria-describedby="err-name" />
+          <p class="field-error" id="err-name" hidden></p>
         </div>
         <div class="field">
           <label for="f-contact">{t('form.contact')}</label>
-          <input id="f-contact" name="contact" type="text" autocomplete="email" maxlength="160" required />
+          <input id="f-contact" name="contact" type="text" inputmode="email" autocomplete="email" maxlength="160" required aria-describedby="hint-contact err-contact" />
+          <p class="hint" id="hint-contact">{t('form.contactHint')}</p>
+          <p class="field-error" id="err-contact" hidden></p>
         </div>
         <div class="field">
           <label for="f-business">{t('form.business')}</label>
@@ -68,15 +72,17 @@ const waHref = whatsappLink(t('whatsapp.message'));
         </div>
         <div class="field">
           <label for="f-message">{t('form.message')}</label>
-          <textarea id="f-message" name="message" rows="4" maxlength="4000" required></textarea>
+          <textarea id="f-message" name="message" rows="4" maxlength="4000" required aria-describedby="err-message"></textarea>
+          <p class="field-error" id="err-message" hidden></p>
         </div>
 
         <div class="consent">
-          <input id="f-consent" name="consent" type="checkbox" value="yes" required />
+          <input id="f-consent" name="consent" type="checkbox" value="yes" required aria-describedby="err-consent" />
           <label for="f-consent">
             {t('form.consentPre')}<a href={privacyPath(lang)} target="_blank">{t('form.consentLink')}</a>{t('form.consentPost')}
           </label>
         </div>
+        <p class="field-error" id="err-consent" hidden></p>
 
         {
           mode === 'api' && (
@@ -132,28 +138,36 @@ const waHref = whatsappLink(t('whatsapp.message'));
       errorBox.hidden = false;
     };
 
+    // Errores junto a cada campo (enlazados con aria-describedby), en lugar del globo nativo del navegador
+    const setFieldError = (el: Field, text: string) => {
+      const box = form.querySelector<HTMLElement>(`#err-${el.id.replace('f-', '')}`);
+      if (box) { box.textContent = text; box.hidden = !text; }
+      if (text) el.setAttribute('aria-invalid', 'true'); else el.removeAttribute('aria-invalid');
+    };
+    // Acepta un correo o un número (mínimo 7 dígitos, con o sin +51, espacios o guiones)
+    const validContact = (v: string) =>
+      v.includes('@')
+        ? /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)
+        : /^\+?[\d\s().-]{7,20}$/.test(v) && v.replace(/\D/g, '').length >= 7;
+
     const validate = (): boolean => {
       let firstInvalid: Field | null = null;
+      const fail = (el: Field, text: string) => { setFieldError(el, text); if (!firstInvalid) firstInvalid = el; };
       form.querySelectorAll<Field>('input[required]:not([type="checkbox"]), textarea[required]').forEach((el) => {
-        const empty = !el.value.trim();
-        el.setAttribute('aria-invalid', String(empty));
-        el.setCustomValidity(empty ? msg.msgRequired ?? '' : '');
-        if (empty && !firstInvalid) firstInvalid = el;
+        const v = el.value.trim();
+        if (!v) fail(el, msg.msgRequired ?? '');
+        else if (el.id === 'f-contact' && !validContact(v)) fail(el, msg.msgContact ?? '');
+        else setFieldError(el, '');
       });
       const consent = form.querySelector<HTMLInputElement>('#f-consent')!;
-      consent.setCustomValidity(consent.checked ? '' : msg.msgConsent ?? '');
-      if (!consent.checked && !firstInvalid) firstInvalid = consent;
-      if (firstInvalid) {
-        (firstInvalid as Field).reportValidity();
-        return false;
-      }
+      if (!consent.checked) fail(consent, msg.msgConsent ?? ''); else setFieldError(consent, '');
+      if (firstInvalid) { (firstInvalid as Field).focus(); return false; }
       return true;
     };
 
     form.querySelectorAll<Field>('input, textarea').forEach((el) =>
-      el.addEventListener('input', () => {
-        el.setCustomValidity('');
-        el.removeAttribute('aria-invalid');
+      el.addEventListener(el.type === 'checkbox' ? 'change' : 'input', () => {
+        if (el.getAttribute('aria-invalid')) setFieldError(el, '');
         errorBox.hidden = true;
       }),
     );
@@ -204,7 +218,7 @@ const waHref = whatsappLink(t('whatsapp.message'));
 
 <style>
   .inner { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 3rem; align-items: start; }
-  :global(.contact-mark) { margin-bottom: 1.5rem; }
+  .contact-mark { margin-bottom: 1.5rem; }
   .direct { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 2rem; }
   .mail { font-size: var(--text-small); }
   .form-card { padding: clamp(1.5rem, 1rem + 2vw, 2.25rem); }
@@ -220,6 +234,9 @@ const waHref = whatsappLink(t('whatsapp.message'));
   input::placeholder, textarea::placeholder { color: var(--color-text-3); }
   input:focus-visible, textarea:focus-visible { border-color: var(--color-accent); }
   [aria-invalid='true'] { border-color: var(--color-error) !important; }
+  .hint { font-size: var(--text-label); color: var(--color-text-3); }
+  .field-error { font-size: var(--text-small); color: var(--color-error); }
+  .consent input[aria-invalid='true'] { outline: 2px solid var(--color-error); outline-offset: 2px; }
   textarea { resize: vertical; }
   .consent { display: flex; gap: 0.75rem; align-items: flex-start; }
   .consent input { width: 20px; height: 20px; margin: 2px 0 0; flex: none; accent-color: var(--color-accent); }

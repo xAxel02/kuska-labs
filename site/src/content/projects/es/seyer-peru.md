@@ -5,7 +5,8 @@ order: 0
 kind: client
 status: live
 url: "https://www.seyerperu.com"
-image: "/portfolio/seyer-peru.webp"
+image: "../../../assets/portfolio/seyer-peru.webp"
+imageFull: "../../../assets/portfolio/seyer-peru-full.webp"
 imageAlt: "Página de inicio de seyerperu.com: Bombas de agua en Trujillo"
 tags: ["Web comercial", "Catálogo", "SEO local", "WhatsApp"]
 ---

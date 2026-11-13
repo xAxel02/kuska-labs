@@ -1,6 +1,16 @@
 ---
+/**
+ * Portafolio.
+ * - Proyecto real destacado: captura de página completa dentro de un marco de navegador; la página
+ *   "se desplaza" al ritmo del scroll del visitante (CSS scroll-driven animation, sin movimiento automático).
+ * - Demos: mini escenas propias (agenda, inventario y una conversación de chatbot que se escribe una vez,
+ *   con botón para repetirla).
+ * - "Quiero algo así" lleva a WhatsApp en lugar de solo sacar al visitante al sitio del cliente.
+ */
 import { getCollection } from 'astro:content';
-import { useTranslations } from '../../i18n/utils';
+import { Picture } from 'astro:assets';
+import { whatsappLink } from '../../config';
+import { useTranslations, slugOf } from '../../i18n/utils';
 import type { Lang } from '../../i18n/ui';
 
 const { lang } = Astro.props as { lang: Lang };
@@ -9,6 +19,28 @@ const t = useTranslations(lang);
 const projects = (await getCollection('projects', ({ id }) => id.startsWith(`${lang}/`))).sort(
   (a, b) => a.data.order - b.data.order,
 );
+const featured = projects.filter((p) => p.data.kind === 'client');
+const demos = projects.filter((p) => p.data.kind !== 'client');
+
+const chat = {
+  es: [
+    ['in', 'Hola, ¿tienen citas para mañana?'],
+    ['out', 'Sí. Hay espacios a las 9:00, 11:30 y 16:00. ¿Cuál prefieres?'],
+    ['in', 'A las 11:30'],
+    ['out', 'Listo, quedó reservada. Te recordaré mañana a las 9:00.'],
+  ],
+  en: [
+    ['in', 'Hi, any appointments tomorrow?'],
+    ['out', 'Yes. We have 9:00, 11:30 and 4:00 pm. Which one works for you?'],
+    ['in', '11:30 please'],
+    ['out', "Done, you're booked. I'll remind you tomorrow at 9:00."],
+  ],
+}[lang];
+const days = lang === 'es' ? ['L', 'M', 'M', 'J', 'V', 'S'] : ['M', 'T', 'W', 'T', 'F', 'S'];
+const stock = {
+  es: [['Cemento Sol', 38, 'ok'], ['Tubo PVC 1/2', 6, 'low'], ['Pintura látex', 21, 'ok'], ['Fierro 3/8', 3, 'low']],
+  en: [['Cement', 38, 'ok'], ['PVC pipe 1/2"', 6, 'low'], ['Latex paint', 21, 'ok'], ['Rebar 3/8"', 3, 'low']],
+}[lang] as [string, number, string][];
 ---
 
 <section id="portafolio" class="section" aria-labelledby="portfolio-title">
@@ -18,42 +50,106 @@ const projects = (await getCollection('projects', ({ id }) => id.startsWith(`${l
       <p>{t('portfolio.lead')}</p>
     </div>
 
-    <ul class="grid" role="list">
+    {
+      featured.map(({ data }) => (
+        <article class="featured" data-reveal>
+          <div class="browser" aria-hidden={data.imageFull ? undefined : 'true'}>
+            <div class="chrome">
+              <i /><i /><i />
+              <span class="address">{data.url?.replace(/^https?:\/\//, '')}</span>
+            </div>
+            <div class="viewport">
+              {data.imageFull ? (
+                <Picture
+                  src={data.imageFull}
+                  alt={data.imageAlt ?? data.title}
+                  widths={[600, 900, 1200]}
+                  sizes="(max-width: 860px) 100vw, 58vw"
+                  formats={['avif', 'webp']}
+                  loading="lazy"
+                  decoding="async"
+                  class="shot"
+                />
+              ) : (
+                data.image && <Picture src={data.image} alt={data.imageAlt ?? data.title} widths={[400, 800]} formats={['avif', 'webp']} class="shot static" loading="lazy" />
+              )}
+            </div>
+          </div>
+          <div class="body">
+            <span class="kind client">{t('portfolio.client')}</span>
+            <h3>{data.title}</h3>
+            <p>{data.summary}</p>
+            <ul class="tags" role="list">{data.tags.map((tag) => <li>{tag}</li>)}</ul>
+            <div class="actions">
+              <a
+                class="btn btn-primary"
+                href={whatsappLink(t('portfolio.wantMessage').replace('{project}', data.title))}
+                target="_blank"
+                rel="noopener"
+                data-umami-event="whatsapp"
+                data-umami-event-location="portfolio"
+              >
+                {t('portfolio.want')}
+              </a>
+              {data.url && (
+                <a class="btn btn-secondary" href={data.url} target="_blank" rel="noopener" data-umami-event="portfolio-visit" data-umami-event-project={data.title}>
+                  {t('portfolio.visit')}
+                </a>
+              )}
+            </div>
+          </div>
+        </article>
+      ))
+    }
+
+    <ul class="demos" role="list">
       {
-        projects.map(({ data }) => {
-          const live = data.status === 'live' && data.url;
+        demos.map((p) => {
+          const slug = slugOf(p.id);
+          const { data } = p;
           return (
-            <li class:list={['card', 'project', { featured: data.kind === 'client' }]}>
-              <div class="thumb">
-                {data.image ? (
-                  <img src={data.image} alt={data.imageAlt ?? data.title} width="800" height="450" loading="lazy" decoding="async" />
-                ) : (
-                  <img class="placeholder" src="/brand/kuska-symbol.svg" alt="" width="64" height="64" loading="lazy" />
+            <li class="card demo">
+              <div class="scene" aria-hidden="true">
+                {slug === 'sistema-de-citas' && (
+                  <div class="cal">
+                    {days.map((d) => <span class="dh">{d}</span>)}
+                    {Array.from({ length: 18 }).map((_, i) => (
+                      <span class:list={['slot', { busy: [1, 4, 6, 9, 13, 16].includes(i), mine: i === 10 }]} />
+                    ))}
+                  </div>
+                )}
+                {slug === 'inventario' && (
+                  <ul class="stock" role="list">
+                    {stock.map(([name, n, st]) => (
+                      <li class={st}>
+                        <span class="name">{name}</span>
+                        <span class="bar"><b style={`width:${Math.min(n * 2.4, 100)}%`} /></span>
+                        <span class="n">{n}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {slug === 'chatbot-whatsapp' && (
+                  <div class="chat" data-chat>
+                    {chat.map(([side, text]) => <p class={`msg ${side}`}>{text}</p>)}
+                    <span class="typing"><i /><i /><i /></span>
+                  </div>
                 )}
               </div>
-              <div class="body">
-                <span class:list={['kind', data.kind]}>
-                  {data.kind === 'client' ? t('portfolio.client') : t('portfolio.demo')}
-                </span>
+              <div class="demo-body">
+                <span class="kind">{t('portfolio.demo')}</span>
                 <h3>{data.title}</h3>
                 <p>{data.summary}</p>
-                <ul class="tags" role="list">
-                  {data.tags.map((tag) => <li>{tag}</li>)}
-                </ul>
-                {live ? (
-                  <a
-                    class="btn btn-secondary visit"
-                    href={data.url}
-                    target="_blank"
-                    rel="noopener"
-                    data-umami-event="portfolio-visit"
-                    data-umami-event-project={data.title}
-                  >
-                    {data.kind === 'client' ? t('portfolio.visit') : t('portfolio.live')}
-                  </a>
-                ) : (
-                  <span class="badge">{t('portfolio.building')}</span>
-                )}
+                <div class="demo-foot">
+                  {data.status === 'live' && data.url ? (
+                    <a class="btn btn-secondary" href={data.url} target="_blank" rel="noopener">{t('portfolio.live')}</a>
+                  ) : (
+                    <span class="badge">{t('portfolio.building')}</span>
+                  )}
+                  {slug === 'chatbot-whatsapp' && (
+                    <button type="button" class="replay" data-replay>{t('portfolio.replay')}</button>
+                  )}
+                </div>
               </div>
             </li>
           );
@@ -63,46 +159,127 @@ const projects = (await getCollection('projects', ({ id }) => id.startsWith(`${l
   </div>
 </section>
 
+<script>
+  // Conversación del chatbot: se "escribe" una vez al entrar en pantalla; el botón la repite.
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll<HTMLElement>('[data-chat]').forEach((chat) => {
+    const msgs = [...chat.querySelectorAll<HTMLElement>('.msg')];
+    const typing = chat.querySelector<HTMLElement>('.typing')!;
+    const replay = chat.closest('.demo')?.querySelector<HTMLButtonElement>('[data-replay]');
+    let timers: number[] = [];
+
+    const showAll = () => { msgs.forEach((m) => m.classList.add('is-shown')); typing.classList.remove('is-on'); };
+    const play = () => {
+      timers.forEach(clearTimeout);
+      timers = [];
+      if (reduce) { showAll(); return; }
+      msgs.forEach((m) => m.classList.remove('is-shown'));
+      let t = 300;
+      msgs.forEach((m) => {
+        const isBot = m.classList.contains('out');
+        if (isBot) {
+          timers.push(window.setTimeout(() => typing.classList.add('is-on'), t));
+          t += 1100;
+        }
+        timers.push(window.setTimeout(() => { typing.classList.remove('is-on'); m.classList.add('is-shown'); }, t));
+        t += isBot ? 700 : 900;
+      });
+    };
+
+    replay?.addEventListener('click', play);
+    if (reduce || !('IntersectionObserver' in window)) { showAll(); return; }
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io.disconnect(); play(); } }, { threshold: 0.5 });
+    io.observe(chat);
+  });
+</script>
+
 <style>
-  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
-  .project { display: flex; flex-direction: column; padding: 0; overflow: hidden; }
-  .thumb {
-    aspect-ratio: 16 / 9; background: var(--color-surface-2); border-bottom: 1px solid var(--color-border);
-    display: grid; place-items: center; overflow: hidden;
+  /* ---------- Proyecto destacado ---------- */
+  .featured {
+    display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(1.5rem, 1rem + 3vw, 3.5rem); align-items: center;
+    margin-bottom: 1.5rem;
   }
-  .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top left; }
-  .thumb .placeholder { width: 56px; height: auto; opacity: 0.35; }
-  .body { display: flex; flex-direction: column; gap: 0.5rem; padding: 1.5rem; flex: 1; }
+  .browser { border: 1px solid var(--color-border-strong); border-radius: var(--radius-lg); overflow: hidden; background: var(--color-surface-1); }
+  .chrome { display: flex; align-items: center; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--color-border); }
+  .chrome i { width: 10px; height: 10px; border-radius: 50%; background: var(--color-border-strong); }
+  .address {
+    flex: 1; margin-left: 10px; padding: 3px 10px; border-radius: 999px; background: var(--color-bg);
+    font-size: 0.75rem; color: var(--color-text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .viewport { aspect-ratio: 16 / 10; overflow: hidden; background: #fff; }
+  .viewport :global(picture), .viewport :global(img) { display: block; width: 100%; height: 100%; }
+  .viewport :global(img) { object-fit: cover; object-position: 50% 0%; }
+
+  /* La página del cliente se desplaza al ritmo del scroll del visitante */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .viewport { view-timeline-name: --shot; }
+      .viewport :global(img.shot:not(.static)) {
+        animation: shot-scroll linear both;
+        animation-timeline: --shot;
+        animation-range: cover 20% cover 85%;
+      }
+    }
+  }
+  @keyframes shot-scroll { from { object-position: 50% 0%; } to { object-position: 50% 100%; } }
+
+  .body { display: flex; flex-direction: column; gap: 0.75rem; }
+  .body h3 { font-size: var(--text-h2); }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem; }
+
   .kind {
     align-self: flex-start; font-size: 0.75rem; font-weight: var(--weight-medium);
-    padding: 2px 8px; border-radius: var(--radius-sm); border: 1px solid var(--color-border-strong); color: var(--color-text-2);
+    padding: 2px 10px; border-radius: 999px; border: 1px solid var(--color-border-strong); color: var(--color-text-2);
   }
   .kind.client { color: var(--color-on-accent); background: var(--color-accent); border-color: var(--color-accent); }
-  .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.25rem; }
-  .tags li {
-    font-size: 0.75rem; color: var(--color-text-2);
-    padding: 2px 8px; border: 1px solid var(--color-border); border-radius: var(--radius-sm);
-  }
-  .badge {
-    align-self: flex-start; margin-top: auto; font-size: var(--text-label); font-weight: var(--weight-medium);
-    color: var(--color-accent); background: var(--color-accent-soft); padding: 4px 10px; border-radius: var(--radius-sm);
-  }
-  .visit { align-self: flex-start; margin-top: auto; }
+  .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
+  .tags li { font-size: 0.75rem; color: var(--color-text-2); padding: 2px 8px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); }
 
-  /* El proyecto real ocupa todo el ancho, con la captura a la izquierda */
-  .featured { grid-column: 1 / -1; flex-direction: row; }
-  .featured .thumb { flex: 0 0 55%; aspect-ratio: auto; min-height: 320px; border-bottom: 0; border-right: 1px solid var(--color-border); }
-  .featured .body { padding: clamp(1.5rem, 1rem + 2vw, 2.5rem); justify-content: center; }
-  .featured h3 { font-size: var(--text-h3); }
+  /* ---------- Demos ---------- */
+  .demos { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  .demo { display: flex; flex-direction: column; padding: 0; overflow: hidden; }
+  .scene { aspect-ratio: 16 / 10; padding: 1rem; background: var(--color-bg); border-bottom: 1px solid var(--color-border); display: grid; align-content: center; }
+  .demo-body { display: flex; flex-direction: column; gap: 0.5rem; padding: 1.25rem 1.5rem 1.5rem; flex: 1; }
+  .demo-foot { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-top: auto; padding-top: 0.5rem; }
+  .badge { font-size: var(--text-label); font-weight: var(--weight-medium); color: var(--color-accent); background: var(--color-accent-soft); padding: 4px 10px; border-radius: var(--radius-sm); }
+  .replay { font-size: var(--text-small); color: var(--color-text-2); background: none; border: 0; cursor: pointer; padding: 0.5rem; text-decoration: underline; text-underline-offset: 3px; }
+  .replay:hover { color: var(--color-text); }
 
-  @media (max-width: 960px) {
-    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
-  @media (max-width: 760px) {
-    .featured { flex-direction: column; }
-    .featured .thumb { flex: none; aspect-ratio: 16 / 9; min-height: 0; border-right: 0; border-bottom: 1px solid var(--color-border); }
-  }
-  @media (max-width: 600px) {
-    .grid { grid-template-columns: 1fr; }
+  /* agenda */
+  .cal { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
+  .dh { text-align: center; font-size: 0.7rem; color: var(--color-text-3); }
+  .slot { height: 18px; border-radius: 3px; background: var(--color-surface-2); }
+  .slot.busy { background: var(--color-border-strong); }
+  .slot.mine { background: var(--color-accent); }
+
+  /* inventario */
+  .stock { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 0.75rem; }
+  .stock li { display: grid; grid-template-columns: 1fr 1.2fr 2ch; align-items: center; gap: 8px; color: var(--color-text-2); }
+  .stock .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stock .bar { height: 8px; border-radius: 2px; background: var(--color-surface-2); overflow: hidden; }
+  .stock .bar b { display: block; height: 100%; background: var(--color-accent); }
+  .stock .low .bar b { background: var(--color-error); }
+  .stock .low .n { color: var(--color-error); }
+  .stock .n { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* chatbot */
+  .chat { display: flex; flex-direction: column; gap: 6px; min-height: 100%; justify-content: flex-end; }
+  .msg { max-width: 85%; padding: 0.4rem 0.65rem; border-radius: 10px; font-size: 0.72rem; line-height: 1.35; }
+  .msg.in { align-self: flex-start; background: var(--color-surface-2); color: var(--color-text); border-bottom-left-radius: 3px; }
+  .msg.out { align-self: flex-end; background: var(--color-accent); color: var(--color-on-accent); border-bottom-right-radius: 3px; }
+  :global(.js) .chat .msg:not(.is-shown) { display: none; }
+  .msg.is-shown { animation: px-reveal 0.35s steps(4, end) both; }
+  .typing { display: none; align-self: flex-end; gap: 3px; padding: 0.45rem 0.6rem; border-radius: 10px; background: var(--color-accent-soft); }
+  .typing.is-on { display: inline-flex; }
+  .typing i { width: 5px; height: 5px; border-radius: 1px; background: var(--color-accent); animation: blink 0.9s steps(2, end) infinite; }
+  .typing i:nth-child(2) { animation-delay: 0.15s; }
+  .typing i:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes blink { 50% { opacity: 0.25; } }
+
+  @media (max-width: 960px) { .demos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 860px) { .featured { grid-template-columns: 1fr; } }
+  @media (max-width: 600px) { .demos { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) {
+    .msg.is-shown, .typing i { animation: none; }
   }
 </style>

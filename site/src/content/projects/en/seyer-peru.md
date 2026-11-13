@@ -5,7 +5,8 @@ order: 0
 kind: client
 status: live
 url: "https://www.seyerperu.com"
-image: "/portfolio/seyer-peru.webp"
+image: "../../../assets/portfolio/seyer-peru.webp"
+imageFull: "../../../assets/portfolio/seyer-peru-full.webp"
 imageAlt: "seyerperu.com home page: water pumps in Trujillo"
 tags: ["Business website", "Catalog", "Local SEO", "WhatsApp"]
 ---

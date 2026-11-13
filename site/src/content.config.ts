@@ -27,7 +27,7 @@ const services = defineCollection({
 
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     title: z.string(),
     summary: z.string(),
     order: z.number(),
@@ -36,7 +36,9 @@ const projects = defineCollection({
     kind: z.enum(['client', 'demo']).default('demo'),
     status: z.enum(['live', 'building']).default('building'),
     url: z.url().optional(), // sitio publicado o demo en línea
-    image: z.string().optional(), // captura 16:9 en /public, ej. /portfolio/seyer-peru.webp
+    // Imágenes en src/assets (Astro genera tamaños y formatos optimizados)
+    image: image().optional(), // captura 16:9
+    imageFull: image().optional(), // captura de página completa (se desplaza en el marco del navegador)
     imageAlt: z.string().optional(),
   }),
 });
