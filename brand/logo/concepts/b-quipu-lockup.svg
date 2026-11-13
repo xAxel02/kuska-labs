@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 256" width="960" height="256" role="img" aria-labelledby="title"><title id="title">Kuska Labs lockup (exploración, texto vivo)</title>
+<g id="symbol" fill="#000">
+<rect x="36" y="38" width="184" height="28" rx="14"/>
+<rect x="50" y="54" width="20" height="132" rx="10"/>
+<rect x="98" y="54" width="20" height="164" rx="10"/>
+<rect x="146" y="54" width="20" height="108" rx="10"/>
+<rect x="194" y="54" width="20" height="148" rx="10"/>
+<circle cx="60" cy="134" r="20"/>
+<circle cx="108" cy="178" r="20"/>
+<circle cx="156" cy="106" r="20"/>
+<circle cx="204" cy="154" r="20"/>
+</g>
+<text x="292" y="158" font-family="Segoe UI, Arial, sans-serif" font-size="104" font-weight="700" letter-spacing="-2" fill="#000">kuska</text>
+<text x="604" y="158" font-family="Consolas, monospace" font-size="72" font-weight="400" fill="#000">labs</text>
+</svg>

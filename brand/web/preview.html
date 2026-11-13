@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kuska Labs — vista previa de tokens</title>
+<link rel="icon" href="../logo/final/web-icons/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../../site/src/styles/tokens.css">
+<style>
+  body { margin: 0; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+  header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid var(--color-border); }
+  header img { height: 36px; }
+  nav a { color: var(--color-text-2); text-decoration: none; margin-left: 24px; font-size: var(--text-small); }
+  .hero { padding: 96px 0 72px; }
+  .hero p:not(.label) { font-size: var(--text-lead); max-width: 60ch; }
+  .btn { display: inline-block; padding: 14px 22px; text-decoration: none; margin: 8px 12px 0 0; font-size: 1rem; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; padding-bottom: 96px; }
+  .card { background: var(--color-surface-1); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 24px; }
+  .card:hover { border-color: var(--color-border-strong); }
+  .price { font-family: var(--font-mono); color: var(--color-text); font-size: var(--text-small); }
+  .wa { color: var(--color-whatsapp); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="../logo/final/kuska-horizontal-color-dark-transparent.svg" alt="Kuska Labs">
+    <nav><a href="#">Servicios</a><a href="#">Portafolio</a><a href="#">Equipo</a><a href="#">Contacto</a></nav>
+  </header>
+  <section class="hero">
+    <p class="label">// desarrollo de software a medida</p>
+    <h1>Software hecho en equipo, desde Perú para el mundo.</h1>
+    <p>Webs, sistemas a medida, ERP y chatbots de WhatsApp para negocios que hoy viven en Excel. Empezamos con un diagnóstico gratis de 30 minutos.</p>
+    <a class="btn btn-primary" href="#">Agenda tu diagnóstico gratis</a>
+    <a class="btn btn-secondary" href="#"><span class="wa">●</span> Escríbenos por WhatsApp</a>
+  </section>
+  <p class="label">// servicios</p>
+  <h2>Lo que construimos</h2>
+  <div class="cards">
+    <div class="card"><h3>Web informativa</h3><p>Tu negocio en Google, rápido y fácil de actualizar.</p><p class="price">desde S/ 600</p></div>
+    <div class="card"><h3>Sistema a medida</h3><p>Citas, inventario, reservas o matrículas, sin Excel.</p><p class="price">desde S/ 3,000</p></div>
+    <div class="card"><h3>Chatbot de WhatsApp</h3><p>Responde, agenda y vende mientras duermes.</p><p class="price">desde S/ 1,500</p></div>
+  </div>
+</div>
+</body>
+</html>

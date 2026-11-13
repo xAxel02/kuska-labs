@@ -1,0 +1,11 @@
+---
+title: "ERP para mypes"
+summary: "Ventas, compras, inventario y facturación en un solo lugar."
+order: 4
+priceFrom:
+  pen: 4000
+  usd: 2500
+billing: one-time
+---
+
+Implementamos y adaptamos Odoo Community o ERPNext a tu negocio.

@@ -1,0 +1,67 @@
+---
+import { getCollection } from 'astro:content';
+import { useTranslations } from '../../i18n/utils';
+import type { Lang } from '../../i18n/ui';
+
+const { lang } = Astro.props as { lang: Lang };
+const t = useTranslations(lang);
+
+const projects = (await getCollection('projects', ({ id }) => id.startsWith(`${lang}/`))).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+---
+
+<section id="portafolio" class="section" aria-labelledby="portfolio-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="label">{t('portfolio.label')}</p>
+      <h2 id="portfolio-title">{t('portfolio.title')}</h2>
+      <p>{t('portfolio.lead')}</p>
+    </div>
+
+    <ul class="grid" role="list">
+      {
+        projects.map(({ data }) => (
+          <li class="card project">
+            <div class="thumb" aria-hidden="true">
+              <img src="/brand/kuska-symbol.svg" alt="" width="64" height="64" loading="lazy" />
+            </div>
+            <h3>{data.title}</h3>
+            <p>{data.summary}</p>
+            <ul class="tags" role="list">
+              {data.tags.map((tag) => <li>{tag}</li>)}
+            </ul>
+            {data.status === 'live' && data.demoUrl ? (
+              <a class="btn btn-secondary demo" href={data.demoUrl} target="_blank" rel="noopener">
+                {t('portfolio.live')} →
+              </a>
+            ) : (
+              <span class="badge">{t('portfolio.building')}</span>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+  .project { display: flex; flex-direction: column; gap: 0.5rem; }
+  .thumb {
+    aspect-ratio: 16 / 9; margin-bottom: 1rem; border-radius: var(--radius-md);
+    background: var(--color-surface-2); border: 1px solid var(--color-border);
+    display: grid; place-items: center;
+  }
+  .thumb img { width: 56px; opacity: 0.35; }
+  .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+  .tags li {
+    font-family: var(--font-mono); font-size: 0.75rem; color: var(--color-text-2);
+    padding: 2px 8px; border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+  }
+  .badge {
+    align-self: flex-start; margin-top: 1rem; font-family: var(--font-mono); font-size: var(--text-label);
+    color: var(--color-accent); background: var(--color-accent-soft); padding: 4px 10px; border-radius: var(--radius-sm);
+  }
+  .demo { align-self: flex-start; margin-top: 1rem; }
+</style>

@@ -1,0 +1,57 @@
+---
+import { getCollection } from 'astro:content';
+import { useTranslations } from '../../i18n/utils';
+import type { Lang } from '../../i18n/ui';
+
+const { lang } = Astro.props as { lang: Lang };
+const t = useTranslations(lang);
+
+const members = (await getCollection('team', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
+const initials = (name: string) =>
+  name.split(' ').filter(Boolean).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
+---
+
+<section id="equipo" class="section" aria-labelledby="team-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="label">{t('team.label')}</p>
+      <h2 id="team-title">{t('team.title')}</h2>
+      <p>{t('team.lead')}</p>
+    </div>
+
+    {
+      members.length === 0 ? (
+        <p class="empty card">{t('team.empty')}</p>
+      ) : (
+        <ul class="grid" role="list">
+          {members.map(({ data }) => (
+            <li class="card member">
+              {data.photo ? (
+                <img src={data.photo} alt={data.name} width="96" height="96" loading="lazy" class="avatar" />
+              ) : (
+                <span class="avatar initials" aria-hidden="true">{initials(data.name)}</span>
+              )}
+              <h3>{data.name}</h3>
+              <p>{data.role[lang]}</p>
+              <p class="links">
+                {data.linkedin && <a href={data.linkedin} target="_blank" rel="noopener">LinkedIn</a>}
+                {data.github && <a href={data.github} target="_blank" rel="noopener">GitHub</a>}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+  .avatar { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem; }
+  .initials {
+    display: grid; place-items: center; background: var(--color-accent-soft); color: var(--color-accent);
+    font-family: var(--font-display); font-weight: var(--weight-bold); font-size: 1.5rem;
+  }
+  .links { display: flex; gap: 1rem; margin-top: 0.75rem; font-size: var(--text-small); }
+  .empty { color: var(--color-text-3); }
+</style>

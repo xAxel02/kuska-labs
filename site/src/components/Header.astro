@@ -1,0 +1,105 @@
+---
+import { useTranslations, homePath } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; altHref: string }
+const { lang, altHref } = Astro.props;
+const t = useTranslations(lang);
+const home = homePath(lang);
+
+const links = [
+  { href: `${home}#servicios`, label: t('nav.services') },
+  { href: `${home}#portafolio`, label: t('nav.portfolio') },
+  { href: `${home}#equipo`, label: t('nav.team') },
+  { href: `${home}#proceso`, label: t('nav.process') },
+  { href: `${home}#contacto`, label: t('nav.contact') },
+];
+---
+
+<header class="site-header">
+  <div class="container bar">
+    <a href={home} class="logo" aria-label="Kuska Labs">
+      <img src="/brand/kuska-logo.svg" alt="Kuska Labs" width="196" height="52" />
+    </a>
+
+    <nav class="nav-desktop" aria-label="Principal">
+      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
+
+    <div class="actions">
+      <a class="lang" href={altHref} hreflang={lang === 'es' ? 'en' : 'es'} aria-label={t('nav.switchLabel')}>
+        {lang === 'es' ? 'EN' : 'ES'}
+      </a>
+      <a class="btn btn-primary cta" href={`${home}#contacto`}>{t('cta.diagnosis')}</a>
+
+      <!-- Menú móvil sin JavaScript -->
+      <details class="nav-mobile">
+        <summary aria-label={t('nav.menu')}>
+          <span></span><span></span><span></span>
+        </summary>
+        <nav aria-label="Móvil">
+          {links.map((l) => <a href={l.href}>{l.label}</a>)}
+          <a class="btn btn-primary" href={`${home}#contacto`}>{t('cta.diagnosis')}</a>
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>
+
+<script>
+  // Cierra el menú móvil al elegir un enlace
+  document.querySelectorAll<HTMLDetailsElement>('.nav-mobile').forEach((d) => {
+    d.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => (d.open = false)));
+  });
+</script>
+
+<style>
+  .site-header {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(11, 11, 15, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; height: 72px; }
+  .logo img { height: 34px; width: auto; }
+  .nav-desktop { display: flex; gap: 1.75rem; }
+  .nav-desktop a, .lang {
+    color: var(--color-text-2); text-decoration: none; font-size: var(--text-small); font-weight: var(--weight-medium);
+  }
+  .nav-desktop a:hover, .lang:hover { color: var(--color-text); }
+  .actions { display: flex; align-items: center; gap: 1rem; }
+  .lang {
+    font-family: var(--font-mono); letter-spacing: var(--tracking-label);
+    padding: 6px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+  }
+  .cta { min-height: 40px; padding: 0.5rem 1rem; font-size: var(--text-small); }
+
+  .nav-mobile { display: none; position: relative; }
+  .nav-mobile summary {
+    list-style: none; cursor: pointer; width: 44px; height: 44px;
+    display: grid; place-content: center; gap: 5px;
+    border: 1px solid var(--color-border); border-radius: var(--radius-md);
+  }
+  .nav-mobile summary::-webkit-details-marker { display: none; }
+  .nav-mobile summary span { display: block; width: 18px; height: 2px; background: var(--color-text); border-radius: 2px; }
+  .nav-mobile nav {
+    position: absolute; right: 0; top: 56px; width: min(84vw, 320px);
+    display: flex; flex-direction: column; gap: 0.25rem; padding: 0.75rem;
+    background: var(--color-surface-2); border: 1px solid var(--color-border-strong); border-radius: var(--radius-lg);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  }
+  .nav-mobile nav a:not(.btn) {
+    color: var(--color-text); text-decoration: none; padding: 0.75rem; border-radius: var(--radius-md);
+  }
+  .nav-mobile nav a:not(.btn):hover { background: var(--color-surface-1); }
+  .nav-mobile .btn { margin-top: 0.5rem; }
+
+  @media (max-width: 1060px) {
+    .nav-desktop { display: none; }
+    .nav-mobile { display: block; }
+  }
+  @media (max-width: 560px) {
+    .cta { display: none; }
+    .logo img { height: 28px; }
+  }
+</style>

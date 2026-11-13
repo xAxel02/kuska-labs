@@ -1,0 +1,23 @@
+# Dependencias y builds
+node_modules/
+dist/
+.astro/
+.wrangler/
+
+# Variables de entorno
+.env
+.env.*
+
+# Configuración local personal de Claude Code
+.claude/settings.local.json
+
+# Sistema operativo / editores
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Python
+__pycache__/

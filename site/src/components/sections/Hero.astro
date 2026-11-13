@@ -1,0 +1,44 @@
+---
+import WhatsAppIcon from '../WhatsAppIcon.astro';
+import { whatsappLink } from '../../config';
+import { useTranslations, homePath } from '../../i18n/utils';
+import type { Lang } from '../../i18n/ui';
+
+const { lang } = Astro.props as { lang: Lang };
+const t = useTranslations(lang);
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="container inner">
+    <div class="copy">
+      <p class="label">{t('hero.label')}</p>
+      <h1 id="hero-title">{t('hero.title')}</h1>
+      <p class="lead">{t('hero.lead')}</p>
+      <div class="ctas">
+        <a class="btn btn-primary" href={`${homePath(lang)}#contacto`}>{t('cta.diagnosis')}</a>
+        <a class="btn btn-secondary" href={whatsappLink(t('whatsapp.message'))} target="_blank" rel="noopener">
+          <WhatsAppIcon /> {t('cta.whatsapp')}
+        </a>
+      </div>
+      <p class="note">{t('hero.note')}</p>
+    </div>
+    <img class="mark" src="/brand/kuska-symbol.svg" alt="" width="256" height="256" />
+  </div>
+</section>
+
+<style>
+  .hero { padding-block: clamp(4rem, 2rem + 8vw, 8.5rem) clamp(3rem, 2rem + 4vw, 6rem); overflow: hidden; }
+  .inner { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 3rem; }
+  h1 { margin-top: 1.25rem; max-width: 15ch; }
+  .lead { margin-top: 1.5rem; max-width: 58ch; font-size: var(--text-lead); }
+  .ctas { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2.25rem; }
+  .note { margin-top: 1.5rem; font-family: var(--font-mono); font-size: var(--text-label); color: var(--color-text-3); }
+  .mark { width: clamp(220px, 24vw, 340px); opacity: 0.95; }
+  @media (max-width: 860px) {
+    .inner { grid-template-columns: 1fr; }
+    .mark { display: none; }
+  }
+  @media (max-width: 480px) {
+    .ctas .btn { width: 100%; }
+  }
+</style>

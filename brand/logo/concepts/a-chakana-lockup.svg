@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 256" width="960" height="256" role="img" aria-labelledby="title"><title id="title">Kuska Labs lockup (exploración, texto vivo)</title>
+<g id="symbol" fill="#000">
+<polygon points="106.5,123 24,123 24,90 46,90 46,68 68,68 68,46 90,46 90,24 123,24 123,106.5 106.5,106.5"/>
+<polygon points="149.5,123 232,123 232,90 210,90 210,68 188,68 188,46 166,46 166,24 133,24 133,106.5 149.5,106.5"/>
+<polygon points="106.5,133 24,133 24,166 46,166 46,188 68,188 68,210 90,210 90,232 123,232 123,149.5 106.5,149.5"/>
+<polygon points="149.5,133 232,133 232,166 210,166 210,188 188,188 188,210 166,210 166,232 133,232 133,149.5 149.5,149.5"/>
+</g>
+<text x="292" y="158" font-family="Segoe UI, Arial, sans-serif" font-size="104" font-weight="700" letter-spacing="-2" fill="#000">kuska</text>
+<text x="604" y="158" font-family="Consolas, monospace" font-size="72" font-weight="400" fill="#000">labs</text>
+</svg>

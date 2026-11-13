@@ -1,0 +1,10 @@
+// Cloudflare Workers (static assets): publica la carpeta dist/ generada por `npm run build`.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "kuska-labs-web",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  }
+}

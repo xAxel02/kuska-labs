@@ -1,0 +1,26 @@
+---
+import WhatsAppIcon from './WhatsAppIcon.astro';
+import { whatsappLink } from '../config';
+import { useTranslations } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+
+const { lang } = Astro.props as { lang: Lang };
+const t = useTranslations(lang);
+---
+
+<a class="wa-float" href={whatsappLink(t('whatsapp.message'))} target="_blank" rel="noopener" aria-label={t('cta.whatsapp')}>
+  <WhatsAppIcon size={28} />
+</a>
+
+<style>
+  .wa-float {
+    position: fixed; right: 20px; bottom: 20px; z-index: 40;
+    width: 56px; height: 56px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border-strong);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .wa-float:hover { transform: translateY(-2px); border-color: var(--color-whatsapp); }
+</style>

@@ -1,0 +1,118 @@
+/* =========================================================
+   Kuska Labs — tokens de diseño web (tipografía y color)
+   Fuente de verdad para la web. No usar valores sueltos:
+   siempre var(--token). Cambios => actualizar también
+   brand/logo/GUIA-DE-MARCA.md (fuente de verdad: site/src/styles/tokens.css)
+   ========================================================= */
+
+/* Fuentes (Google Fonts, licencia OFL). Cuando se defina el stack,
+   alojarlas en el propio sitio (self-host) para mejor rendimiento:
+   https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap */
+
+:root {
+  /* ---------- Tipografía ---------- */
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif; /* títulos */
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; /* texto e interfaz */
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace; /* etiquetas, detalles de código */
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600; /* solo Inter: botones */
+  --weight-bold: 700;     /* solo Space Grotesk: H1 y H2 */
+
+  /* Escala fluida (móvil 360px -> escritorio 1280px) */
+  --text-h1: clamp(2.5rem, 1.72rem + 3.48vw, 4.5rem);      /* 40 -> 72px */
+  --text-h2: clamp(1.875rem, 1.53rem + 1.52vw, 2.75rem);   /* 30 -> 44px */
+  --text-h3: clamp(1.25rem, 1.15rem + 0.43vw, 1.5rem);     /* 20 -> 24px */
+  --text-lead: clamp(1.125rem, 1.07rem + 0.22vw, 1.25rem); /* 18 -> 20px, párrafo destacado */
+  --text-body: 1.0625rem;                                   /* 17px */
+  --text-small: 0.875rem;                                   /* 14px */
+  --text-label: 0.8125rem;                                  /* 13px, mono */
+
+  --leading-tight: 1.1;   /* H1, H2 */
+  --leading-snug: 1.3;    /* H3 */
+  --leading-body: 1.6;
+  --tracking-tight: -0.02em; /* títulos */
+  --tracking-label: 0.02em;  /* etiquetas mono */
+
+  /* ---------- Color: base oscura ---------- */
+  --color-bg: #0B0B0F;          /* Negro Kuska */
+  --color-surface-1: #131318;   /* tarjetas */
+  --color-surface-2: #1B1B22;   /* tarjetas elevadas, inputs */
+  --color-border: #2A2A33;
+  --color-border-strong: #3A3A45; /* hover, botón secundario */
+
+  /* Texto (contraste sobre --color-bg) */
+  --color-text: #F4F2EE;        /* Blanco hueso · 17.6:1 */
+  --color-text-2: #B4B4BC;      /* secundario · ~9.9:1 */
+  --color-text-3: #8B8B94;      /* terciario, notas · 5.8:1 (AA) */
+
+  /* Acento único: Oro Inti — solo CTA principal, enlaces y detalles */
+  --color-accent: #F2B33D;      /* 10.6:1 sobre bg */
+  --color-accent-hover: #FFC65C;
+  --color-accent-pressed: #D99A22;
+  --color-accent-soft: #2A2112; /* fondos de badges/resaltados */
+  --color-on-accent: #0B0B0F;   /* texto sobre botón dorado */
+
+  /* Estados (mensajes de formulario) */
+  --color-success: #3DD68C;
+  --color-error: #F26B5B;
+
+  /* WhatsApp: solo el ícono, el botón es neutro */
+  --color-whatsapp: #25D366;
+
+  /* ---------- Forma ---------- */
+  --radius-sm: 6px;
+  --radius-md: 8px;   /* botones, inputs */
+  --radius-lg: 12px;  /* tarjetas */
+  --focus-ring: 0 0 0 3px rgba(242, 179, 61, 0.45);
+}
+
+/* ---------- Estilos base sugeridos ---------- */
+body {
+  background: var(--color-bg);
+  color: var(--color-text-2);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+}
+h1, h2 {
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text);
+}
+h1 { font-size: var(--text-h1); }
+h2 { font-size: var(--text-h2); }
+h3 {
+  font-family: var(--font-display);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-h3);
+  line-height: var(--leading-snug);
+  color: var(--color-text);
+}
+a { color: var(--color-accent); }
+a:hover { color: var(--color-accent-hover); }
+:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+.label { /* p. ej. "// servicios" */
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: var(--tracking-label);
+  color: var(--color-accent);
+}
+.btn-primary {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-weight: var(--weight-semibold);
+  border-radius: var(--radius-md);
+}
+.btn-primary:hover { background: var(--color-accent-hover); }
+.btn-primary:active { background: var(--color-accent-pressed); }
+.btn-secondary { /* WhatsApp: borde neutro, ícono verde */
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+}

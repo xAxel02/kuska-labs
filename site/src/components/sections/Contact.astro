@@ -1,0 +1,106 @@
+---
+import WhatsAppIcon from '../WhatsAppIcon.astro';
+import { WHATSAPP_NUMBER, CONTACT_EMAIL, whatsappLink } from '../../config';
+import { useTranslations } from '../../i18n/utils';
+import type { Lang } from '../../i18n/ui';
+
+const { lang } = Astro.props as { lang: Lang };
+const t = useTranslations(lang);
+
+/*
+ * PROVISIONAL: mientras se decide a dónde llegan los mensajes del formulario,
+ * al enviarlo se abre WhatsApp con el mensaje armado. Cuando se defina el destino
+ * (p. ej. un Worker de Cloudflare que envíe un correo), se reemplaza el script de abajo.
+ */
+---
+
+<section id="contacto" class="section" aria-labelledby="contact-title">
+  <div class="container inner">
+    <div class="section-head">
+      <p class="label">{t('contact.label')}</p>
+      <h2 id="contact-title">{t('contact.title')}</h2>
+      <p>{t('contact.lead')}</p>
+      <div class="direct">
+        <a class="btn btn-secondary" href={whatsappLink(t('whatsapp.message'))} target="_blank" rel="noopener">
+          <WhatsAppIcon /> {t('cta.whatsapp')}
+        </a>
+        <a class="mail" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+      </div>
+    </div>
+
+    <form class="card form" id="contact-form" data-wa={WHATSAPP_NUMBER} data-lang={lang} novalidate>
+      <div class="field">
+        <label for="f-name">{t('form.name')}</label>
+        <input id="f-name" name="name" type="text" autocomplete="name" required />
+      </div>
+      <div class="field">
+        <label for="f-contact">{t('form.contact')}</label>
+        <input id="f-contact" name="contact" type="text" autocomplete="tel" required />
+      </div>
+      <div class="field">
+        <label for="f-business">{t('form.business')}</label>
+        <input id="f-business" name="business" type="text" placeholder={t('form.businessPlaceholder')} />
+      </div>
+      <div class="field">
+        <label for="f-message">{t('form.message')}</label>
+        <textarea id="f-message" name="message" rows="4" required></textarea>
+      </div>
+      <button class="btn btn-primary" type="submit">{t('form.submit')}</button>
+      <p class="note">{t('form.note')}</p>
+      <p class="sr-only" id="form-required-msg">{t('form.required')}</p>
+    </form>
+  </div>
+</section>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('#contact-form');
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const requiredMsg = document.querySelector('#form-required-msg')?.textContent ?? '';
+    let firstInvalid: HTMLInputElement | HTMLTextAreaElement | null = null;
+    form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('[required]').forEach((el) => {
+      const empty = !el.value.trim();
+      el.setAttribute('aria-invalid', String(empty));
+      el.setCustomValidity(empty ? requiredMsg : '');
+      if (empty && !firstInvalid) firstInvalid = el;
+    });
+    if (firstInvalid) {
+      (firstInvalid as HTMLInputElement).reportValidity();
+      return;
+    }
+    const d = new FormData(form);
+    const es = form.dataset.lang === 'es';
+    const lines = es
+      ? [`Hola Kuska Labs, quiero agendar un diagnóstico gratis.`, `Nombre: ${d.get('name')}`, `Contacto: ${d.get('contact')}`, `Negocio: ${d.get('business') || '-'}`, `Necesito: ${d.get('message')}`]
+      : [`Hi Kuska Labs, I'd like to book a free discovery call.`, `Name: ${d.get('name')}`, `Contact: ${d.get('contact')}`, `Business: ${d.get('business') || '-'}`, `I need: ${d.get('message')}`];
+    const url = `https://wa.me/${form.dataset.wa}?text=${encodeURIComponent(lines.join('\n'))}`;
+    window.open(url, '_blank', 'noopener');
+  });
+  form?.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('[required]').forEach((el) =>
+    el.addEventListener('input', () => {
+      el.setCustomValidity('');
+      el.removeAttribute('aria-invalid');
+    }),
+  );
+</script>
+
+<style>
+  .inner { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 3rem; align-items: start; }
+  .direct { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 2rem; }
+  .mail { font-size: var(--text-small); }
+  .form { display: flex; flex-direction: column; gap: 1.125rem; padding: clamp(1.5rem, 1rem + 2vw, 2.25rem); }
+  .field { display: flex; flex-direction: column; gap: 0.375rem; }
+  label { font-size: var(--text-small); font-weight: var(--weight-medium); color: var(--color-text); }
+  input, textarea {
+    width: 100%; padding: 0.75rem 0.875rem; min-height: 48px;
+    background: var(--color-surface-2); border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md); color: var(--color-text);
+  }
+  input::placeholder, textarea::placeholder { color: var(--color-text-3); }
+  input:focus-visible, textarea:focus-visible { border-color: var(--color-accent); }
+  [aria-invalid='true'] { border-color: var(--color-error); }
+  textarea { resize: vertical; }
+  .form .btn { margin-top: 0.5rem; }
+  .note { font-size: var(--text-label); color: var(--color-text-3); }
+  @media (max-width: 860px) { .inner { grid-template-columns: 1fr; gap: 1rem; } }
+</style>

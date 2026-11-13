@@ -1,0 +1,22 @@
+---
+// Página de inicio (una sola página con secciones). La usan /index.astro (es) y /en/index.astro (en).
+import Layout from '../layouts/Layout.astro';
+import Hero from './sections/Hero.astro';
+import Services from './sections/Services.astro';
+import Portfolio from './sections/Portfolio.astro';
+import Team from './sections/Team.astro';
+import Process from './sections/Process.astro';
+import Contact from './sections/Contact.astro';
+import type { Lang } from '../i18n/ui';
+
+const { lang } = Astro.props as { lang: Lang };
+---
+
+<Layout lang={lang}>
+  <Hero lang={lang} />
+  <Services lang={lang} />
+  <Portfolio lang={lang} />
+  <Team lang={lang} />
+  <Process lang={lang} />
+  <Contact lang={lang} />
+</Layout>

@@ -1,0 +1,38 @@
+{
+  "brand": "Kuska Labs",
+  "tagline": "Software hecho en equipo, desde Perú para el mundo.",
+  "brief": "Colectivo de estudiantes y egresados de Ingeniería de Sistemas que desarrolla webs, sistemas a medida, ERP, CRM, chatbots y apps para mypes peruanas y clientes de Latinoamérica, España y EE. UU. La marca debe verse profesional para un cliente extranjero y cercana para una mype peruana, sobre una web de tendencia oscura.",
+  "adjectives": ["en equipo", "confiable", "técnica", "peruana", "moderna"],
+  "criteria": "Éxito: distinta del azul genérico del software, reconocible a 16 px, funciona a un color y sobre negro, con raíz peruana sin caer en lo folclórico.",
+  "mockups": ["website", "favicon-tab", "app-icon", "business-card", "social", "sticker"],
+  "nav": ["Servicios", "Portafolio", "Contacto"],
+  "brand_color": "#F2B33D",
+  "tile_color": "#0B0B0F",
+  "greyscale": false,
+  "final": true,
+  "deck_title": "identidad final",
+  "designer": "Kuska Labs",
+  "concepts": [
+    {
+      "name": "Chakana en piezas",
+      "symbol": "../final/kuska-symbol.svg",
+      "lockup": "../final/kuska-horizontal.svg",
+      "stacked": "../final/kuska-stacked.svg",
+      "symbol_on_tile": "../final/kuska-symbol-gold-reversed.svg",
+      "symbol_on_dark": "../final/kuska-symbol-gold-reversed.svg",
+      "lockup_on_tile": "../final/kuska-horizontal-color-dark-transparent.svg",
+      "lockup_on_dark": "../final/kuska-horizontal-color-dark-transparent.svg",
+      "stacked_on_tile": "../final/kuska-stacked-color-dark-transparent.svg",
+      "stacked_on_dark": "../final/kuska-stacked-color-dark-transparent.svg",
+      "idea": "Cuatro piezas que solo forman la chakana cuando están juntas: eso es kuska.",
+      "rationale": [
+        "La chakana da raíz andina; su escalonado de píxeles la vuelve digital",
+        "Las cuatro piezas expresan el trabajo en equipo sin explicarlo",
+        "Oro Inti sobre negro: se separa del azul típico del software",
+        "Retícula de 9 × 9 módulos; versión simplificada para 16 px"
+      ]
+    }
+  ],
+  "recommendation": "Dirección aprobada: Chakana en piezas, en Oro Inti sobre Negro Kuska.",
+  "next_steps": ["Validar el kit con el equipo", "Definir tipografía de la web", "Aplicar la marca en la web"]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "Kuska Labs",
+  "short_name": "Kuska Labs",
+  "description": "Software hecho en equipo, desde Perú para el mundo.",
+  "lang": "es",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "theme_color": "#0B0B0F",
+  "background_color": "#0B0B0F",
+  "display": "standalone"
+}
