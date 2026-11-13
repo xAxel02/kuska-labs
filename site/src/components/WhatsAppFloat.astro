@@ -8,7 +8,7 @@ const { lang } = Astro.props as { lang: Lang };
 const t = useTranslations(lang);
 ---
 
-<a class="wa-float" href={whatsappLink(t('whatsapp.message'))} target="_blank" rel="noopener" aria-label={t('cta.whatsapp')}>
+<a class="wa-float" href={whatsappLink(t('whatsapp.message'))} target="_blank" rel="noopener" aria-label={t('cta.whatsapp')} data-umami-event="whatsapp" data-umami-event-location="float">
   <WhatsAppIcon size={28} />
 </a>
 

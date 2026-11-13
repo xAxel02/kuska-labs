@@ -30,7 +30,7 @@ const links = [
       <a class="lang" href={altHref} hreflang={lang === 'es' ? 'en' : 'es'} aria-label={t('nav.switchLabel')}>
         {lang === 'es' ? 'EN' : 'ES'}
       </a>
-      <a class="btn btn-primary cta" href={`${home}#contacto`}>{t('cta.diagnosis')}</a>
+      <a class="btn btn-primary cta" href={`${home}#contacto`} data-umami-event="cta-diagnosis" data-umami-event-location="header">{t('cta.diagnosis')}</a>
 
       <!-- Menú móvil sin JavaScript -->
       <details class="nav-mobile">
@@ -39,7 +39,7 @@ const links = [
         </summary>
         <nav aria-label="Móvil">
           {links.map((l) => <a href={l.href}>{l.label}</a>)}
-          <a class="btn btn-primary" href={`${home}#contacto`}>{t('cta.diagnosis')}</a>
+          <a class="btn btn-primary" href={`${home}#contacto`} data-umami-event="cta-diagnosis" data-umami-event-location="menu">{t('cta.diagnosis')}</a>
         </nav>
       </details>
     </div>

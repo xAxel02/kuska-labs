@@ -1,0 +1,154 @@
+---
+/*
+ * Política de privacidad (ES/EN).
+ * BORRADOR redactado como referencia: debe revisarlo una persona con conocimiento legal
+ * (Ley N.° 29733 de Perú y su reglamento; RGPD para usuarios de la UE) antes de publicar.
+ */
+import Layout from '../layouts/Layout.astro';
+import { CONTACT_EMAIL } from '../config';
+import { useTranslations, privacyPath } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+
+const { lang } = Astro.props as { lang: Lang };
+const t = useTranslations(lang);
+const updated = lang === 'es' ? '12 de noviembre de 2026' : 'November 12, 2026';
+const mail = CONTACT_EMAIL;
+---
+
+<Layout
+  lang={lang}
+  title={`${t('privacy.title')} · Kuska Labs`}
+  description={t('privacy.description')}
+  alternates={{ es: privacyPath('es'), en: privacyPath('en') }}
+>
+  <article class="section">
+    <div class="container prose">
+      <p class="label">// {lang === 'es' ? 'privacidad' : 'privacy'}</p>
+      <h1>{t('privacy.title')}</h1>
+      <p class="updated">{lang === 'es' ? 'Última actualización' : 'Last updated'}: {updated}</p>
+
+      {
+        lang === 'es' ? (
+          <>
+            <h2>1. Quiénes somos</h2>
+            <p>
+              Kuska Labs es un colectivo de profesionales independientes de Ingeniería de Sistemas del Perú. Cuando nos
+              escribes, tus datos los recibe y gestiona el equipo de Kuska Labs. Puedes contactarnos en{' '}
+              <a href={`mailto:${mail}`}>{mail}</a>.
+            </p>
+
+            <h2>2. Qué datos recogemos</h2>
+            <ul>
+              <li><strong>Formulario de contacto:</strong> nombre, WhatsApp o correo, tipo de negocio y el mensaje que nos escribes.</li>
+              <li><strong>Datos técnicos del envío:</strong> país aproximado y navegador, para prevenir spam.</li>
+              <li><strong>Analítica:</strong> estadísticas anónimas y agregadas de visitas (páginas vistas, país, dispositivo y clics en botones). No usamos cookies ni identificamos a personas.</li>
+            </ul>
+
+            <h2>3. Para qué los usamos</h2>
+            <p>
+              Solo para responder tu consulta, agendar el diagnóstico gratuito y, si lo pides, enviarte una propuesta. No
+              vendemos ni cedemos tus datos, ni te enviaremos publicidad sin tu permiso.
+            </p>
+
+            <h2>4. Base legal</h2>
+            <p>
+              Tu consentimiento, que nos das al marcar la casilla del formulario, conforme a la Ley N.° 29733, Ley de
+              Protección de Datos Personales del Perú. Para usuarios de la Unión Europea, la base es el consentimiento
+              (art. 6.1.a del RGPD).
+            </p>
+
+            <h2>5. Proveedores que nos ayudan</h2>
+            <ul>
+              <li><strong>Cloudflare</strong>: alojamiento de la web, protección antispam (Turnstile), base de datos de mensajes y reenvío de correo.</li>
+              <li><strong>Umami</strong>: analítica de visitas sin cookies.</li>
+              <li><strong>WhatsApp (Meta)</strong>: si decides escribirnos por ese canal.</li>
+            </ul>
+            <p>
+              Algunos de estos servicios pueden almacenar información fuera del Perú (transferencia internacional), con
+              medidas de seguridad adecuadas.
+            </p>
+
+            <h2>6. Cuánto tiempo los guardamos</h2>
+            <p>
+              Hasta 12 meses desde tu último contacto si no iniciamos un proyecto. Si trabajamos juntos, el tiempo que
+              dure la relación y lo que exijan las obligaciones legales y tributarias.
+            </p>
+
+            <h2>7. Tus derechos</h2>
+            <p>
+              Puedes pedir acceso, rectificación, cancelación u oposición (derechos ARCO), así como retirar tu
+              consentimiento en cualquier momento, escribiendo a <a href={`mailto:${mail}`}>{mail}</a>. Respondemos en los
+              plazos que establece la ley. Si no quedas conforme, puedes acudir a la Autoridad Nacional de Protección de
+              Datos Personales del Perú o, si estás en la UE, a la autoridad de tu país.
+            </p>
+
+            <h2>8. Cambios</h2>
+            <p>Si actualizamos esta política, publicaremos la nueva versión en esta página con su fecha.</p>
+          </>
+        ) : (
+          <>
+            <h2>1. Who we are</h2>
+            <p>
+              Kuska Labs is a collective of independent Systems Engineering professionals from Peru. When you write to us,
+              your data is received and managed by the Kuska Labs team. You can reach us at{' '}
+              <a href={`mailto:${mail}`}>{mail}</a>.
+            </p>
+
+            <h2>2. What data we collect</h2>
+            <ul>
+              <li><strong>Contact form:</strong> your name, WhatsApp or email, type of business and your message.</li>
+              <li><strong>Technical data:</strong> approximate country and browser, to prevent spam.</li>
+              <li><strong>Analytics:</strong> anonymous, aggregated visit statistics (page views, country, device and button clicks). We do not use cookies or identify individuals.</li>
+            </ul>
+
+            <h2>3. How we use it</h2>
+            <p>
+              Only to answer your inquiry, book the free discovery call and, if you ask for it, send you a proposal. We do
+              not sell or share your data, and we will not send you marketing without your permission.
+            </p>
+
+            <h2>4. Legal basis</h2>
+            <p>
+              Your consent, given by ticking the box on the form, under Peru's Personal Data Protection Law (Law No.
+              29733). For users in the European Union, the legal basis is consent (Art. 6(1)(a) GDPR).
+            </p>
+
+            <h2>5. Service providers</h2>
+            <ul>
+              <li><strong>Cloudflare</strong>: website hosting, spam protection (Turnstile), message database and email forwarding.</li>
+              <li><strong>Umami</strong>: cookie-free visit analytics.</li>
+              <li><strong>WhatsApp (Meta)</strong>: if you choose to contact us there.</li>
+            </ul>
+            <p>Some of these providers may store data outside Peru (international transfer) with appropriate safeguards.</p>
+
+            <h2>6. How long we keep it</h2>
+            <p>
+              Up to 12 months after your last contact if we don't start a project. If we work together, for the duration
+              of the relationship and as required by legal and tax obligations.
+            </p>
+
+            <h2>7. Your rights</h2>
+            <p>
+              You can request access, rectification, deletion or objection, and withdraw your consent at any time, by
+              writing to <a href={`mailto:${mail}`}>{mail}</a>. If you are not satisfied, you may contact Peru's National
+              Authority for Personal Data Protection or, in the EU, your local data protection authority.
+            </p>
+
+            <h2>8. Changes</h2>
+            <p>If we update this policy, we will publish the new version on this page with its date.</p>
+          </>
+        )
+      }
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .prose { max-width: 46rem; }
+  .prose h1 { margin-top: 0.75rem; font-size: var(--text-h2); }
+  .updated { margin-top: 0.75rem; font-family: var(--font-mono); font-size: var(--text-label); color: var(--color-text-3); }
+  .prose h2 { font-size: var(--text-h3); font-weight: var(--weight-medium); margin-top: 2.5rem; margin-bottom: 0.75rem; }
+  .prose p, .prose li { color: var(--color-text-2); }
+  .prose ul { padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .prose strong { color: var(--color-text); font-weight: var(--weight-medium); }
+</style>

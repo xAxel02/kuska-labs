@@ -4,13 +4,38 @@
     {
       "name": "site-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "site", "run", "dev", "--", "--port", "4321"],
+      "runtimeArgs": [
+        "--prefix",
+        "site",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "4321"
+      ],
       "port": 4321
+    },
+    {
+      "name": "site-worker",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "site",
+        "run",
+        "worker:dev"
+      ],
+      "port": 8787
     },
     {
       "name": "brand-preview",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8765", "--directory", "."],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8765",
+        "--directory",
+        "."
+      ],
       "port": 8765
     }
   ]

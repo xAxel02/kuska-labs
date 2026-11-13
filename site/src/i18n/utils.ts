@@ -14,6 +14,9 @@ export function useTranslations(lang: Lang) {
 /** Ruta de inicio de cada idioma: "/" para español, "/en/" para inglés. */
 export const homePath = (lang: Lang) => (lang === defaultLang ? '/' : `/${lang}/`);
 
+/** Página de privacidad de cada idioma. */
+export const privacyPath = (lang: Lang) => (lang === 'es' ? '/privacidad/' : '/en/privacy/');
+
 /** id de una entrada de contenido sin el prefijo de idioma: "es/web-informativa" -> "web-informativa" */
 export const slugOf = (id: string) => id.split('/').slice(1).join('/');
 

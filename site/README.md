@@ -17,11 +17,17 @@ npm run dev        # http://localhost:4321
 
 | Comando | Qué hace |
 |---|---|
-| `npm run dev` | Servidor local con recarga automática |
-| `npm run check` | Revisa tipos y errores (correrlo antes de abrir un PR) |
+| `npm run dev` | Servidor local con recarga automática (sin el Worker: el formulario no envía) |
+| `npm run check` | Revisa tipos de la web y del Worker (correrlo antes de abrir un PR) |
 | `npm run build` | Genera el sitio final en `dist/` |
-| `npm run preview` | Sirve `dist/` para revisarlo como en producción |
+| `npm run preview` | Build + `wrangler dev`: web **y** Worker como en producción, en http://localhost:8787 |
+| `npm run db:migrate:local` | Crea las tablas en la base D1 local (una vez, antes de `preview`) |
 | `npm run deploy` | Build y publicación manual en Cloudflare (requiere `npx wrangler login`) |
+
+**Probar el formulario en local:**
+1. Copia `.env.example` como `.env` y `.dev.vars.example` como `.dev.vars`. Ambos traen las claves de prueba de Turnstile.
+2. Corre `npm run db:migrate:local` y luego `npm run preview`.
+3. Los correos no se envían de verdad: Wrangler los guarda en `.wrangler/tmp/email/` y muestra la ruta en la consola.
 
 ## Dónde se edita cada cosa
 
@@ -33,6 +39,8 @@ npm run dev        # http://localhost:4321
 | Un proyecto del portafolio | `src/content/projects/es|en/<proyecto>.md` |
 | Integrantes del equipo | `src/content/team/<nombre>.md` (copiar `_ejemplo.md`) |
 | WhatsApp, correo, dominio, mostrar precios | `src/config.ts` |
+| Formulario (backend) | `worker/index.ts` + `wrangler.jsonc` |
+| Política de privacidad | `src/components/Privacy.astro` |
 | Colores, tipografía y tamaños | `src/styles/tokens.css` (fuente de verdad de la marca) |
 | Logo e íconos | `public/brand/` y `public/*.png|ico|svg` (generados desde `../brand/logo`) |
 
@@ -54,9 +62,11 @@ src/
   content.config.ts         ← esquema de cada colección (valida los campos)
   i18n/                     ← textos y utilidades de idioma
   layouts/Layout.astro      ← <head>: SEO, hreflang, Open Graph, íconos
-  pages/                    ← rutas: index (es), en/index, 404
+  pages/                    ← rutas: index (es), en/index, privacidad, en/privacy, 404
   styles/                   ← tokens.css (marca) + global.css
 public/                     ← archivos que se copian tal cual (íconos, logo, _headers)
+worker/index.ts             ← Worker: /api/contacto (Turnstile + D1 + correo)
+migrations/                 ← esquema de la base D1 de leads
 wrangler.jsonc              ← configuración de Cloudflare
 ```
 
@@ -77,13 +87,61 @@ wrangler.jsonc              ← configuración de Cloudflare
    - **Deploy command:** `npx wrangler deploy`
 4. Cuando tengamos el dominio, agrégalo en **Settings → Domains & Routes** y actualiza `SITE_URL` en `src/config.ts`.
 
+## Formulario y analítica
+
+**Cómo funciona el formulario:**
+1. El visitante envía el formulario, que va a `POST /api/contacto`. Lo atiende el Worker en [`worker/index.ts`](worker/index.ts).
+2. El Worker valida Turnstile (antispam) y un campo trampa para bots, el honeypot.
+3. Guarda el lead en D1, en la tabla `leads` (ver [`migrations/`](migrations/)).
+4. Envía un correo a `MAIL_TO` con *Reply-To* apuntando al cliente.
+
+**Fallback:** si `PUBLIC_TURNSTILE_SITE_KEY` está vacía, el formulario abre WhatsApp con el mensaje armado. Así la web funciona aunque no se haya activado nada.
+
+**Ver los leads:**
+
+```bash
+npx wrangler d1 execute kuska-leads --remote --command "SELECT id, created_at, name, contact, business, status FROM leads ORDER BY id DESC LIMIT 20"
+```
+
+**Analítica (Umami, sin cookies):** registra las visitas y estos eventos de conversión:
+
+| Evento | Cuándo | Propiedad |
+|---|---|---|
+| `cta-diagnosis` | Clic en "Agenda tu diagnóstico" | `location`: header, menu, hero |
+| `whatsapp` | Clic en cualquier enlace de WhatsApp | `location`: hero, float, contact, footer, form-success |
+| `email` | Clic en el correo | `location` |
+| `form-submit` | Formulario enviado | `mode`: api o whatsapp |
+| `form-error` | Error al enviar | `reason` |
+
+Para medir un botón nuevo, agrégale `data-umami-event="nombre"` y `data-umami-event-location="seccion"`.
+
+### Activación (una sola vez, cuando tengan dominio)
+
+1. **Dominio en Cloudflare:** comprarlo o transferirlo y agregarlo a la cuenta.
+2. **Email Routing** (Email → Email Routing):
+   - Activarlo.
+   - Crear la dirección `hola@` reenviada a los Gmail del equipo.
+   - Verificar `hola@kuskalabs.com` como *destination address*. Debe coincidir con `MAIL_TO` en `wrangler.jsonc`.
+3. **Turnstile** (Turnstile → Add widget):
+   - Usar el dominio del sitio y el modo *Managed*.
+   - Guardar la clave pública como variable de build `PUBLIC_TURNSTILE_SITE_KEY`.
+   - Guardar la clave secreta con `npx wrangler secret put TURNSTILE_SECRET`.
+4. **Base de datos:** el primer `wrangler deploy` crea `kuska-leads` automáticamente. Luego hay que correr `npm run db:migrate:remote`.
+5. **Umami:**
+   - Crear una cuenta gratis en umami.is y agregar el sitio.
+   - Guardar el *Website ID* como variable de build `PUBLIC_UMAMI_WEBSITE_ID`.
+6. **Google Search Console:**
+   - Agregar la propiedad de dominio y verificarla por DNS (Cloudflare lo hace con un clic).
+   - Enviar `https://<dominio>/sitemap-index.xml`.
+7. **Si quieren publicar antes de tener dominio** (en `*.workers.dev`): comenten el bloque `send_email` en `wrangler.jsonc`. Los leads se guardarán igual en D1.
+
 ## Pendientes (decisiones del equipo)
 
 - [ ] Dominio definitivo → `SITE_URL` en `src/config.ts`
 - [ ] Número de WhatsApp y correo → `src/config.ts`
 - [ ] Mostrar precios o no → `SHOW_PRICES`
-- [ ] Destino del formulario. Hoy abre WhatsApp con el mensaje armado; ver el comentario en `sections/Contact.astro`.
+- [ ] Activar formulario y analítica (ver "Activación" arriba)
+- [ ] Revisión legal de la política de privacidad (`src/components/Privacy.astro`): Ley 29733 y, de ser necesario, inscripción del banco de datos ante la ANPD
 - [ ] Textos finales (los actuales son borrador)
 - [ ] Integrantes del equipo y sus fotos
 - [ ] Imagen para redes 1200×630 (`og:image`)
-- [ ] Analítica

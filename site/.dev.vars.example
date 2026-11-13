@@ -1,0 +1,4 @@
+# Secretos del Worker para `wrangler dev` (copia como .dev.vars; no se sube a git).
+# En producción: npx wrangler secret put TURNSTILE_SECRET
+# Clave secreta de PRUEBA de Turnstile (siempre aprueba):
+TURNSTILE_SECRET=1x0000000000000000000000000000000AA

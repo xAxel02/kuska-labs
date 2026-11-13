@@ -1,6 +1,6 @@
 ---
 import { CONTACT_EMAIL, whatsappLink } from '../config';
-import { useTranslations } from '../i18n/utils';
+import { useTranslations, privacyPath } from '../i18n/utils';
 import type { Lang } from '../i18n/ui';
 
 const { lang } = Astro.props as { lang: Lang };
@@ -15,8 +15,9 @@ const year = new Date().getFullYear();
       <p class="tagline">{t('footer.tagline')}</p>
     </div>
     <div class="contact">
-      <a href={whatsappLink(t('whatsapp.message'))} target="_blank" rel="noopener">{t('cta.whatsappShort')}</a>
-      <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+      <a href={whatsappLink(t('whatsapp.message'))} target="_blank" rel="noopener" data-umami-event="whatsapp" data-umami-event-location="footer">{t('cta.whatsappShort')}</a>
+      <a href={`mailto:${CONTACT_EMAIL}`} data-umami-event="email" data-umami-event-location="footer">{CONTACT_EMAIL}</a>
+      <a href={privacyPath(lang)}>{t('footer.privacy')}</a>
     </div>
   </div>
   <div class="container legal">

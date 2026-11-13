@@ -1,10 +1,35 @@
-// Cloudflare Workers (static assets): publica la carpeta dist/ generada por `npm run build`.
+// Cloudflare Workers: sirve el sitio estático (dist/) y el endpoint /api/contacto (worker/index.ts).
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "kuska-labs-web",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-11-01",
+  "observability": { "enabled": true },
+
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "404-page"
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    // Solo /api/* pasa por el Worker; el resto se sirve directo como archivo estático
+    "run_worker_first": ["/api/*"]
+  },
+
+  // Base de datos de leads. Sin "database_id", Wrangler la crea automáticamente en el primer deploy.
+  // Aplicar el esquema: npx wrangler d1 migrations apply kuska-leads --remote
+  "d1_databases": [
+    { "binding": "DB", "database_name": "kuska-leads", "migrations_dir": "migrations" }
+  ],
+
+  // Correo al equipo vía Cloudflare Email Routing.
+  // Requiere: dominio en Cloudflare + Email Routing activo + MAIL_TO verificado como destino.
+  // Si todavía no tienen dominio, comenten este bloque para poder desplegar (los leads igual se guardan en D1).
+  "send_email": [
+    { "name": "EMAIL", "destination_address": "hola@kuskalabs.com" }
+  ],
+
+  "vars": {
+    "MAIL_FROM": "web@kuskalabs.com",
+    "MAIL_TO": "hola@kuskalabs.com"
   }
+  // Secreto (no va aquí): npx wrangler secret put TURNSTILE_SECRET
 }
