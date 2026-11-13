@@ -11,8 +11,8 @@ export const BRAND = 'Kuska Labs';
 // TODO: número real de WhatsApp en formato internacional, sin "+" ni espacios (ej. 51987654321)
 export const WHATSAPP_NUMBER = '51900000000';
 
-// TODO: correo de contacto
-export const CONTACT_EMAIL = 'hola@kuskalabs.com';
+// Correo del equipo (Gmail compartido)
+export const CONTACT_EMAIL = 'kuskalabs.pe@gmail.com'; // cuando haya dominio: hola@kuskalabs.com (reenvía a este Gmail)
 
 // Decisión pendiente: ¿mostramos precios "desde ..."? Cambiar a true para mostrarlos.
 export const SHOW_PRICES = false;

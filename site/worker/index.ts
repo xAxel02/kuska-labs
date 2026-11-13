@@ -6,7 +6,7 @@
  * Variables / bindings (ver wrangler.jsonc y site/README.md):
  *   TURNSTILE_SECRET  (secreto)  clave secreta de Turnstile
  *   MAIL_FROM          (var)      remitente en el dominio con Email Routing, ej. web@kuskalabs.com
- *   MAIL_TO            (var)      destino verificado en Email Routing, ej. hola@kuskalabs.com
+ *   MAIL_TO            (var)      destino verificado en Email Routing (el Gmail del equipo)
  *   DB                 (D1)       base de datos de leads (opcional, pero recomendado)
  *   EMAIL              (send_email)
  */

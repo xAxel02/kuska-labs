@@ -14,22 +14,27 @@
     "run_worker_first": ["/api/*"]
   },
 
-  // Base de datos de leads. Sin "database_id", Wrangler la crea automáticamente en el primer deploy.
-  // Aplicar el esquema: npx wrangler d1 migrations apply kuska-leads --remote
+  // Base de datos de leads (creada en el primer deploy, 2026-11-13).
+  // Aplicar cambios de esquema: npm run db:migrate:remote
   "d1_databases": [
-    { "binding": "DB", "database_name": "kuska-leads", "migrations_dir": "migrations" }
+    {
+      "binding": "DB",
+      "database_name": "kuska-leads",
+      "database_id": "206722d0-27d5-4087-afe0-453d7611fd41",
+      "migrations_dir": "migrations"
+    }
   ],
 
   // Correo al equipo vía Cloudflare Email Routing.
   // Requiere: dominio en Cloudflare + Email Routing activo + MAIL_TO verificado como destino.
-  // Si todavía no tienen dominio, comenten este bloque para poder desplegar (los leads igual se guardan en D1).
-  "send_email": [
-    { "name": "EMAIL", "destination_address": "hola@kuskalabs.com" }
-  ],
+  // DESACTIVADO hasta tener dominio: descomentar al activar Email Routing (los leads igual se guardan en D1).
+  // "send_email": [
+  //   { "name": "EMAIL", "destination_address": "kuskalabs.pe@gmail.com" }
+  // ],
 
   "vars": {
     "MAIL_FROM": "web@kuskalabs.com",
-    "MAIL_TO": "hola@kuskalabs.com"
+    "MAIL_TO": "kuskalabs.pe@gmail.com"
   }
   // Secreto (no va aquí): npx wrangler secret put TURNSTILE_SECRET
 }

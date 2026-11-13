@@ -120,8 +120,10 @@ Para medir un botón nuevo, agrégale `data-umami-event="nombre"` y `data-umami-
 1. **Dominio en Cloudflare:** comprarlo o transferirlo y agregarlo a la cuenta.
 2. **Email Routing** (Email → Email Routing):
    - Activarlo.
-   - Crear la dirección `hola@` reenviada a los Gmail del equipo.
-   - Verificar `hola@kuskalabs.com` como *destination address*. Debe coincidir con `MAIL_TO` en `wrangler.jsonc`.
+   - Crear la dirección `hola@` reenviada a `kuskalabs.pe@gmail.com`.
+   - Verificar `kuskalabs.pe@gmail.com` como *destination address* (llega un correo de confirmación). Debe coincidir con `MAIL_TO` en `wrangler.jsonc`.
+   - Descomentar el bloque `send_email` en `wrangler.jsonc`.
+   - Cambiar `CONTACT_EMAIL` en `src/config.ts` a `hola@kuskalabs.com`.
 3. **Turnstile** (Turnstile → Add widget):
    - Usar el dominio del sitio y el modo *Managed*.
    - Guardar la clave pública como variable de build `PUBLIC_TURNSTILE_SITE_KEY`.
@@ -138,7 +140,8 @@ Para medir un botón nuevo, agrégale `data-umami-event="nombre"` y `data-umami-
 ## Pendientes (decisiones del equipo)
 
 - [ ] Dominio definitivo → `SITE_URL` en `src/config.ts`
-- [ ] Número de WhatsApp y correo → `src/config.ts`
+- [x] Correo del equipo: `kuskalabs.pe@gmail.com`
+- [ ] Número de WhatsApp → `src/config.ts`
 - [ ] Mostrar precios o no → `SHOW_PRICES`
 - [ ] Activar formulario y analítica (ver "Activación" arriba)
 - [ ] Revisión legal de la política de privacidad (`src/components/Privacy.astro`): Ley 29733 y, de ser necesario, inscripción del banco de datos ante la ANPD
