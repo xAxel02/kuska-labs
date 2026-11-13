@@ -38,6 +38,8 @@ const ogImage = new URL(`/brand/og-${lang}.png`, site).href;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Marca que hay JS antes de pintar: las animaciones de revelado solo ocultan contenido si JS puede mostrarlo -->
+    <script is:inline>document.documentElement.classList.add('js');</script>
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
     {noindex && <meta name="robots" content="noindex" />}
@@ -87,5 +89,30 @@ const ogImage = new URL(`/brand/og-${lang}.png`, site).href;
     </main>
     <Footer lang={lang} />
     <WhatsAppFloat lang={lang} />
+
+    <script>
+      // Revelado en escalones de píxel (ver global.css): marca cada bloque al entrar en pantalla.
+      const targets = document.querySelectorAll<HTMLElement>('.section-head, main .card, .steps, .flow-wrap');
+      // Escalonado entre hermanos de una misma cuadrícula (máx. 4 pasos)
+      targets.forEach((el) => {
+        const siblings = el.parentElement ? [...el.parentElement.children] : [];
+        el.style.setProperty('--reveal-i', String(Math.min(siblings.indexOf(el) % 3, 3)));
+      });
+      if (!('IntersectionObserver' in window)) {
+        targets.forEach((el) => el.classList.add('is-in'));
+      } else {
+        const io = new IntersectionObserver(
+          (entries) =>
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                e.target.classList.add('is-in');
+                io.unobserve(e.target);
+              }
+            }),
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
+        );
+        targets.forEach((el) => io.observe(el));
+      }
+    </script>
   </body>
 </html>

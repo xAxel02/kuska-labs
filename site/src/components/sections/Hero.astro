@@ -1,5 +1,7 @@
 ---
 import WhatsAppIcon from '../WhatsAppIcon.astro';
+import Chakana from '../Chakana.astro';
+import Flow from '../Flow.astro';
 import { whatsappLink } from '../../config';
 import { useTranslations, homePath } from '../../i18n/utils';
 import type { Lang } from '../../i18n/ui';
@@ -9,34 +11,45 @@ const t = useTranslations(lang);
 ---
 
 <section class="hero" aria-labelledby="hero-title">
-  <div class="container inner">
-    <div class="copy">
-      <p class="label">{t('hero.label')}</p>
-      <h1 id="hero-title">{t('hero.title')}</h1>
-      <p class="lead">{t('hero.lead')}</p>
-      <div class="ctas">
-        <a class="btn btn-primary" href={`${homePath(lang)}#contacto`} data-umami-event="cta-diagnosis" data-umami-event-location="hero">{t('cta.diagnosis')}</a>
-        <a class="btn btn-secondary" href={whatsappLink(t('whatsapp.message'))} target="_blank" rel="noopener" data-umami-event="whatsapp" data-umami-event-location="hero">
-          <WhatsAppIcon /> {t('cta.whatsapp')}
-        </a>
+  <div class="container">
+    <div class="inner">
+      <div class="copy">
+        <h1 id="hero-title">{t('hero.title')}</h1>
+        <p class="lead">{t('hero.lead')}</p>
+        <div class="ctas">
+          <a class="btn btn-primary" href={`${homePath(lang)}#contacto`} data-umami-event="cta-diagnosis" data-umami-event-location="hero">{t('cta.diagnosis')}</a>
+          <a class="btn btn-secondary" href={whatsappLink(t('whatsapp.message'))} target="_blank" rel="noopener" data-umami-event="whatsapp" data-umami-event-location="hero">
+            <WhatsAppIcon /> {t('cta.whatsapp')}
+          </a>
+        </div>
+        <p class="note">{t('hero.note')}</p>
       </div>
-      <p class="note">{t('hero.note')}</p>
+      <div class="mark">
+        <Chakana mode="load" />
+      </div>
     </div>
-    <img class="mark" src="/brand/kuska-symbol.svg" alt="" width="256" height="256" />
+
+    <div class="flow-wrap">
+      <p class="flow-title">{t('hero.flowTitle')}</p>
+      <Flow lang={lang} />
+    </div>
   </div>
 </section>
 
 <style>
-  .hero { padding-block: clamp(4rem, 2rem + 8vw, 8.5rem) clamp(3rem, 2rem + 4vw, 6rem); overflow: hidden; }
-  .inner { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 3rem; }
-  h1 { margin-top: 1.25rem; max-width: 15ch; }
+  .hero { padding-block: clamp(3rem, 1.5rem + 6vw, 7rem) clamp(2rem, 1.5rem + 3vw, 4.5rem); overflow: hidden; }
+  .inner { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: clamp(2rem, 1rem + 4vw, 5rem); }
+  h1 { max-width: 15ch; view-transition-name: hero-title; }
   .lead { margin-top: 1.5rem; max-width: 58ch; font-size: var(--text-lead); }
   .ctas { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2.25rem; }
-  .note { margin-top: 1.5rem; font-family: var(--font-mono); font-size: var(--text-label); color: var(--color-text-3); }
-  .mark { width: clamp(220px, 24vw, 340px); opacity: 0.95; }
+  .note { margin-top: 1.5rem; font-size: var(--text-small); color: var(--color-text-3); }
+  .mark { width: clamp(200px, 24vw, 340px); view-transition-name: hero-chakana; }
+  .flow-wrap { margin-top: clamp(3rem, 2rem + 4vw, 5rem); }
+  .flow-title { margin-bottom: 1rem; color: var(--color-text); font-family: var(--font-display); font-weight: var(--weight-medium); font-size: var(--text-h3); }
+
   @media (max-width: 860px) {
-    .inner { grid-template-columns: 1fr; }
-    .mark { display: none; }
+    .inner { grid-template-columns: 1fr; gap: 1.5rem; }
+    .mark { order: -1; width: 88px; }
   }
   @media (max-width: 480px) {
     .ctas .btn { width: 100%; }

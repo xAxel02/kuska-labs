@@ -1,0 +1,299 @@
+---
+/**
+ * "Flujo vivo": muestra cómo un mensaje de WhatsApp se convierte en datos y reportes.
+ * El visitante elige su rubro y el flujo cambia. Pensado como demostración de lo que
+ * Kuska Labs puede instalar en un negocio.
+ * - Se pausa fuera de pantalla (IntersectionObserver) y con el botón Pausar (WCAG 2.2.2).
+ * - Con prefers-reduced-motion: sin recorrido ni tipeo; todos los nodos visibles y el registro completo.
+ */
+import type { Lang } from '../i18n/ui';
+
+const { lang } = Astro.props as { lang: Lang };
+
+const nodes = {
+  es: [
+    { icon: 'chat', title: 'WhatsApp' },
+    { icon: 'bot', title: 'Agente de IA' },
+    { icon: 'db', title: 'Tu sistema' },
+    { icon: 'chart', title: 'Reporte' },
+  ],
+  en: [
+    { icon: 'chat', title: 'WhatsApp' },
+    { icon: 'bot', title: 'AI agent' },
+    { icon: 'db', title: 'Your system' },
+    { icon: 'chart', title: 'Report' },
+  ],
+}[lang];
+
+const scenarios = {
+  es: [
+    {
+      id: 'bodega',
+      label: 'Bodega o ferretería',
+      steps: ['«¿Tienen cemento Sol?»', 'Responde con stock y precio', 'Registra la venta y descuenta', 'Ventas y stock del día'],
+      log: ['pedido #214 recibido por WhatsApp', 'cemento Sol x3 · stock 41 → 38', 'alerta: reponer antes del viernes'],
+    },
+    {
+      id: 'consultorio',
+      label: 'Consultorio',
+      steps: ['«Quiero una cita»', 'Ofrece horarios libres', 'Agenda y envía recordatorio', 'Ocupación de la semana'],
+      log: ['cita confirmada: jueves 10:30', 'recordatorio programado 24 h antes', 'ocupación semanal: 86 %'],
+    },
+    {
+      id: 'academia',
+      label: 'Academia',
+      steps: ['«Info de matrícula»', 'Envía requisitos y precios', 'Registra al alumno y su pago', 'Matrículas por curso'],
+      log: ['alumna inscrita en Python básico', 'adelanto del 50 % registrado', 'vacantes restantes: 4 de 20'],
+    },
+  ],
+  en: [
+    {
+      id: 'store',
+      label: 'Retail store',
+      steps: ['“Do you have it in stock?”', 'Replies with stock and price', 'Logs the sale, updates stock', 'Daily sales and stock'],
+      log: ['order #214 received on WhatsApp', 'item x3 · stock 41 → 38', 'alert: restock before Friday'],
+    },
+    {
+      id: 'clinic',
+      label: 'Clinic',
+      steps: ['“I need an appointment”', 'Offers open slots', 'Books it and sends a reminder', 'Weekly occupancy'],
+      log: ['appointment confirmed: Thu 10:30', 'reminder scheduled 24 h before', 'weekly occupancy: 86 %'],
+    },
+    {
+      id: 'school',
+      label: 'School',
+      steps: ['“How do I enroll?”', 'Sends requirements and fees', 'Registers student and payment', 'Enrollments by course'],
+      log: ['student enrolled in Python 101', '50 % deposit recorded', 'seats left: 4 of 20'],
+    },
+  ],
+}[lang];
+
+const t = {
+  es: { pick: 'Elige tu tipo de negocio', caption: 'Así se vería en tu negocio', pause: 'Pausar', play: 'Reanudar' },
+  en: { pick: 'Pick your type of business', caption: 'How it would work for your business', pause: 'Pause', play: 'Resume' },
+}[lang];
+const first = scenarios[0];
+---
+
+<figure class="flow" data-flow aria-label={t.caption}>
+  <figcaption class="sr-only">{t.caption}</figcaption>
+
+  <div class="bar">
+    <div class="chips" role="group" aria-label={t.pick}>
+      {
+        scenarios.map((s, i) => (
+          <button type="button" class="chip" aria-pressed={i === 0 ? 'true' : 'false'} data-id={s.id}>
+            {s.label}
+          </button>
+        ))
+      }
+    </div>
+    <button type="button" class="toggle" data-toggle data-label-pause={t.pause} data-label-play={t.play} aria-pressed="false">
+      <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14" /></svg>
+      <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5l12 7-12 7z" /></svg>
+      <span class="toggle-label">{t.pause}</span>
+    </button>
+  </div>
+
+  <ol class="nodes" role="list">
+    {
+      nodes.map((n, i) => (
+        <li class="node" data-node={i}>
+          <span class="icon" aria-hidden="true">
+            {n.icon === 'chat' && (
+              <svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z" /></svg>
+            )}
+            {n.icon === 'bot' && (
+              <svg viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="11" rx="2" /><path d="M12 4v4M9 13h.01M15 13h.01" /></svg>
+            )}
+            {n.icon === 'db' && (
+              <svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3" /><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3" /></svg>
+            )}
+            {n.icon === 'chart' && (
+              <svg viewBox="0 0 24 24"><path d="M4 20h16M7 16v-5M12 16V7M17 16v-8" /></svg>
+            )}
+          </span>
+          <strong>{n.title}</strong>
+          <span class="step" data-step={i}>{first.steps[i]}</span>
+        </li>
+      ))
+    }
+  </ol>
+
+  <div class="track" aria-hidden="true">
+    <span class="packet"></span>
+  </div>
+
+  <div class="log" aria-hidden="true">
+    {first.log.map((line) => <p class="line"><span class="prompt">›</span> <span class="txt">{line}</span></p>)}
+  </div>
+
+  <script type="application/json" data-flow-data set:html={JSON.stringify(scenarios)} />
+</figure>
+
+<script>
+  type Scenario = { id: string; label: string; steps: string[]; log: string[] };
+
+  document.querySelectorAll<HTMLElement>('[data-flow]').forEach((root) => {
+    const data: Scenario[] = JSON.parse(root.querySelector('[data-flow-data]')!.textContent || '[]');
+    const nodes = [...root.querySelectorAll<HTMLElement>('.node')];
+    const steps = [...root.querySelectorAll<HTMLElement>('.step')];
+    const lines = [...root.querySelectorAll<HTMLElement>('.line .txt')];
+    const chips = [...root.querySelectorAll<HTMLButtonElement>('.chip')];
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+
+    let current = data[0];
+    let active = 0;
+    let timer = 0;
+    let visible = false;
+    let paused = false;
+    const toggle = root.querySelector<HTMLButtonElement>('[data-toggle]')!;
+    const toggleLabel = toggle.querySelector<HTMLElement>('.toggle-label')!;
+
+    let gen = 0; // invalida tipeos en curso al cambiar de rubro
+    const typeLine = (el: HTMLElement, text: string) => {
+      if (reduce.matches) { el.textContent = text; return; }
+      el.textContent = '';
+      let i = 0;
+      const g = gen;
+      const tick = () => {
+        if (g !== gen) return;
+        el.textContent = text.slice(0, ++i);
+        if (i < text.length) setTimeout(tick, 18);
+      };
+      tick();
+    };
+
+    const render = () => {
+      nodes.forEach((n, i) => n.classList.toggle('is-on', reduce.matches || i <= active));
+      nodes.forEach((n, i) => n.classList.toggle('is-current', !reduce.matches && i === active));
+      root.style.setProperty('--progress', String(active / (nodes.length - 1)));
+      // Con movimiento reducido el registro ya está completo (lo llena setScenario)
+      if (reduce.matches) return;
+      // La línea del registro que corresponde al nodo actual se "escribe"
+      const lineIdx = Math.min(active - 1, lines.length - 1);
+      if (active === 0) lines.forEach((l) => (l.textContent = ''));
+      else if (lineIdx >= 0) typeLine(lines[lineIdx], current.log[lineIdx]);
+    };
+
+    const step = () => {
+      active = (active + 1) % (nodes.length + 1); // una pausa al final antes de reiniciar
+      if (active === nodes.length) { root.classList.add('is-done'); return; }
+      root.classList.remove('is-done');
+      render();
+    };
+
+    const start = () => {
+      stop();
+      if (reduce.matches || !visible || paused) return;
+      timer = window.setInterval(step, 1400);
+    };
+    function stop() { window.clearInterval(timer); }
+
+    const setScenario = (id: string) => {
+      gen++;
+      current = data.find((s) => s.id === id) ?? data[0];
+      chips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.id === current.id)));
+      steps.forEach((s, i) => (s.textContent = current.steps[i]));
+      if (reduce.matches) {
+        lines.forEach((l, i) => (l.textContent = current.log[i]));
+      } else {
+        lines.forEach((l) => (l.textContent = ''));
+      }
+      active = 0;
+      root.classList.remove('is-done');
+      render();
+      start();
+    };
+
+    chips.forEach((c) => c.addEventListener('click', () => setScenario(c.dataset.id!)));
+    // Control explícito para detener el movimiento automático (WCAG 2.2.2)
+    toggle.addEventListener('click', () => {
+      paused = !paused;
+      toggle.setAttribute('aria-pressed', String(paused));
+      toggleLabel.textContent = paused ? toggle.dataset.labelPlay! : toggle.dataset.labelPause!;
+      if (paused) stop(); else start();
+    });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(([e]) => { visible = e.isIntersecting; start(); }, { threshold: 0.3 }).observe(root);
+    } else {
+      visible = true; // sin API: se considera visible siempre
+    }
+    reduce.addEventListener('change', () => setScenario(current.id));
+
+    setScenario(current.id);
+  });
+</script>
+
+<style>
+  .flow {
+    margin: 0; padding: clamp(1rem, 0.6rem + 1.6vw, 1.75rem);
+    background: var(--color-surface-1); border: 1px solid var(--color-border); border-radius: var(--radius-lg);
+    --progress: 0;
+  }
+  .bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 1.25rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .toggle {
+    display: inline-flex; align-items: center; gap: 0.375rem; min-height: 40px; padding: 0.5rem 0.75rem; cursor: pointer;
+    font-size: var(--text-small); color: var(--color-text-3); background: transparent; border: 0; border-radius: var(--radius-md);
+  }
+  .toggle:hover { color: var(--color-text); }
+  .toggle svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .toggle .i-play, .toggle[aria-pressed='true'] .i-pause { display: none; }
+  .toggle[aria-pressed='true'] .i-play { display: block; }
+  .chip {
+    min-height: 40px; padding: 0.5rem 0.875rem; cursor: pointer;
+    font-size: var(--text-small); color: var(--color-text-2);
+    background: transparent; border: 1px solid var(--color-border-strong); border-radius: 999px;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  }
+  .chip:hover { color: var(--color-text); border-color: var(--color-text-3); }
+  .chip[aria-pressed='true'] { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-on-accent); }
+
+  .nodes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.75rem; }
+  .node {
+    display: flex; flex-direction: column; gap: 0.25rem; padding: 0.875rem;
+    background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-md);
+    transition: border-color 0.35s, background-color 0.35s, transform 0.35s;
+  }
+  .node strong { color: var(--color-text); font-size: 0.9375rem; font-weight: var(--weight-medium); }
+  .step { font-size: var(--text-small); color: var(--color-text-3); line-height: 1.4; transition: color 0.35s; }
+  .icon svg { width: 22px; height: 22px; fill: none; stroke: var(--color-text-3); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.35s; }
+  .node.is-on { border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border)); }
+  .node.is-on .step { color: var(--color-text-2); }
+  .node.is-on .icon svg { stroke: var(--color-accent); }
+  .node.is-current { background: var(--color-accent-soft); border-color: var(--color-accent); transform: translateY(-3px); }
+
+  /* Recorrido: un "paquete" que avanza en escalones de píxel */
+  .track { position: relative; height: 12px; margin: 1rem 0.5rem 0.25rem; }
+  .track::before { content: ''; position: absolute; inset: 5px 0 auto; height: 2px; background: var(--color-border); }
+  .track::after {
+    content: ''; position: absolute; inset: 5px auto auto 0; height: 2px; background: var(--color-accent);
+    width: calc(var(--progress) * 100%); transition: width 1.2s steps(8);
+  }
+  .packet {
+    position: absolute; top: 1px; width: 10px; height: 10px; background: var(--color-accent);
+    left: calc(var(--progress) * (100% - 10px)); transition: left 1.2s steps(8);
+  }
+  .is-done .packet { opacity: 0; transition: opacity 0.3s; }
+
+  .log {
+    margin-top: 0.75rem; padding: 0.75rem 0.875rem; min-height: 5.5rem;
+    background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md);
+    font-family: var(--font-mono); font-size: 0.8125rem; color: var(--color-text-2);
+  }
+  .line { min-height: 1.5em; }
+  .prompt { color: var(--color-accent); }
+
+  @media (max-width: 720px) {
+    .nodes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .track { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .toggle { display: none; }
+    .node, .packet, .track::after { transition: none; }
+    .node.is-current { transform: none; }
+    .packet { display: none; }
+    .track::after { width: 100%; }
+  }
+</style>

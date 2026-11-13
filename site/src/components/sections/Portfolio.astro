@@ -14,7 +14,6 @@ const projects = (await getCollection('projects', ({ id }) => id.startsWith(`${l
 <section id="portafolio" class="section" aria-labelledby="portfolio-title">
   <div class="container">
     <div class="section-head">
-      <p class="label">{t('portfolio.label')}</p>
       <h2 id="portfolio-title">{t('portfolio.title')}</h2>
       <p>{t('portfolio.lead')}</p>
     </div>
@@ -50,7 +49,7 @@ const projects = (await getCollection('projects', ({ id }) => id.startsWith(`${l
                     data-umami-event="portfolio-visit"
                     data-umami-event-project={data.title}
                   >
-                    {data.kind === 'client' ? t('portfolio.visit') : t('portfolio.live')} →
+                    {data.kind === 'client' ? t('portfolio.visit') : t('portfolio.live')}
                   </a>
                 ) : (
                   <span class="badge">{t('portfolio.building')}</span>
@@ -75,17 +74,17 @@ const projects = (await getCollection('projects', ({ id }) => id.startsWith(`${l
   .thumb .placeholder { width: 56px; height: auto; opacity: 0.35; }
   .body { display: flex; flex-direction: column; gap: 0.5rem; padding: 1.5rem; flex: 1; }
   .kind {
-    align-self: flex-start; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: var(--tracking-label);
+    align-self: flex-start; font-size: 0.75rem; font-weight: var(--weight-medium);
     padding: 2px 8px; border-radius: var(--radius-sm); border: 1px solid var(--color-border-strong); color: var(--color-text-2);
   }
   .kind.client { color: var(--color-on-accent); background: var(--color-accent); border-color: var(--color-accent); }
   .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.25rem; }
   .tags li {
-    font-family: var(--font-mono); font-size: 0.75rem; color: var(--color-text-2);
+    font-size: 0.75rem; color: var(--color-text-2);
     padding: 2px 8px; border: 1px solid var(--color-border); border-radius: var(--radius-sm);
   }
   .badge {
-    align-self: flex-start; margin-top: auto; font-family: var(--font-mono); font-size: var(--text-label);
+    align-self: flex-start; margin-top: auto; font-size: var(--text-label); font-weight: var(--weight-medium);
     color: var(--color-accent); background: var(--color-accent-soft); padding: 4px 10px; border-radius: var(--radius-sm);
   }
   .visit { align-self: flex-start; margin-top: auto; }

@@ -16,16 +16,14 @@ const items = await Promise.all(services.map(async (s) => ({ ...s, Content: (awa
 <section id="servicios" class="section" aria-labelledby="services-title">
   <div class="container">
     <div class="section-head">
-      <p class="label">{t('services.label')}</p>
       <h2 id="services-title">{t('services.title')}</h2>
       <p>{t('services.lead')}</p>
     </div>
 
     <ul class="grid" role="list">
       {
-        items.map(({ data, Content }, i) => (
+        items.map(({ data, Content }) => (
           <li class="card">
-            <span class="num">{String(i + 1).padStart(2, '0')}</span>
             <h3>{data.title}</h3>
             <p class="summary">{data.summary}</p>
             <div class="body"><Content /></div>
@@ -47,12 +45,11 @@ const items = await Promise.all(services.map(async (s) => ({ ...s, Content: (awa
 <style>
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
   .card { display: flex; flex-direction: column; }
-  .num { font-family: var(--font-mono); font-size: var(--text-label); color: var(--color-accent); margin-bottom: 1rem; }
   .summary { color: var(--color-text); }
   .body { margin-top: 0.5rem; font-size: var(--text-small); color: var(--color-text-3); }
   .price {
     margin-top: auto; padding-top: 1.25rem; border-top: 1px solid var(--color-border);
-    font-family: var(--font-mono); font-size: var(--text-small); color: var(--color-text-2);
+    font-size: var(--text-small); color: var(--color-text-2); font-variant-numeric: tabular-nums;
   }
   .price .from { color: var(--color-text-3); }
   .price strong { color: var(--color-accent); font-weight: var(--weight-medium); font-size: 1rem; }

@@ -1,0 +1,64 @@
+---
+/**
+ * Chakana de Kuska Labs (4 piezas) con animación de ensamblaje: "kuska" = juntos.
+ *  - mode="load":   las piezas llegan y se unen al cargar la página.
+ *  - mode="scroll": las piezas se unen a medida que la sección entra en pantalla (scroll-driven animation).
+ * Con prefers-reduced-motion o sin soporte, se muestra ensamblada y quieta.
+ * Geometría: brand/logo/build_logo.py (retícula 9x9, módulo 22).
+ */
+interface Props {
+  mode?: 'load' | 'scroll';
+  size?: string; // ancho CSS, ej. "clamp(200px, 24vw, 340px)"
+  class?: string;
+}
+const { mode = 'load', size = '100%', class: className } = Astro.props;
+---
+
+<svg
+  class:list={['chakana', `chakana--${mode}`, className]}
+  viewBox="0 0 256 256"
+  style={`width:${size}`}
+  aria-hidden="true"
+  focusable="false"
+>
+  <g fill="var(--color-accent)">
+    <polygon class="pc pc-tl" points="106.5,123 24,123 24,90 46,90 46,68 68,68 68,46 90,46 90,24 123,24 123,106.5 106.5,106.5" />
+    <polygon class="pc pc-tr" points="149.5,123 232,123 232,90 210,90 210,68 188,68 188,46 166,46 166,24 133,24 133,106.5 149.5,106.5" />
+    <polygon class="pc pc-bl" points="106.5,133 24,133 24,166 46,166 46,188 68,188 68,210 90,210 90,232 123,232 123,149.5 106.5,149.5" />
+    <polygon class="pc pc-br" points="149.5,133 232,133 232,166 210,166 210,188 188,188 188,210 166,210 166,232 133,232 133,149.5 149.5,149.5" />
+  </g>
+</svg>
+
+<style>
+  .chakana { display: block; height: auto; overflow: visible; }
+  .pc { transform-box: fill-box; transform-origin: center; }
+  .pc-tl { --dx: -38%; --dy: -38%; --r: -90deg; }
+  .pc-tr { --dx: 38%; --dy: -38%; --r: 90deg; }
+  .pc-bl { --dx: -38%; --dy: 38%; --r: 90deg; }
+  .pc-br { --dx: 38%; --dy: 38%; --r: -90deg; }
+
+  @keyframes piece-in {
+    from { transform: translate(var(--dx), var(--dy)) rotate(var(--r)); opacity: 0; }
+    60% { opacity: 1; }
+    to { transform: none; opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* Al cargar: llegan en orden, como cuatro personas que se juntan */
+    .chakana--load .pc { animation: piece-in 1.1s cubic-bezier(0.2, 0.9, 0.2, 1.08) both; }
+    .chakana--load .pc-tl { animation-delay: 0.15s; }
+    .chakana--load .pc-tr { animation-delay: 0.3s; }
+    .chakana--load .pc-br { animation-delay: 0.45s; }
+    .chakana--load .pc-bl { animation-delay: 0.6s; }
+
+    /* Con el scroll: se unen mientras la sección entra en pantalla */
+    @supports (animation-timeline: view()) {
+      .chakana--scroll { view-timeline-name: --chakana; }
+      .chakana--scroll .pc {
+        animation: piece-in linear both;
+        animation-timeline: --chakana;
+        animation-range: entry 10% cover 45%;
+      }
+    }
+  }
+</style>

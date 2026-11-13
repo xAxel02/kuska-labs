@@ -65,3 +65,30 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .card:hover { border-color: var(--color-border-strong); }
 .card h3 { margin-bottom: 0.5rem; }
+
+/* ======================================================================
+   Movimiento de marca (fase 1)
+   - Revelado en escalones de píxel: los bloques aparecen en 6 saltos,
+     como los escalones de la chakana. Lo activa un IntersectionObserver
+     (Layout.astro) solo si hay JavaScript y el usuario no pidió reducir movimiento.
+   - Cambio de idioma con View Transitions (navegación entre páginas).
+   ====================================================================== */
+@keyframes px-reveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Estado inicial con opacity (no clip-path: IntersectionObserver no detecta elementos totalmente recortados) */
+  .js :is(.section-head, main .card, .steps, .flow-wrap):not(.is-in) { opacity: 0; }
+  .js :is(.section-head, main .card, .steps, .flow-wrap).is-in {
+    animation: px-reveal 0.75s steps(6, end) both;
+    animation-delay: calc(var(--reveal-i, 0) * 90ms);
+  }
+
+  @view-transition { navigation: auto; }
+  ::view-transition-old(root) { animation: none; }
+  ::view-transition-new(root) { animation: px-reveal 0.55s steps(6, end) both; }
+}
+
+.site-header .logo { view-transition-name: site-logo; }

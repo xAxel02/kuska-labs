@@ -19,6 +19,7 @@ export const ui = {
     'nav.team': 'Equipo',
     'nav.contact': 'Contacto',
     'nav.menu': 'Menú',
+    'nav.primary': 'Navegación principal',
     'nav.skip': 'Saltar al contenido',
     'nav.switch': 'English',
     'nav.switchLabel': 'Ver el sitio en inglés',
@@ -28,13 +29,12 @@ export const ui = {
     'cta.whatsappShort': 'WhatsApp',
     'whatsapp.message': 'Hola Kuska Labs, quiero conversar sobre un proyecto.',
 
-    'hero.label': '// desarrollo de software a medida',
     'hero.title': 'Software hecho en equipo, desde Perú para el mundo.',
+    'hero.flowTitle': 'Mira cómo un mensaje de WhatsApp se convierte en datos para tu negocio',
     'hero.lead':
       '¿Tu negocio todavía depende de Excel, cuadernos o mensajes de WhatsApp? Creamos la web, el sistema o el chatbot que lo ordena. Empezamos con un diagnóstico gratis de 30 minutos y una propuesta clara, sin compromiso.',
     'hero.note': 'Kuska significa «juntos» en quechua.',
 
-    'services.label': '// servicios',
     'services.title': 'Lo que construimos',
     'services.lead': 'Desde tu primera web hasta el sistema que ordena todo tu negocio, con precios claros desde el inicio.',
     'services.from': 'desde',
@@ -43,7 +43,6 @@ export const ui = {
     'services.priceNote':
       'Precios referenciales de lanzamiento en soles. El monto final depende del alcance y lo acordamos por escrito después del diagnóstico. ¿Estás fuera del Perú? Te cotizamos en dólares.',
 
-    'portfolio.label': '// portafolio',
     'portfolio.title': 'Trabajo real y demos',
     'portfolio.lead': 'Un proyecto publicado para un cliente y demos propias, para que veas cómo trabajamos antes de empezar el tuyo.',
     'portfolio.client': 'Proyecto real',
@@ -52,17 +51,14 @@ export const ui = {
     'portfolio.building': 'En construcción',
     'portfolio.live': 'Probar demo',
 
-    'process.label': '// proceso',
     'process.title': 'Cómo trabajamos',
     'process.lead': 'En cada etapa sabes qué estamos haciendo, cuánto falta y cuánto cuesta.',
 
-    'team.label': '// equipo',
     'team.title': 'Quién está detrás',
     'team.lead':
       'Kuska Labs es un colectivo de ingenieros de sistemas del Perú. Trabajamos de forma remota para clientes de Perú, Latinoamérica, España y EE. UU., y cada proyecto tiene un responsable directo que te acompaña de principio a fin.',
     'team.empty': 'Muy pronto presentaremos a cada integrante del equipo.',
 
-    'contact.label': '// contacto',
     'contact.title': 'Conversemos sobre tu proyecto',
     'contact.lead':
       'Cuéntanos qué necesitas. Te respondemos en menos de 24 horas hábiles para agendar tu diagnóstico gratis de 30 minutos, sin compromiso.',
@@ -93,6 +89,7 @@ export const ui = {
     'footer.legal':
       'Kuska Labs es un colectivo de profesionales independientes. Cada integrante emite recibo por honorarios electrónico.',
     'footer.rights': 'Hecho con cariño en Perú.',
+    'footer.copyright': 'Kuska Labs',
     'footer.privacy': 'Privacidad',
 
     'notFound.title': 'Página no encontrada',
@@ -110,6 +107,7 @@ export const ui = {
     'nav.team': 'Team',
     'nav.contact': 'Contact',
     'nav.menu': 'Menu',
+    'nav.primary': 'Main navigation',
     'nav.skip': 'Skip to content',
     'nav.switch': 'Español',
     'nav.switchLabel': 'View the site in Spanish',
@@ -119,13 +117,12 @@ export const ui = {
     'cta.whatsappShort': 'WhatsApp',
     'whatsapp.message': "Hi Kuska Labs, I'd like to talk about a project.",
 
-    'hero.label': '// custom software development',
     'hero.title': 'Software built together, from Peru to the world.',
+    'hero.flowTitle': 'See how a WhatsApp message turns into data for your business',
     'hero.lead':
       'A remote team of Peruvian software engineers building websites, custom systems, ERP and WhatsApp chatbots for growing businesses, plus white-label development for agencies. It starts with a free 30-minute discovery call and a clear proposal.',
     'hero.note': 'Kuska means “together” in Quechua.',
 
-    'services.label': '// services',
     'services.title': 'What we build',
     'services.lead': 'From your first website to the system that runs your whole business, with clear pricing from day one.',
     'services.from': 'from',
@@ -134,7 +131,6 @@ export const ui = {
     'services.priceNote':
       'Reference launch prices in US dollars. The final price depends on scope and is agreed in writing after the discovery call.',
 
-    'portfolio.label': '// portfolio',
     'portfolio.title': 'Real work and demos',
     'portfolio.lead': 'A live client project and our own demos, so you can see how we work before we start yours.',
     'portfolio.client': 'Client project',
@@ -143,17 +139,14 @@ export const ui = {
     'portfolio.building': 'In progress',
     'portfolio.live': 'Try the demo',
 
-    'process.label': '// process',
     'process.title': 'How we work',
     'process.lead': 'At every stage you know what we are doing, what is left and what it costs.',
 
-    'team.label': '// team',
     'team.title': "Who's behind it",
     'team.lead':
       'Kuska Labs is a collective of software engineers from Peru. We work remotely for clients in Peru, Latin America, Spain and the US, and every project has one accountable lead from start to finish.',
     'team.empty': 'We will introduce every team member very soon.',
 
-    'contact.label': '// contact',
     'contact.title': "Let's talk about your project",
     'contact.lead':
       'Tell us what you need. We reply within one business day to book your free 30-minute discovery call, no strings attached.',
@@ -183,6 +176,7 @@ export const ui = {
     'footer.tagline': 'Software built together, from Peru to the world.',
     'footer.legal': 'Kuska Labs is a collective of independent professionals.',
     'footer.rights': 'Made with care in Peru.',
+    'footer.copyright': 'Kuska Labs',
     'footer.privacy': 'Privacy',
 
     'notFound.title': 'Page not found',

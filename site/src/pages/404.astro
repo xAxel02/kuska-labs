@@ -10,7 +10,7 @@ const en = useTranslations('en');
 <Layout lang="es" title={`404 — ${es('notFound.title')} · Kuska Labs`} noindex>
   <section class="section">
     <div class="container nf">
-      <p class="label">// 404</p>
+      <p class="code" aria-hidden="true">404</p>
       <h1>{es('notFound.title')}</h1>
       <p>{es('notFound.text')} <a href="/">{es('notFound.back')}</a></p>
       <p lang="en">{en('notFound.text')} <a href="/en/">{en('notFound.back')}</a></p>
@@ -19,5 +19,6 @@ const en = useTranslations('en');
 </Layout>
 
 <style>
+  .code { font-family: var(--font-display); font-weight: var(--weight-bold); font-size: clamp(4rem, 3rem + 6vw, 8rem); line-height: 1; color: var(--color-accent); }
   .nf { min-height: 50vh; display: flex; flex-direction: column; gap: 1rem; justify-content: center; }
 </style>

@@ -23,7 +23,6 @@ const mail = CONTACT_EMAIL;
 >
   <article class="section">
     <div class="container prose">
-      <p class="label">// {lang === 'es' ? 'privacidad' : 'privacy'}</p>
       <h1>{t('privacy.title')}</h1>
       <p class="updated">{lang === 'es' ? 'Última actualización' : 'Last updated'}: {updated}</p>
 
@@ -146,7 +145,7 @@ const mail = CONTACT_EMAIL;
 <style>
   .prose { max-width: 46rem; }
   .prose h1 { margin-top: 0.75rem; font-size: var(--text-h2); }
-  .updated { margin-top: 0.75rem; font-family: var(--font-mono); font-size: var(--text-label); color: var(--color-text-3); }
+  .updated { margin-top: 0.75rem; font-size: var(--text-small); color: var(--color-text-3); }
   .prose h2 { font-size: var(--text-h3); font-weight: var(--weight-medium); margin-top: 2.5rem; margin-bottom: 0.75rem; }
   .prose p, .prose li { color: var(--color-text-2); }
   .prose ul { padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem; }

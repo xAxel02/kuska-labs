@@ -10,7 +10,6 @@ const steps = processSteps[lang];
 <section id="proceso" class="section" aria-labelledby="process-title">
   <div class="container">
     <div class="section-head">
-      <p class="label">{t('process.label')}</p>
       <h2 id="process-title">{t('process.title')}</h2>
       <p>{t('process.lead')}</p>
     </div>
@@ -39,7 +38,7 @@ const steps = processSteps[lang];
   .steps li:nth-last-child(-n + 4) { border-bottom: 0; }
   .n {
     display: inline-grid; place-items: center; width: 36px; height: 36px; margin-bottom: 1rem;
-    font-family: var(--font-mono); font-size: var(--text-label); color: var(--color-on-accent);
+    font-family: var(--font-display); font-weight: var(--weight-bold); font-size: var(--text-small); color: var(--color-on-accent);
     background: var(--color-accent); border-radius: var(--radius-sm);
   }
   h3 { font-size: 1.125rem; margin-bottom: 0.375rem; }

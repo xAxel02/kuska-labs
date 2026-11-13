@@ -22,7 +22,7 @@ const links = [
       <img src="/brand/kuska-logo.svg" alt="Kuska Labs" width="196" height="52" />
     </a>
 
-    <nav class="nav-desktop" aria-label="Principal">
+    <nav class="nav-desktop" aria-label={t('nav.primary')}>
       {links.map((l) => <a href={l.href}>{l.label}</a>)}
     </nav>
 
@@ -37,7 +37,7 @@ const links = [
         <summary aria-label={t('nav.menu')}>
           <span></span><span></span><span></span>
         </summary>
-        <nav aria-label="Móvil">
+        <nav aria-label={t('nav.menu')}>
           {links.map((l) => <a href={l.href}>{l.label}</a>)}
           <a class="btn btn-primary" href={`${home}#contacto`} data-umami-event="cta-diagnosis" data-umami-event-location="menu">{t('cta.diagnosis')}</a>
         </nav>
@@ -50,6 +50,13 @@ const links = [
   // Cierra el menú móvil al elegir un enlace
   document.querySelectorAll<HTMLDetailsElement>('.nav-mobile').forEach((d) => {
     d.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => (d.open = false)));
+  });
+
+  // Al cambiar de idioma, conserva la sección en la que estás (#servicios, #contacto, …)
+  document.querySelectorAll<HTMLAnchorElement>('a.lang').forEach((a) => {
+    a.addEventListener('click', () => {
+      if (location.hash) a.href = a.href.split('#')[0] + location.hash;
+    });
   });
 </script>
 
@@ -69,7 +76,7 @@ const links = [
   .nav-desktop a:hover, .lang:hover { color: var(--color-text); }
   .actions { display: flex; align-items: center; gap: 1rem; }
   .lang {
-    font-family: var(--font-mono); letter-spacing: var(--tracking-label);
+    font-weight: var(--weight-medium); letter-spacing: 0.04em;
     padding: 6px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-sm);
   }
   .cta { min-height: 40px; padding: 0.5rem 1rem; font-size: var(--text-small); }
