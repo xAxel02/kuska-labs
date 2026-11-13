@@ -38,7 +38,7 @@ def main() -> None:
     PUBLIC.mkdir(parents=True, exist_ok=True)
     for lang in ("es", "en"):
         out = HERE / f"og-{lang}.png"
-        url = (HERE / "og.html").as_uri() + f"?lang={lang}"
+        url = (HERE / "og.html").as_uri() + f"?lang={lang}&url=kuskalabs.com"
         with tempfile.TemporaryDirectory() as profile:
             subprocess.run(
                 [exe, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--allow-file-access-from-files",

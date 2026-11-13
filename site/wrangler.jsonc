@@ -10,9 +10,21 @@
     "directory": "./dist",
     "binding": "ASSETS",
     "not_found_handling": "404-page",
-    // Solo /api/* pasa por el Worker; el resto se sirve directo como archivo estático
-    "run_worker_first": ["/api/*"]
+    // Todo pasa primero por el Worker: redirige www y workers.dev al dominio principal
+    // y atiende /api/*; el resto lo entrega como archivo estático (env.ASSETS).
+    "run_worker_first": true
   },
+
+  // La URL antigua sigue activa solo para redirigir (301) al dominio; las Preview URLs por versión
+  // (<versión>-kuska-labs-web….workers.dev) no se redirigen y sirven para revisar cambios.
+  "workers_dev": true,
+  "preview_urls": true,
+
+  // Dominio propio (Cloudflare crea el DNS y el certificado al desplegar)
+  "routes": [
+    { "pattern": "kuskalabs.com", "custom_domain": true },
+    { "pattern": "www.kuskalabs.com", "custom_domain": true }
+  ],
 
   // Base de datos de leads (creada en el primer deploy, 2026-11-13).
   // Aplicar cambios de esquema: npm run db:migrate:remote
@@ -25,14 +37,15 @@
     }
   ],
 
-  // Correo al equipo vía Cloudflare Email Routing.
-  // Requiere: dominio en Cloudflare + Email Routing activo + MAIL_TO verificado como destino.
-  // DESACTIVADO hasta tener dominio: descomentar al activar Email Routing (los leads igual se guardan en D1).
-  // "send_email": [
-  //   { "name": "EMAIL", "destination_address": "kuskalabs.pe@gmail.com" }
-  // ],
+  // Correo al equipo vía Cloudflare Email Routing (activo desde 2026-11-13).
+  // El destino debe estar verificado en Email Routing; hola@kuskalabs.com también reenvía a este Gmail.
+  "send_email": [
+    { "name": "EMAIL", "destination_address": "kuskalabs.pe@gmail.com" }
+  ],
 
   "vars": {
+    "CANONICAL_HOST": "kuskalabs.com",
+    "LEGACY_HOST": "kuska-labs-web.renatovr25.workers.dev",
     "MAIL_FROM": "web@kuskalabs.com",
     "MAIL_TO": "kuskalabs.pe@gmail.com"
   }

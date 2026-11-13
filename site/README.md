@@ -149,11 +149,11 @@ Para medir un botón nuevo, agrégale `data-umami-event="nombre"` y `data-umami-
 
 ## Pendientes (decisiones del equipo)
 
-- [ ] Dominio definitivo → `SITE_URL` en `src/config.ts` (hoy apunta a la URL de workers.dev)
+- [x] Dominio `kuskalabs.com` (www y la URL antigua de workers.dev redirigen con 301)
 - [x] Correo del equipo: `kuskalabs.pe@gmail.com`
 - [x] WhatsApp: +51 960 098 421
 - [x] Precios visibles (`SHOW_PRICES = true`)
-- [ ] Activar formulario y analítica (ver "Activación" arriba)
+- [x] Formulario activo (Turnstile + D1 + aviso por correo) y analítica (Umami + Search Console)
 - [ ] Revisión legal de la política de privacidad (`src/components/Privacy.astro`): Ley 29733 y, de ser necesario, inscripción del banco de datos ante la ANPD
 - [x] Textos finales v1.0 (`src/i18n/ui.ts`)
 - [ ] Foto y LinkedIn del equipo (opcional)

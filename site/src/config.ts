@@ -4,8 +4,8 @@
  */
 
 // URL pública del sitio (canonical, sitemap, imágenes para redes).
-// TODO: al tener dominio, cambiar a 'https://kuskalabs.com' (o .pe).
-export const SITE_URL = 'https://kuska-labs-web.renatovr25.workers.dev';
+// Dominio propio (comprado el 2026-11-13). La URL antigua de workers.dev redirige aquí.
+export const SITE_URL = 'https://kuskalabs.com';
 
 export const BRAND = 'Kuska Labs';
 
@@ -13,7 +13,7 @@ export const BRAND = 'Kuska Labs';
 export const WHATSAPP_NUMBER = '51960098421'; // +51 960 098 421
 
 // Correo del equipo (Gmail compartido)
-export const CONTACT_EMAIL = 'kuskalabs.pe@gmail.com'; // cuando haya dominio: hola@kuskalabs.com (reenvía a este Gmail)
+export const CONTACT_EMAIL = 'hola@kuskalabs.com'; // reenvía a kuskalabs.pe@gmail.com (Email Routing)
 
 // Precios referenciales "desde ..." (soles en español, dólares en inglés). false = ocultarlos.
 export const SHOW_PRICES = true;

@@ -19,6 +19,8 @@ interface Env {
   TURNSTILE_SECRET?: string;
   MAIL_FROM?: string;
   MAIL_TO?: string;
+  CANONICAL_HOST?: string;
+  LEGACY_HOST?: string;
 }
 
 type Lead = {
@@ -34,6 +36,14 @@ const LIMITS = { name: 120, contact: 160, business: 160, message: 4000 };
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+
+    // Un solo dominio público: www.kuskalabs.com y la URL antigua de workers.dev redirigen (301)
+    // a https://kuskalabs.com conservando ruta y parámetros (enlaces compartidos y SEO).
+    const canonical = env.CANONICAL_HOST;
+    if (canonical && (url.hostname === `www.${canonical}` || url.hostname === env.LEGACY_HOST)) {
+      return Response.redirect(`https://${canonical}${url.pathname}${url.search}`, 301);
+    }
+
     if (url.pathname === '/api/contacto') {
       if (request.method !== 'POST') return json({ ok: false, error: 'method_not_allowed' }, 405);
       return handleContact(request, env, ctx);
