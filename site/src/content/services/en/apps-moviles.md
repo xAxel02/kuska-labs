@@ -2,10 +2,10 @@
 title: "Mobile apps"
 summary: "Your Android and iOS app from a single codebase."
 group: systems
-order: 8
+order: 9
 priceFrom:
-  pen: 6000
-  usd: 3000
+  pen: 8000
+  usd: 4000
 billing: one-time
 ---
 

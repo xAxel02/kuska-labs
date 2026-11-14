@@ -4,8 +4,8 @@ summary: "Appointments, inventory, bookings or enrollments, without spreadsheets
 group: systems
 order: 3
 priceFrom:
-  pen: 3000
-  usd: 1500
+  pen: 4500
+  usd: 2500
 billing: one-time
 ---
 

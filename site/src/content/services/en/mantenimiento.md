@@ -2,10 +2,10 @@
 title: "Monthly maintenance"
 summary: "Your website or system always updated, secure and running."
 group: care
-order: 9
+order: 10
 priceFrom:
-  pen: 150
-  usd: 80
+  pen: 200
+  usd: 100
 billing: monthly
 ---
 

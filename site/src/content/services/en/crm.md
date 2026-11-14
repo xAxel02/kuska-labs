@@ -4,8 +4,8 @@ summary: "Organize your customers and deals and follow up on every sale."
 group: systems
 order: 5
 priceFrom:
-  pen: 2500
-  usd: 1200
+  pen: 3000
+  usd: 1500
 billing: one-time
 ---
 

@@ -49,7 +49,7 @@ export const ui = {
     'services.monthly': '+ mensualidad',
     'services.perMonth': '/ mes',
     'services.priceNote':
-      'Precios referenciales de lanzamiento en soles. El monto final depende del alcance y lo acordamos por escrito después del diagnóstico. ¿Estás fuera del Perú? Te cotizamos en dólares.',
+      'Precios de lanzamiento en soles, sin IGV: trabajamos con recibo por honorarios. El monto final depende del alcance y lo acordamos por escrito después del diagnóstico. Los costos de terceros (mensajes de WhatsApp, hosting o facturación electrónica) se pagan aparte. ¿Estás fuera del Perú? Te cotizamos en dólares.',
 
     'portfolio.title': 'Trabajo real y demos',
     'portfolio.lead': 'Un proyecto publicado para un cliente y demos propias, para que veas cómo trabajamos antes de empezar el tuyo.',
@@ -152,7 +152,7 @@ export const ui = {
     'services.monthly': '+ monthly fee',
     'services.perMonth': '/ month',
     'services.priceNote':
-      'Reference launch prices in US dollars. The final price depends on scope and is agreed in writing after the discovery call.',
+      'Launch prices in US dollars. The final price depends on scope and is agreed in writing after the discovery call. Third-party costs (WhatsApp messaging fees, hosting) are billed separately.',
 
     'portfolio.title': 'Real work and demos',
     'portfolio.lead': 'A live client project and our own demos, so you can see how we work before we start yours.',

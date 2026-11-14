@@ -4,8 +4,8 @@ summary: "Ordena tus clientes y oportunidades y haz seguimiento a cada venta."
 group: systems
 order: 5
 priceFrom:
-  pen: 2500
-  usd: 1200
+  pen: 3000
+  usd: 1500
 billing: one-time
 ---
 

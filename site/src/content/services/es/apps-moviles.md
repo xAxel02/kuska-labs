@@ -2,10 +2,10 @@
 title: "Apps móviles"
 summary: "Tu app para Android e iOS con una sola base de código."
 group: systems
-order: 8
+order: 9
 priceFrom:
-  pen: 6000
-  usd: 3000
+  pen: 8000
+  usd: 4000
 billing: one-time
 ---
 

@@ -1,6 +1,6 @@
 ---
-title: "AI agents and chatbots"
-summary: "An assistant that answers, books and sells on WhatsApp or your website."
+title: "WhatsApp chatbot"
+summary: "Answers common questions, takes orders and books appointments on WhatsApp, around the clock."
 group: ai
 order: 6
 priceFrom:
@@ -9,4 +9,4 @@ priceFrom:
 billing: plus-monthly
 ---
 
-Serves your customers around the clock and hands off to a person when needed.
+Guided flows with buttons and keywords that hand off to a person when needed. Like the [chatbot demo](/en/demos/chatbot/).
