@@ -5,7 +5,7 @@ group: ai
 order: 6
 priceFrom:
   pen: 1500
-  usd: 800
+  usd: 430
 billing: plus-monthly
 ---
 

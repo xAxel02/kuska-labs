@@ -51,7 +51,7 @@ export const ui = {
     'services.monthly': '+ mensualidad',
     'services.perMonth': '/ mes',
     'services.priceNote':
-      'Precios de lanzamiento en soles, sin IGV: trabajamos con recibo por honorarios. El monto final depende del alcance y lo acordamos por escrito después del diagnóstico. Los costos de terceros (mensajes de WhatsApp, hosting o facturación electrónica) se pagan aparte. ¿Estás fuera del Perú? Te cotizamos en dólares.',
+      'Precios de lanzamiento en soles, sin IGV: trabajamos con recibo por honorarios. Los precios en dólares son el equivalente aproximado de los precios en soles, con un tipo de cambio referencial de S/ 3.50 por US$ 1. El monto final depende del alcance y lo acordamos por escrito después del diagnóstico. Los costos de terceros (mensajes de WhatsApp, hosting o facturación electrónica) se pagan aparte.',
     'services.view': 'Ver servicio',
     'service.forWhom': 'Ideal para',
     'service.faq': 'Preguntas frecuentes',
@@ -77,7 +77,7 @@ export const ui = {
     'process.payNote': 'Pagas en dos partes: la mitad para empezar y la otra mitad cuando el proyecto ya funciona.',
     'process.payBadge': 'Pago del 50 %',
 
-    'team.title': 'Quién está detrás',
+    'team.title': 'Quiénes están detrás',
     'team.lead':
       'Kuska Labs es un colectivo de ingenieros de sistemas del Perú. Trabajamos de forma remota para clientes de Perú, Latinoamérica, España y EE. UU., y cada proyecto tiene un responsable directo que te acompaña de principio a fin.',
     'team.empty': 'Muy pronto presentaremos a cada integrante del equipo.',
@@ -166,7 +166,7 @@ export const ui = {
     'services.monthly': '+ monthly fee',
     'services.perMonth': '/ month',
     'services.priceNote':
-      'Launch prices in US dollars. The final price depends on scope and is agreed in writing after the discovery call. Third-party costs (WhatsApp messaging fees, hosting) are billed separately.',
+      'Launch prices in US dollars are the approximate equivalent of the prices in soles, using a reference exchange rate of S/ 3.50 per US$ 1. The final price depends on scope and is agreed in writing after the discovery call. Third-party costs (WhatsApp messaging fees, hosting) are billed separately.',
     'services.view': 'View service',
     'service.forWhom': 'Ideal for',
     'service.faq': 'Frequently asked questions',
@@ -192,7 +192,7 @@ export const ui = {
     'process.payNote': 'You pay in two parts: half to get started and the other half once the project is working.',
     'process.payBadge': '50 % payment',
 
-    'team.title': "Who's behind it",
+    'team.title': "Who's on the team",
     'team.lead':
       'Kuska Labs is a collective of software engineers from Peru. We work remotely for clients in Peru, Latin America, Spain and the US, and every project has one accountable lead from start to finish.',
     'team.empty': 'We will introduce every team member very soon.',

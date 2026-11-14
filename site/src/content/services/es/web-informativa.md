@@ -5,7 +5,7 @@ group: web
 order: 1
 priceFrom:
   pen: 600
-  usd: 500
+  usd: 170
 billing: one-time
 ---
 

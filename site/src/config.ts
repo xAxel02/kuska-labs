@@ -15,7 +15,7 @@ export const WHATSAPP_NUMBER = '51960098421'; // +51 960 098 421
 // Correo del equipo (Gmail compartido)
 export const CONTACT_EMAIL = 'hola@kuskalabs.com'; // reenvía a kuskalabs.pe@gmail.com (Email Routing)
 
-// Precios referenciales "desde ..." (soles en español, dólares en inglés). false = ocultarlos.
+// Precios referenciales "desde ..." (soles en español y su equivalente aproximado en dólares en inglés). false = ocultarlos.
 export const SHOW_PRICES = true;
 
 /**

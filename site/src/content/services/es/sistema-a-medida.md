@@ -5,7 +5,7 @@ group: systems
 order: 3
 priceFrom:
   pen: 4500
-  usd: 2500
+  usd: 1300
 billing: one-time
 ---
 

@@ -5,7 +5,7 @@ group: ai
 order: 8
 priceFrom:
   pen: 500
-  usd: 400
+  usd: 140
 billing: one-time
 ---
 

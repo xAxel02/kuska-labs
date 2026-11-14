@@ -18,7 +18,7 @@ const services = defineCollection({
     order: z.number(),
     priceFrom: z.object({
       pen: z.number(), // Perú (S/)
-      usd: z.number(), // exterior (USD)
+      usd: z.number(), // equivalente aproximado en USD
     }),
     // one-time: pago único · plus-monthly: "+ mensualidad" · monthly: precio por mes
     billing: z.enum(['one-time', 'plus-monthly', 'monthly']).default('one-time'),

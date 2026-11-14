@@ -5,7 +5,7 @@ group: care
 order: 10
 priceFrom:
   pen: 200
-  usd: 100
+  usd: 60
 billing: monthly
 ---
 
