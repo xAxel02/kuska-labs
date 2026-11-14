@@ -23,9 +23,9 @@ from PIL import Image, ImageDraw, ImageFilter
 HERE = Path(__file__).resolve().parent
 OUT = HERE.parent.parent / "site" / "public" / "sequence"
 
-FRAMES = 72
+FRAMES = 120  # ~1 fotograma cada 15 px de scroll; el canvas interpola entre ellos
 W, H = 1600, 900            # lienzo de trabajo
-SIZES = {"desktop": (1280, 720, 68), "mobile": (640, 360, 62)}  # ancho, alto, calidad WebP
+SIZES = {"desktop": (1280, 720, 60), "mobile": (640, 360, 56)}  # ancho, alto, calidad WebP
 CELL = 16                   # tamaño del "píxel" de marca
 GOLD = [(242, 179, 61), (184, 134, 47)]  # Oro Inti y oro profundo (tejido)
 
@@ -177,11 +177,13 @@ def main():
     for f in range(FRAMES):
         t = f / (FRAMES - 1)
         # Fondo: pixelado por escalones -> oscurecido -> "después" nítido
+        # Pixelado en 12 escalones (antes 7): conserva el estilo de "píxel" pero sin saltos bruscos
+        steps = [1, 2, 3, 4, 6, 8, 10, 12, 14, 16, 20, 24]
         if t < 0.5:
-            blk = [1, 2, 4, 8, 12, 16, 24][min(6, int(stepped(t / 0.42, 6) * 6))]
+            blk = steps[min(11, int(min(1, t / 0.42) * 11.999))]
             mix = ease((t - 0.36) / 0.14)
         else:
-            blk = [24, 16, 12, 8, 4, 2, 1][min(6, int(stepped((t - 0.58) / 0.34, 6) * 6))] if t > 0.58 else 24
+            blk = steps[::-1][min(11, int(min(1, max(0, (t - 0.58) / 0.34)) * 11.999))] if t > 0.58 else 24
             mix = 1.0
         bg = Image.blend(mosaic(a, blk), mosaic(b, blk), mix)
         dim = 1 - 0.62 * (ease((t - 0.2) / 0.22) - ease((t - 0.6) / 0.25))

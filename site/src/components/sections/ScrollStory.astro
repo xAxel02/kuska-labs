@@ -1,8 +1,9 @@
 ---
 /**
  * "Del cuaderno al sistema": image sequence scrubbing.
- * 72 fotogramas (public/sequence/{desktop,mobile}/NNN.webp, generados con brand/sequence/build_sequence.py)
+ * 120 fotogramas (public/sequence/{desktop,mobile}/NNN.webp, generados con brand/sequence/build_sequence.py)
  * que se dibujan en un <canvas> según el scroll, con 3 títulos encima.
+ * - Entre fotograma y fotograma se hace un fundido, y el scroll se suaviza con inercia.
  * - Carga progresiva: empieza a bajar fotogramas cuando la sección está cerca (primero 1 de cada 4).
  * - Móvil o "ahorro de datos": versión de 640 px.
  * - Sin JavaScript o con movimiento reducido: "antes" y "después" estáticos, uno al lado del otro.
@@ -11,7 +12,7 @@ import { homePath } from '../../i18n/utils';
 import type { Lang } from '../../i18n/ui';
 
 const { lang } = Astro.props as { lang: Lang };
-const FRAMES = 72;
+const FRAMES = 120;
 const t = {
   es: {
     s1: 'Así se ve hoy tu negocio',
@@ -93,7 +94,11 @@ const frame = (size: string, i: number) => `/sequence/${size}/${String(i).padSta
     const caps = [...root.querySelectorAll<HTMLElement>('[data-cap]')];
     const bar = root.querySelector<HTMLElement>('.progress span')!;
     const cta = root.querySelector<HTMLAnchorElement>('.cap a')!;
-    let current = -1;
+    let shownF = -1;   // fotograma (con decimales) dibujado ahora
+    let target = 0;    // progreso real del scroll
+    let shown = 0;     // progreso suavizado (con inercia) que se dibuja
+    let running = false;
+    let last = 0;
     let started = false;
 
     const load = (i: number) =>
@@ -101,7 +106,7 @@ const frame = (size: string, i: number) => `/sequence/${size}/${String(i).padSta
         if (imgs[i]) return res();
         const im = new Image();
         im.decoding = 'async';
-        im.onload = () => { imgs[i] = im; res(); if (i === current || current < 0) draw(true); };
+        im.onload = () => { imgs[i] = im; res(); if (Math.abs(i - shownF) < 2 || shownF < 0) render(true); };
         im.onerror = () => res();
         im.src = src(i);
       });
@@ -127,8 +132,8 @@ const frame = (size: string, i: number) => `/sequence/${size}/${String(i).padSta
       const dpr = Math.min(devicePixelRatio || 1, 2);
       canvas.width = Math.round(canvas.clientWidth * dpr);
       canvas.height = Math.round(canvas.clientHeight * dpr);
-      current = -1;
-      draw(true);
+      ctx!.imageSmoothingQuality = 'high';
+      render(true);
     };
 
     const progress = () => {
@@ -136,19 +141,9 @@ const frame = (size: string, i: number) => `/sequence/${size}/${String(i).padSta
       return Math.min(1, Math.max(0, -r.top / (r.height - innerHeight)));
     };
 
-    function draw(force = false) {
-      const p = progress();
-      // Pausa al inicio (antes) y al final (después) para leer los títulos
-      const f = Math.round(Math.min(1, Math.max(0, (p - 0.1) / 0.72)) * (total - 1));
-      bar.style.transform = `scaleX(${p})`;
-      const step = p < 0.32 ? 0 : p < 0.74 ? 1 : 2;
-      caps.forEach((c, i) => c.classList.toggle('on', i === step));
-      cta.tabIndex = step === 2 ? 0 : -1;
-      if (f === current && !force) return;
-      const im = imgs[f] ?? nearest(f);
-      if (!im) return;
-      current = f;
+    const paint = (im: HTMLImageElement, alpha: number) => {
       const cw = canvas.width, ch = canvas.height;
+      ctx!.globalAlpha = alpha;
       if (cw / ch >= 1) {
         // Horizontal: "cover", llena el lienzo recortando lo que sobra
         const s = Math.max(cw / im.naturalWidth, ch / im.naturalHeight);
@@ -158,17 +153,45 @@ const frame = (size: string, i: number) => `/sequence/${size}/${String(i).padSta
         // Vertical (celular): banda arriba con casi todo el ancho de la escena; los títulos van debajo
         const s = cw / (im.naturalWidth * 0.82);
         const w = im.naturalWidth * s, h = im.naturalHeight * s;
-        ctx!.fillStyle = '#0B0B0F';
-        ctx!.fillRect(0, 0, cw, ch);
+        if (alpha === 1) { ctx!.fillStyle = '#0B0B0F'; ctx!.fillRect(0, 0, cw, ch); }
         ctx!.drawImage(im, (cw - w) / 2, ch * 0.13, w, h);
       }
+      ctx!.globalAlpha = 1;
+    };
+
+    function render(force = false) {
+      const p = shown;
+      bar.style.transform = `scaleX(${p})`;
+      const step = p < 0.32 ? 0 : p < 0.74 ? 1 : 2;
+      caps.forEach((c, i) => c.classList.toggle('on', i === step));
+      cta.tabIndex = step === 2 ? 0 : -1;
+      // Pausa al inicio (antes) y al final (después) para leer los títulos
+      const f = Math.min(1, Math.max(0, (p - 0.1) / 0.72)) * (total - 1);
+      if (!force && Math.abs(f - shownF) < 0.01) return;
+      const lo = Math.floor(f), hi = Math.min(total - 1, lo + 1), frac = f - lo;
+      const a = imgs[lo] ?? nearest(lo);
+      if (!a) return;
+      shownF = f;
+      paint(a, 1);
+      // Fundido entre el fotograma actual y el siguiente: el movimiento no "salta"
+      if (frac > 0.02 && imgs[lo] && imgs[hi]) paint(imgs[hi]!, frac);
     }
 
-    let ticking = false;
+    // Inercia: el progreso dibujado persigue al scroll real (independiente de los Hz de la pantalla)
+    const tick = (now: number) => {
+      const dt = Math.min(64, now - (last || now));
+      last = now;
+      const k = 1 - Math.pow(1 - 0.16, dt / 16.67);
+      shown += (target - shown) * k;
+      if (Math.abs(target - shown) < 0.0004) shown = target;
+      render();
+      if (shown !== target) requestAnimationFrame(tick);
+      else { running = false; last = 0; }
+    };
+
     const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => { ticking = false; draw(); });
+      target = progress();
+      if (!running) { running = true; requestAnimationFrame(tick); }
     };
 
     new IntersectionObserver(([e]) => {
@@ -176,6 +199,7 @@ const frame = (size: string, i: number) => `/sequence/${size}/${String(i).padSta
     }, { rootMargin: '150% 0px' }).observe(root);
     addEventListener('scroll', onScroll, { passive: true });
     // El lienzo toma su tamaño real cuando ya está visible (y al cambiar el tamaño de ventana)
+    shown = target = progress();
     new ResizeObserver(() => fit()).observe(canvas);
   });
 </script>
