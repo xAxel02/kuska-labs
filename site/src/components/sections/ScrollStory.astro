@@ -1,0 +1,218 @@
+---
+/**
+ * "Del cuaderno al sistema": image sequence scrubbing.
+ * 72 fotogramas (public/sequence/{desktop,mobile}/NNN.webp, generados con brand/sequence/build_sequence.py)
+ * que se dibujan en un <canvas> según el scroll, con 3 títulos encima.
+ * - Carga progresiva: empieza a bajar fotogramas cuando la sección está cerca (primero 1 de cada 4).
+ * - Móvil o "ahorro de datos": versión de 640 px.
+ * - Sin JavaScript o con movimiento reducido: "antes" y "después" estáticos, uno al lado del otro.
+ */
+import { homePath } from '../../i18n/utils';
+import type { Lang } from '../../i18n/ui';
+
+const { lang } = Astro.props as { lang: Lang };
+const FRAMES = 72;
+const t = {
+  es: {
+    s1: 'Así se ve hoy tu negocio',
+    s1b: 'Ventas en un cuaderno, recibos sueltos y 23 chats sin responder.',
+    s2: 'Lo ordenamos juntos',
+    s2b: 'Cada pieza de tu negocio encuentra su lugar.',
+    s3: 'Así se ve con Kuska Labs',
+    s3b: 'Ventas, stock y pedidos al día, y un asistente que responde por WhatsApp.',
+    cta: 'Agenda tu diagnóstico gratis',
+    before: 'Antes',
+    after: 'Después',
+    sr: 'Animación: el cuaderno de ventas, los recibos y el celular lleno de mensajes de una ferretería se convierten en una laptop con un panel de ventas y un celular con un asistente que registra pedidos.',
+  },
+  en: {
+    s1: 'This is your business today',
+    s1b: 'Sales in a notebook, loose receipts and 23 unanswered chats.',
+    s2: 'We sort it out together',
+    s2b: 'Every piece of your business finds its place.',
+    s3: 'This is your business with Kuska Labs',
+    s3b: 'Sales, stock and orders up to date, and an assistant answering on WhatsApp.',
+    cta: 'Book your free discovery call',
+    before: 'Before',
+    after: 'After',
+    sr: "Animation: a hardware store's sales notebook, loose receipts and a phone full of messages turn into a laptop with a sales dashboard and a phone with an assistant logging orders.",
+  },
+}[lang];
+const frame = (size: string, i: number) => `/sequence/${size}/${String(i).padStart(3, '0')}.webp`;
+---
+
+<section class="story" data-story data-frames={FRAMES} aria-label={t.s3}>
+  <p class="sr-only">{t.sr}</p>
+  <!-- Activa el modo animado antes de que el navegador lea las imágenes estáticas (así no las descarga) -->
+  <script is:inline>
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window)
+      document.currentScript.parentElement.classList.add('is-live');
+  </script>
+
+  <!-- Versión estática (sin JS o con movimiento reducido) -->
+  <div class="container static">
+    <figure>
+      <img src={frame('desktop', 0)} alt="" width="1280" height="720" loading="lazy" decoding="async" />
+      <figcaption><strong>{t.before}.</strong> {t.s1b}</figcaption>
+    </figure>
+    <figure>
+      <img src={frame('desktop', FRAMES - 1)} alt="" width="1280" height="720" loading="lazy" decoding="async" />
+      <figcaption><strong>{t.after}.</strong> {t.s3b}</figcaption>
+    </figure>
+  </div>
+
+  <!-- Versión animada -->
+  <div class="stage" aria-hidden="true">
+    <canvas></canvas>
+    <div class="captions container">
+      <div class="cap" data-cap="0"><h2>{t.s1}</h2><p>{t.s1b}</p></div>
+      <div class="cap" data-cap="1"><h2>{t.s2}</h2><p>{t.s2b}</p></div>
+      <div class="cap" data-cap="2">
+        <h2>{t.s3}</h2><p>{t.s3b}</p>
+        <a class="btn btn-primary" href={`${homePath(lang)}#contacto`} tabindex="-1" data-umami-event="cta-diagnosis" data-umami-event-location="story">{t.cta}</a>
+      </div>
+    </div>
+    <div class="progress"><span></span></div>
+  </div>
+</section>
+
+<script>
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll<HTMLElement>('[data-story]').forEach((root) => {
+    if (reduce || !('IntersectionObserver' in window)) return; // se queda la versión estática
+    const canvas = root.querySelector('canvas')!;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    root.classList.add('is-live');
+
+    const total = Number(root.dataset.frames);
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+    const size = innerWidth < 768 || conn?.saveData ? 'mobile' : 'desktop';
+    const src = (i: number) => `/sequence/${size}/${String(i).padStart(3, '0')}.webp`;
+    const imgs: (HTMLImageElement | null)[] = Array(total).fill(null);
+    const caps = [...root.querySelectorAll<HTMLElement>('[data-cap]')];
+    const bar = root.querySelector<HTMLElement>('.progress span')!;
+    const cta = root.querySelector<HTMLAnchorElement>('.cap a')!;
+    let current = -1;
+    let started = false;
+
+    const load = (i: number) =>
+      new Promise<void>((res) => {
+        if (imgs[i]) return res();
+        const im = new Image();
+        im.decoding = 'async';
+        im.onload = () => { imgs[i] = im; res(); if (i === current || current < 0) draw(true); };
+        im.onerror = () => res();
+        im.src = src(i);
+      });
+
+    // Primero el fotograma 0 y el último, luego 1 de cada 4, luego el resto
+    const loadAll = async () => {
+      await Promise.all([load(0), load(total - 1)]);
+      const order: number[] = [];
+      for (let i = 4; i < total - 1; i += 4) order.push(i);
+      for (let i = 1; i < total - 1; i++) if (i % 4) order.push(i);
+      for (let k = 0; k < order.length; k += 6) await Promise.all(order.slice(k, k + 6).map(load));
+    };
+
+    const nearest = (i: number) => {
+      for (let d = 0; d < total; d++) {
+        if (imgs[i - d]) return imgs[i - d];
+        if (imgs[i + d]) return imgs[i + d];
+      }
+      return null;
+    };
+
+    const fit = () => {
+      const dpr = Math.min(devicePixelRatio || 1, 2);
+      canvas.width = Math.round(canvas.clientWidth * dpr);
+      canvas.height = Math.round(canvas.clientHeight * dpr);
+      current = -1;
+      draw(true);
+    };
+
+    const progress = () => {
+      const r = root.getBoundingClientRect();
+      return Math.min(1, Math.max(0, -r.top / (r.height - innerHeight)));
+    };
+
+    function draw(force = false) {
+      const p = progress();
+      // Pausa al inicio (antes) y al final (después) para leer los títulos
+      const f = Math.round(Math.min(1, Math.max(0, (p - 0.1) / 0.72)) * (total - 1));
+      bar.style.transform = `scaleX(${p})`;
+      const step = p < 0.32 ? 0 : p < 0.74 ? 1 : 2;
+      caps.forEach((c, i) => c.classList.toggle('on', i === step));
+      cta.tabIndex = step === 2 ? 0 : -1;
+      if (f === current && !force) return;
+      const im = imgs[f] ?? nearest(f);
+      if (!im) return;
+      current = f;
+      const cw = canvas.width, ch = canvas.height;
+      if (cw / ch >= 1) {
+        // Horizontal: "cover", llena el lienzo recortando lo que sobra
+        const s = Math.max(cw / im.naturalWidth, ch / im.naturalHeight);
+        const w = im.naturalWidth * s, h = im.naturalHeight * s;
+        ctx!.drawImage(im, (cw - w) / 2, (ch - h) / 2, w, h);
+      } else {
+        // Vertical (celular): banda arriba con casi todo el ancho de la escena; los títulos van debajo
+        const s = cw / (im.naturalWidth * 0.82);
+        const w = im.naturalWidth * s, h = im.naturalHeight * s;
+        ctx!.fillStyle = '#0B0B0F';
+        ctx!.fillRect(0, 0, cw, ch);
+        ctx!.drawImage(im, (cw - w) / 2, ch * 0.13, w, h);
+      }
+    }
+
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => { ticking = false; draw(); });
+    };
+
+    new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !started) { started = true; loadAll(); }
+    }, { rootMargin: '150% 0px' }).observe(root);
+    addEventListener('scroll', onScroll, { passive: true });
+    // El lienzo toma su tamaño real cuando ya está visible (y al cambiar el tamaño de ventana)
+    new ResizeObserver(() => fit()).observe(canvas);
+  });
+</script>
+
+<style>
+  .story { position: relative; }
+
+  /* Estática */
+  .static { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding-block: clamp(3rem, 2rem + 4vw, 6rem); }
+  .static figure { margin: 0; }
+  .static img { width: 100%; height: auto; border-radius: var(--radius-lg); border: 1px solid var(--color-border); }
+  .static figcaption { margin-top: 0.75rem; font-size: var(--text-small); color: var(--color-text-2); }
+  .static strong { color: var(--color-text); }
+  .stage { display: none; }
+
+  /* Animada */
+  .story.is-live { height: 340vh; }
+  .story.is-live .static { display: none; }
+  .story.is-live .stage { display: block; position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--color-bg); }
+  canvas { width: 100%; height: 100%; display: block; }
+  /* Degradado inferior para que los títulos se lean sobre la foto */
+  .stage::after {
+    content: ''; position: absolute; inset: 45% 0 0; pointer-events: none;
+    background: linear-gradient(to top, rgba(11, 11, 15, 0.95) 0%, rgba(11, 11, 15, 0.8) 40%, rgba(11, 11, 15, 0) 100%);
+  }
+  .captions { position: absolute; inset: auto 0 0; z-index: 1; padding-bottom: clamp(2rem, 1.5rem + 3vw, 4rem); }
+  .cap { position: absolute; left: 20px; right: 20px; bottom: clamp(2rem, 1.5rem + 3vw, 4rem); max-width: 40rem; opacity: 0; transform: translateY(12px); transition: opacity 0.4s, transform 0.4s; pointer-events: none; }
+  .cap.on { opacity: 1; transform: none; pointer-events: auto; }
+  .cap h2 { color: var(--color-text); }
+  .cap p { margin-top: 0.6rem; font-size: var(--text-lead); color: var(--color-text-2); }
+  .cap .btn { margin-top: 1.25rem; }
+  .progress { position: absolute; z-index: 1; left: 0; right: 0; top: 72px; height: 3px; background: rgba(255, 255, 255, 0.08); }
+  .progress span { display: block; height: 100%; background: var(--color-accent); transform-origin: left; transform: scaleX(0); }
+
+  @media (min-width: 1160px) { .cap { left: calc((100vw - 1160px) / 2 + 20px); } }
+  @media (max-width: 760px) {
+    .static { grid-template-columns: 1fr; }
+    .story.is-live { height: 300vh; }
+  }
+</style>

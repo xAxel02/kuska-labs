@@ -3,7 +3,7 @@
 import Layout from '../layouts/Layout.astro';
 import Hero from './sections/Hero.astro';
 import Services from './sections/Services.astro';
-import BeforeAfter from './sections/BeforeAfter.astro';
+import ScrollStory from './sections/ScrollStory.astro';
 import Portfolio from './sections/Portfolio.astro';
 import Team from './sections/Team.astro';
 import Process from './sections/Process.astro';
@@ -15,8 +15,8 @@ const { lang } = Astro.props as { lang: Lang };
 
 <Layout lang={lang}>
   <Hero lang={lang} />
+  <ScrollStory lang={lang} />
   <Services lang={lang} />
-  <BeforeAfter lang={lang} />
   <Portfolio lang={lang} />
   <Team lang={lang} />
   <Process lang={lang} />
