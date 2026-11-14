@@ -6,7 +6,7 @@
  */
 import { getCollection, render } from 'astro:content';
 import { SHOW_PRICES } from '../../config';
-import { useTranslations, formatPrice } from '../../i18n/utils';
+import { useTranslations, formatPrice, servicePath, slugOf } from '../../i18n/utils';
 import type { Lang, UIKey } from '../../i18n/ui';
 
 const { lang } = Astro.props as { lang: Lang };
@@ -93,12 +93,13 @@ const scene = {
                 <p>{g.text}</p>
               </div>
               <ul class="rows" role="list">
-                {g.items.map(({ data, Content }) => (
+                {g.items.map(({ id, data, Content }) => (
                   <li class="row">
                     <div class="row-main">
-                      <h4>{data.title}</h4>
+                      <h4><a href={servicePath(lang, slugOf(id))}>{data.title}</a></h4>
                       <p class="summary">{data.summary}</p>
                       <div class="body"><Content /></div>
+                      <a class="service-link" href={servicePath(lang, slugOf(id))}>{t('services.view')} →</a>
                     </div>
                     {SHOW_PRICES && (
                       <p class="price">
@@ -220,8 +221,11 @@ const scene = {
   .rows { list-style: none; margin: 0; padding: 0; }
   .row { display: flex; justify-content: space-between; gap: 1.5rem; padding-block: 1.25rem; border-bottom: 1px solid var(--color-border); }
   .row h4 { font-family: var(--font-display); font-weight: var(--weight-medium); font-size: 1.125rem; color: var(--color-text); }
+  .row h4 a { color: inherit; text-decoration: none; }
+  .row h4 a:hover { color: var(--color-accent); }
   .summary { margin-top: 0.25rem; color: var(--color-text-2); }
   .body { margin-top: 0.25rem; font-size: var(--text-small); color: var(--color-text-3); }
+  .service-link { display: inline-block; margin-top: 0.65rem; font-size: var(--text-small); }
   .price { flex: none; text-align: right; display: flex; flex-direction: column; align-items: flex-end; font-variant-numeric: tabular-nums; }
   .price .from, .price .unit { font-size: 0.75rem; color: var(--color-text-3); }
   .price strong { font-family: var(--font-display); font-weight: var(--weight-bold); font-size: 1.25rem; color: var(--color-accent); line-height: 1.2; }

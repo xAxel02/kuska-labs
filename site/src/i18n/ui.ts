@@ -9,9 +9,9 @@ export const defaultLang: Lang = 'es';
 
 export const ui = {
   es: {
-    'meta.title': 'Kuska Labs — Software hecho en equipo, desde Perú para el mundo',
+    'meta.title': 'Software y páginas web en Trujillo | Kuska Labs',
     'meta.description':
-      'Desarrollamos webs, sistemas a medida, ERP, CRM, chatbots de WhatsApp y apps para negocios de Perú y el extranjero. Precios claros y diagnóstico gratis de 30 minutos.',
+      'Desarrollo de software en Trujillo, La Libertad, Perú: sistemas a medida y páginas web con precios accesibles. Agenda tu diagnóstico gratis.',
 
     'nav.services': 'Servicios',
     'nav.portfolio': 'Portafolio',
@@ -34,6 +34,8 @@ export const ui = {
     'hero.lead':
       '¿Tu negocio todavía depende de Excel, cuadernos o mensajes de WhatsApp? Creamos la web, el sistema o el chatbot que lo ordena. Empezamos con un diagnóstico gratis de 30 minutos y una propuesta clara, sin compromiso.',
     'hero.note': 'Kuska significa «juntos» en quechua.',
+    'hero.location': 'Trabajamos desde Trujillo, La Libertad, para todo el Perú y clientes del extranjero.',
+    'hero.launchPrices': 'Tenemos precios accesibles de lanzamiento, con alcance y costo acordados por escrito.',
 
     'services.title': 'Lo que construimos',
     'services.lead': 'Desde tu primera web hasta el sistema que ordena todo tu negocio, con precios claros desde el inicio.',
@@ -50,6 +52,14 @@ export const ui = {
     'services.perMonth': '/ mes',
     'services.priceNote':
       'Precios de lanzamiento en soles, sin IGV: trabajamos con recibo por honorarios. El monto final depende del alcance y lo acordamos por escrito después del diagnóstico. Los costos de terceros (mensajes de WhatsApp, hosting o facturación electrónica) se pagan aparte. ¿Estás fuera del Perú? Te cotizamos en dólares.',
+    'services.view': 'Ver servicio',
+    'service.forWhom': 'Ideal para',
+    'service.faq': 'Preguntas frecuentes',
+    'service.related': 'Servicios relacionados',
+    'service.back': 'Ver todos los servicios',
+    'service.price': 'Precio referencial',
+    'service.ctaTitle': 'Cuéntanos qué necesitas',
+    'service.ctaText': 'Agenda tu diagnóstico gratis o escríbenos por WhatsApp. Revisamos tu caso y te damos una propuesta clara.',
 
     'portfolio.title': 'Trabajo real y demos',
     'portfolio.lead': 'Un proyecto publicado para un cliente y demos propias, para que veas cómo trabajamos antes de empezar el tuyo.',
@@ -106,15 +116,17 @@ export const ui = {
     'footer.rights': 'Hecho con cariño en Perú.',
     'footer.copyright': 'Kuska Labs',
     'footer.privacy': 'Privacidad',
+    'footer.location': 'Trujillo, La Libertad — Perú',
+    'footer.services': 'Servicios',
 
     'notFound.title': 'Página no encontrada',
     'notFound.text': 'La página que buscas no existe o cambió de lugar.',
     'notFound.back': 'Volver al inicio',
   },
   en: {
-    'meta.title': 'Kuska Labs — Software built together, from Peru to the world',
+    'meta.title': 'Web & software development in Trujillo | Kuska Labs',
     'meta.description':
-      'We build websites, custom systems, ERP, CRM, WhatsApp chatbots and mobile apps for businesses in Latin America, Spain and the US. Clear pricing and a free 30-minute discovery call.',
+      'Web and software development in Trujillo, Peru: custom systems and websites with accessible launch pricing. Book your free discovery call today.',
 
     'nav.services': 'Services',
     'nav.portfolio': 'Portfolio',
@@ -137,6 +149,8 @@ export const ui = {
     'hero.lead':
       'A remote team of Peruvian software engineers building websites, custom systems, ERP and WhatsApp chatbots for growing businesses, plus white-label development for agencies. It starts with a free 30-minute discovery call and a clear proposal.',
     'hero.note': 'Kuska means “together” in Quechua.',
+    'hero.location': 'Based in Trujillo, La Libertad, serving all of Peru remotely and clients abroad.',
+    'hero.launchPrices': 'We offer accessible launch pricing, with scope and cost agreed in writing.',
 
     'services.title': 'What we build',
     'services.lead': 'From your first website to the system that runs your whole business, with clear pricing from day one.',
@@ -153,6 +167,14 @@ export const ui = {
     'services.perMonth': '/ month',
     'services.priceNote':
       'Launch prices in US dollars. The final price depends on scope and is agreed in writing after the discovery call. Third-party costs (WhatsApp messaging fees, hosting) are billed separately.',
+    'services.view': 'View service',
+    'service.forWhom': 'Ideal for',
+    'service.faq': 'Frequently asked questions',
+    'service.related': 'Related services',
+    'service.back': 'View all services',
+    'service.price': 'Starting price',
+    'service.ctaTitle': 'Tell us what you need',
+    'service.ctaText': 'Book your free discovery call or message us on WhatsApp. We will review your needs and send a clear proposal.',
 
     'portfolio.title': 'Real work and demos',
     'portfolio.lead': 'A live client project and our own demos, so you can see how we work before we start yours.',
@@ -208,6 +230,8 @@ export const ui = {
     'footer.rights': 'Made with care in Peru.',
     'footer.copyright': 'Kuska Labs',
     'footer.privacy': 'Privacy',
+    'footer.location': 'Trujillo, La Libertad — Peru',
+    'footer.services': 'Services',
 
     'notFound.title': 'Page not found',
     'notFound.text': 'The page you are looking for does not exist or has moved.',

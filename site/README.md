@@ -36,6 +36,7 @@ npm run dev        # http://localhost:4321
 | Textos de la interfaz (menú, títulos, botones, formulario) | `src/i18n/ui.ts` (bloques `es` y `en`) |
 | Pasos del proceso | `src/i18n/ui.ts` → `processSteps` |
 | Un servicio | `src/content/services/es/<servicio>.md` **y** `src/content/services/en/<servicio>.md` |
+| Página de detalle de servicios (ES/EN) | `src/pages/servicios/[slug].astro`, `src/pages/en/services/[slug].astro` y `src/components/ServicePage.astro` |
 | Un proyecto del portafolio | `src/content/projects/es|en/<proyecto>.md` |
 | Integrantes del equipo | `src/content/team/<nombre>.md` (copiar `_ejemplo.md`) |
 | WhatsApp, correo, dominio, mostrar precios | `src/config.ts` |
@@ -45,6 +46,7 @@ npm run dev        # http://localhost:4321
 | Política de privacidad | `src/components/Privacy.astro` |
 | Colores, tipografía y tamaños | `src/styles/tokens.css` (fuente de verdad de la marca) |
 | Logo e íconos | `public/brand/` y `public/*.png|ico|svg` (generados desde `../brand/logo`) |
+| SEO del `<head>`, metadatos geográficos y JSON-LD base | `src/layouts/Layout.astro` (el JSON-LD de cada servicio se arma en `src/components/ServicePage.astro`) |
 
 **Reglas de contenido:**
 - Cada servicio y cada proyecto existe en los dos idiomas, con **el mismo nombre de archivo** en `es/` y `en/`.

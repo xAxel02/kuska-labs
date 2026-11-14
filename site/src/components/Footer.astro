@@ -1,11 +1,14 @@
 ---
 import { CONTACT_EMAIL, whatsappLink } from '../config';
-import { useTranslations, privacyPath } from '../i18n/utils';
+import { getCollection } from 'astro:content';
+import { useTranslations, privacyPath, servicePath, slugOf } from '../i18n/utils';
 import type { Lang } from '../i18n/ui';
 
 const { lang } = Astro.props as { lang: Lang };
 const t = useTranslations(lang);
 const year = new Date().getFullYear();
+const services = (await getCollection('services', ({ id }) => id.startsWith(`${lang}/`)))
+  .sort((a, b) => a.data.order - b.data.order);
 ---
 
 <footer class="site-footer">
@@ -13,7 +16,14 @@ const year = new Date().getFullYear();
     <div>
       <img src="/brand/kuska-logo.svg" alt="Kuska Labs" width="196" height="52" class="logo" loading="lazy" />
       <p class="tagline">{t('footer.tagline')}</p>
+      <p class="location">{t('footer.location')}</p>
     </div>
+    <nav class="services" aria-label={t('footer.services')}>
+      <strong>{t('footer.services')}</strong>
+      <div class="service-links">
+        {services.map((service) => <a href={servicePath(lang, slugOf(service.id))}>{service.data.title}</a>)}
+      </div>
+    </nav>
     <div class="contact">
       <a href={whatsappLink(t('whatsapp.message'))} target="_blank" rel="noopener" data-umami-event="whatsapp" data-umami-event-location="footer">{t('cta.whatsappShort')}</a>
       <a href={`mailto:${CONTACT_EMAIL}`} data-umami-event="email" data-umami-event-location="footer">{CONTACT_EMAIL}</a>
@@ -32,6 +42,10 @@ const year = new Date().getFullYear();
   .grid { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2rem; }
   .logo { height: 32px; width: auto; }
   .tagline { margin-top: 0.75rem; font-size: var(--text-small); }
+  .location { margin-top: 0.35rem; color: var(--color-text-3); font-size: var(--text-small); }
+  .services { max-width: 34rem; }
+  .services strong { display: block; margin-bottom: 0.5rem; color: var(--color-text); font-family: var(--font-display); }
+  .service-links { display: flex; flex-wrap: wrap; gap: 0.35rem 1rem; font-size: var(--text-small); }
   .contact { display: flex; flex-direction: column; gap: 0.5rem; font-size: var(--text-small); }
   .legal {
     margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border);

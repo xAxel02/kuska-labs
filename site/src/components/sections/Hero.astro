@@ -15,7 +15,9 @@ const t = useTranslations(lang);
     <div class="inner">
       <div class="copy">
         <h1 id="hero-title">{t('hero.title')}</h1>
+        <p class="location">{t('hero.location')}</p>
         <p class="lead">{t('hero.lead')}</p>
+        <p class="launch-prices">{t('hero.launchPrices')}</p>
         <div class="ctas">
           <a class="btn btn-primary" href={`${homePath(lang)}#contacto`} data-umami-event="cta-diagnosis" data-umami-event-location="hero">{t('cta.diagnosis')}</a>
           <a class="btn btn-secondary" href={whatsappLink(t('whatsapp.message'))} target="_blank" rel="noopener" data-umami-event="whatsapp" data-umami-event-location="hero">
@@ -41,6 +43,8 @@ const t = useTranslations(lang);
   .inner { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: clamp(2rem, 1rem + 4vw, 5rem); }
   h1 { max-width: 15ch; view-transition-name: hero-title; }
   .lead { margin-top: 1.5rem; max-width: 58ch; font-size: var(--text-lead); }
+  .location { margin-top: 1rem; max-width: 58ch; color: var(--color-accent); font-weight: var(--weight-medium); }
+  .launch-prices { margin-top: 0.75rem; max-width: 58ch; color: var(--color-text-3); font-size: var(--text-small); }
   .ctas { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2.25rem; }
   .note { margin-top: 1.5rem; font-size: var(--text-small); color: var(--color-text-3); }
   .mark { width: clamp(200px, 24vw, 340px); view-transition-name: hero-chakana; }

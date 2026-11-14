@@ -17,6 +17,10 @@ export const homePath = (lang: Lang) => (lang === defaultLang ? '/' : `/${lang}/
 /** Página de privacidad de cada idioma. */
 export const privacyPath = (lang: Lang) => (lang === 'es' ? '/privacidad/' : '/en/privacy/');
 
+/** Página de detalle de un servicio. */
+export const servicePath = (lang: Lang, slug: string) =>
+  lang === 'es' ? `/servicios/${slug}/` : `/en/services/${slug}/`;
+
 /** id de una entrada de contenido sin el prefijo de idioma: "es/web-informativa" -> "web-informativa" */
 export const slugOf = (id: string) => id.split('/').slice(1).join('/');
 

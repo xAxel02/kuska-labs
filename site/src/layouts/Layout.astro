@@ -3,7 +3,7 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import WhatsAppFloat from '../components/WhatsAppFloat.astro';
-import { BRAND, UMAMI_WEBSITE_ID, UMAMI_SCRIPT_URL, UMAMI_DOMAINS, GOOGLE_SITE_VERIFICATION } from '../config';
+import { BRAND, SITE_URL, CONTACT_EMAIL, UMAMI_WEBSITE_ID, UMAMI_SCRIPT_URL, UMAMI_DOMAINS, GOOGLE_SITE_VERIFICATION } from '../config';
 import { useTranslations } from '../i18n/utils';
 import type { Lang } from '../i18n/ui';
 
@@ -14,9 +14,10 @@ interface Props {
   noindex?: boolean;
   /** Rutas equivalentes si el slug cambia entre idiomas (ej. /privacidad/ y /en/privacy/) */
   alternates?: { es: string; en: string };
+  structuredData?: Record<string, unknown>[];
 }
 
-const { lang, title, description, noindex = false, alternates } = Astro.props;
+const { lang, title, description, noindex = false, alternates, structuredData = [] } = Astro.props;
 const t = useTranslations(lang);
 const pageTitle = title ?? t('meta.title');
 const pageDescription = description ?? t('meta.description');
@@ -31,6 +32,39 @@ const altEs = new URL(esPath, site).href;
 const altEn = new URL(enPath, site).href;
 // Imagen para redes 1200x630 por idioma (se regenera con brand/og/render_og.py)
 const ogImage = new URL(`/brand/og-${lang}.png`, site).href;
+const areaServed = [
+  { '@type': 'City', name: 'Trujillo' },
+  { '@type': 'State', name: 'La Libertad' },
+  { '@type': 'Country', name: 'Peru' },
+];
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': ['Organization', 'ProfessionalService'],
+      '@id': `${SITE_URL}/#org`,
+      name: BRAND,
+      url: SITE_URL,
+      logo: new URL('/brand/kuska-avatar.png', site).href,
+      slogan: 'Software hecho en equipo, desde Perú para el mundo.',
+      email: CONTACT_EMAIL,
+      telephone: '+51 960 098 421',
+      address: { '@type': 'PostalAddress', addressLocality: 'Trujillo', addressRegion: 'La Libertad', addressCountry: 'PE' },
+      areaServed,
+      knowsLanguage: ['es', 'en'],
+      priceRange: 'S/ 200 – S/ 8,000',
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: BRAND,
+      inLanguage: ['es', 'en'],
+      publisher: { '@id': `${SITE_URL}/#org` },
+    },
+    ...structuredData,
+  ],
+};
 ---
 
 <!doctype html>
@@ -42,10 +76,12 @@ const ogImage = new URL(`/brand/og-${lang}.png`, site).href;
     <script is:inline>document.documentElement.classList.add('js');</script>
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
+    <meta name="geo.region" content="PE-LAL" />
+    <meta name="geo.placename" content="Trujillo" />
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="es" href={altEs} />
-    <link rel="alternate" hreflang="en" href={altEn} />
+    <link rel="alternate" hreflang="es-PE" href={altEs} />
+    <link rel="alternate" hreflang="en-US" href={altEn} />
     <link rel="alternate" hreflang="x-default" href={altEs} />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
@@ -73,6 +109,7 @@ const ogImage = new URL(`/brand/og-${lang}.png`, site).href;
     <meta name="twitter:image" content={ogImage} />
 
     <meta name="generator" content={Astro.generator} />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     {GOOGLE_SITE_VERIFICATION && <meta name="google-site-verification" content={GOOGLE_SITE_VERIFICATION} />}
 
     <!-- Analítica sin cookies (Umami): solo si hay ID configurado. Eventos: atributos data-umami-event -->
