@@ -160,8 +160,8 @@ const stock = {
 </section>
 
 <script>
+  import { prefersReducedMotion, onReducedMotionChange } from '../../scripts/motion';
   // Conversación del chatbot: se "escribe" una vez al entrar en pantalla; el botón la repite.
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.querySelectorAll<HTMLElement>('[data-chat]').forEach((chat) => {
     const msgs = [...chat.querySelectorAll<HTMLElement>('.msg')];
     const typing = chat.querySelector<HTMLElement>('.typing')!;
@@ -172,7 +172,7 @@ const stock = {
     const play = () => {
       timers.forEach(clearTimeout);
       timers = [];
-      if (reduce) { showAll(); return; }
+      if (prefersReducedMotion()) { showAll(); return; }
       msgs.forEach((m) => m.classList.remove('is-shown'));
       let t = 300;
       msgs.forEach((m) => {
@@ -186,8 +186,11 @@ const stock = {
       });
     };
 
+    onReducedMotionChange((reduced) => {
+      if (reduced) { timers.forEach(clearTimeout); timers = []; showAll(); }
+    });
     replay?.addEventListener('click', play);
-    if (reduce || !('IntersectionObserver' in window)) { showAll(); return; }
+    if (prefersReducedMotion() || !('IntersectionObserver' in window)) { showAll(); return; }
     const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io.disconnect(); play(); } }, { threshold: 0.5 });
     io.observe(chat);
   });
@@ -204,9 +207,9 @@ const stock = {
   .chrome i { width: 10px; height: 10px; border-radius: 50%; background: var(--color-border-strong); }
   .address {
     flex: 1; margin-left: 10px; padding: 3px 10px; border-radius: 999px; background: var(--color-bg);
-    font-size: 0.75rem; color: var(--color-text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-size: var(--text-label); color: var(--color-text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .viewport { aspect-ratio: 16 / 10; overflow: hidden; background: #fff; }
+  .viewport { aspect-ratio: 16 / 10; overflow: hidden; background: var(--color-viewport-bg); }
   .viewport :global(picture), .viewport :global(img) { display: block; width: 100%; height: 100%; }
   .viewport :global(img) { object-fit: cover; object-position: 50% 0%; }
 
@@ -228,12 +231,12 @@ const stock = {
   .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem; }
 
   .kind {
-    align-self: flex-start; font-size: 0.75rem; font-weight: var(--weight-medium);
+    align-self: flex-start; font-size: var(--text-label); font-weight: var(--weight-medium);
     padding: 2px 10px; border-radius: 999px; border: 1px solid var(--color-border-strong); color: var(--color-text-2);
   }
   .kind.client { color: var(--color-on-accent); background: var(--color-accent); border-color: var(--color-accent); }
   .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
-  .tags li { font-size: 0.75rem; color: var(--color-text-2); padding: 2px 8px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); }
+  .tags li { font-size: var(--text-label); color: var(--color-text-2); padding: 2px 8px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); }
 
   /* ---------- Demos ---------- */
   .demos { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
@@ -247,13 +250,13 @@ const stock = {
 
   /* agenda */
   .cal { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
-  .dh { text-align: center; font-size: 0.7rem; color: var(--color-text-3); }
+  .dh { text-align: center; font-size: var(--text-label); color: var(--color-text-3); }
   .slot { height: 18px; border-radius: 3px; background: var(--color-surface-2); }
   .slot.busy { background: var(--color-border-strong); }
   .slot.mine { background: var(--color-accent); }
 
   /* inventario */
-  .stock { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 0.75rem; }
+  .stock { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: var(--text-label); }
   .stock li { display: grid; grid-template-columns: 1fr 1.2fr 2ch; align-items: center; gap: 8px; color: var(--color-text-2); }
   .stock .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .stock .bar { height: 8px; border-radius: 2px; background: var(--color-surface-2); overflow: hidden; }
@@ -264,16 +267,16 @@ const stock = {
 
   /* chatbot */
   .chat { display: flex; flex-direction: column; gap: 6px; min-height: 100%; justify-content: flex-end; }
-  .msg { max-width: 85%; padding: 0.4rem 0.65rem; border-radius: 10px; font-size: 0.72rem; line-height: 1.35; }
+  .msg { max-width: 85%; padding: 0.4rem 0.65rem; border-radius: 10px; font-size: var(--text-label); line-height: 1.35; }
   .msg.in { align-self: flex-start; background: var(--color-surface-2); color: var(--color-text); border-bottom-left-radius: 3px; }
   .msg.out { align-self: flex-end; background: var(--color-accent); color: var(--color-on-accent); border-bottom-right-radius: 3px; }
   :global(.js) .chat .msg:not(.is-shown) { display: none; }
-  .msg.is-shown { animation: px-reveal 0.35s steps(4, end) both; }
+  .msg.is-shown { animation: px-reveal var(--dur-base) steps(4, end) both; }
   .typing { display: none; align-self: flex-end; gap: 3px; padding: 0.45rem 0.6rem; border-radius: 10px; background: var(--color-accent-soft); }
   .typing.is-on { display: inline-flex; }
   .typing i { width: 5px; height: 5px; border-radius: 1px; background: var(--color-accent); animation: blink 0.9s steps(2, end) infinite; }
-  .typing i:nth-child(2) { animation-delay: 0.15s; }
-  .typing i:nth-child(3) { animation-delay: 0.3s; }
+  .typing i:nth-child(2) { animation-delay: var(--dur-fast); }
+  .typing i:nth-child(3) { animation-delay: var(--dur-base); }
   @keyframes blink { 50% { opacity: 0.25; } }
 
   @media (max-width: 960px) { .demos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -281,5 +284,7 @@ const stock = {
   @media (max-width: 600px) { .demos { grid-template-columns: 1fr; } }
   @media (prefers-reduced-motion: reduce) {
     .msg.is-shown, .typing i { animation: none; }
+    :global(.js) .chat .msg:not(.is-shown) { display: block; }
+    .typing.is-on { display: none; }
   }
 </style>

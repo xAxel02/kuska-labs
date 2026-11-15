@@ -129,28 +129,11 @@ const jsonLd = {
     <WhatsAppFloat lang={lang} />
 
     <script>
-      // Revelado en escalones de píxel (ver global.css): marca cada bloque al entrar en pantalla.
-      const targets = document.querySelectorAll<HTMLElement>('.section-head, main .card, .flow-wrap, [data-reveal]');
-      // Escalonado entre hermanos de una misma cuadrícula (máx. 4 pasos)
-      targets.forEach((el) => {
-        const siblings = el.parentElement ? [...el.parentElement.children] : [];
-        el.style.setProperty('--reveal-i', String(Math.min(siblings.indexOf(el) % 3, 3)));
+      import { observeReveal } from '../scripts/motion';
+      document.querySelectorAll<HTMLElement>('.section-head, main .card, .flow-wrap').forEach((el) => {
+        if (!el.hasAttribute('data-reveal')) el.dataset.reveal = 'pixel';
       });
-      if (!('IntersectionObserver' in window)) {
-        targets.forEach((el) => el.classList.add('is-in'));
-      } else {
-        const io = new IntersectionObserver(
-          (entries) =>
-            entries.forEach((e) => {
-              if (e.isIntersecting) {
-                e.target.classList.add('is-in');
-                io.unobserve(e.target);
-              }
-            }),
-          { rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
-        );
-        targets.forEach((el) => io.observe(el));
-      }
+      if (!CSS.supports('animation-timeline: view()')) observeReveal('[data-reveal]');
     </script>
   </body>
 </html>

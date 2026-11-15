@@ -132,6 +132,7 @@ const first = scenarios[0];
 </figure>
 
 <script>
+  import { prefersReducedMotion, onReducedMotionChange } from '../scripts/motion';
   type Scenario = { id: string; label: string; steps: string[]; log: string[] };
 
   document.querySelectorAll<HTMLElement>('[data-flow]').forEach((root) => {
@@ -140,7 +141,7 @@ const first = scenarios[0];
     const steps = [...root.querySelectorAll<HTMLElement>('.step')];
     const lines = [...root.querySelectorAll<HTMLElement>('.line .txt')];
     const chips = [...root.querySelectorAll<HTMLButtonElement>('.chip')];
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+    const typingTimers = new Set<number>();
 
     let current = data[0];
     let active = 0;
@@ -152,24 +153,27 @@ const first = scenarios[0];
 
     let gen = 0; // invalida tipeos en curso al cambiar de rubro
     const typeLine = (el: HTMLElement, text: string) => {
-      if (reduce.matches) { el.textContent = text; return; }
+      if (prefersReducedMotion() || paused || !visible) { el.textContent = text; return; }
       el.textContent = '';
       let i = 0;
       const g = gen;
       const tick = () => {
         if (g !== gen) return;
         el.textContent = text.slice(0, ++i);
-        if (i < text.length) setTimeout(tick, 18);
+        if (i < text.length) {
+          const id = window.setTimeout(() => { typingTimers.delete(id); tick(); }, 18);
+          typingTimers.add(id);
+        }
       };
       tick();
     };
 
     const render = () => {
-      nodes.forEach((n, i) => n.classList.toggle('is-on', reduce.matches || i <= active));
-      nodes.forEach((n, i) => n.classList.toggle('is-current', !reduce.matches && i === active));
+      nodes.forEach((n, i) => n.classList.toggle('is-on', prefersReducedMotion() || i <= active));
+      nodes.forEach((n, i) => n.classList.toggle('is-current', !prefersReducedMotion() && i === active));
       root.style.setProperty('--progress', String(active / (nodes.length - 1)));
       // Con movimiento reducido el registro ya está completo (lo llena setScenario)
-      if (reduce.matches) return;
+      if (prefersReducedMotion()) return;
       // La línea del registro que corresponde al nodo actual se "escribe"
       const lineIdx = Math.min(active - 1, lines.length - 1);
       if (active === 0) lines.forEach((l) => (l.textContent = ''));
@@ -184,18 +188,23 @@ const first = scenarios[0];
     };
 
     const start = () => {
-      stop();
-      if (reduce.matches || !visible || paused) return;
+      window.clearInterval(timer);
+      if (prefersReducedMotion() || !visible || paused) { stop(); return; }
       timer = window.setInterval(step, 1400);
     };
-    function stop() { window.clearInterval(timer); }
+    function stop() {
+      window.clearInterval(timer);
+      gen++;
+      typingTimers.forEach(clearTimeout);
+      typingTimers.clear();
+    }
 
     const setScenario = (id: string) => {
-      gen++;
+      stop();
       current = data.find((s) => s.id === id) ?? data[0];
       chips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.id === current.id)));
       steps.forEach((s, i) => (s.textContent = current.steps[i]));
-      if (reduce.matches) {
+      if (prefersReducedMotion()) {
         lines.forEach((l, i) => (l.textContent = current.log[i]));
       } else {
         lines.forEach((l) => (l.textContent = ''));
@@ -219,7 +228,7 @@ const first = scenarios[0];
     } else {
       visible = true; // sin API: se considera visible siempre
     }
-    reduce.addEventListener('change', () => setScenario(current.id));
+    onReducedMotionChange(() => setScenario(current.id));
 
     setScenario(current.id);
   });
@@ -234,7 +243,7 @@ const first = scenarios[0];
   .bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 1.25rem; }
   .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
   .toggle {
-    display: inline-flex; align-items: center; gap: 0.375rem; min-height: 40px; padding: 0.5rem 0.75rem; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 0.375rem; min-height: 44px; min-width: 44px; padding: 0.5rem 0.75rem; cursor: pointer;
     font-size: var(--text-small); color: var(--color-text-3); background: transparent; border: 0; border-radius: var(--radius-md);
   }
   .toggle:hover { color: var(--color-text); }
@@ -242,10 +251,10 @@ const first = scenarios[0];
   .toggle .i-play, .toggle[aria-pressed='true'] .i-pause { display: none; }
   .toggle[aria-pressed='true'] .i-play { display: block; }
   .chip {
-    min-height: 40px; padding: 0.5rem 0.875rem; cursor: pointer;
+    min-height: 44px; min-width: 44px; padding: 0.5rem 0.875rem; cursor: pointer;
     font-size: var(--text-small); color: var(--color-text-2);
     background: transparent; border: 1px solid var(--color-border-strong); border-radius: 999px;
-    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    transition: background-color var(--dur-fast), color var(--dur-fast), border-color var(--dur-fast);
   }
   .chip:hover { color: var(--color-text); border-color: var(--color-text-3); }
   .chip[aria-pressed='true'] { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-on-accent); }
@@ -254,11 +263,11 @@ const first = scenarios[0];
   .node {
     display: flex; flex-direction: column; gap: 0.25rem; padding: 0.875rem;
     background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-md);
-    transition: border-color 0.35s, background-color 0.35s, transform 0.35s;
+    transition: border-color var(--dur-base), background-color var(--dur-base), transform var(--dur-base);
   }
   .node strong { color: var(--color-text); font-size: 0.9375rem; font-weight: var(--weight-medium); }
-  .step { font-size: var(--text-small); color: var(--color-text-3); line-height: 1.4; transition: color 0.35s; }
-  .icon svg { width: 22px; height: 22px; fill: none; stroke: var(--color-text-3); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.35s; }
+  .step { font-size: var(--text-small); color: var(--color-text-3); line-height: 1.4; transition: color var(--dur-base); }
+  .icon svg { width: 22px; height: 22px; fill: none; stroke: var(--color-text-3); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: stroke var(--dur-base); }
   .node.is-on { border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border)); }
   .node.is-on .step { color: var(--color-text-2); }
   .node.is-on .icon svg { stroke: var(--color-accent); }
@@ -275,7 +284,7 @@ const first = scenarios[0];
     position: absolute; top: 1px; width: 10px; height: 10px; background: var(--color-accent);
     left: calc(var(--progress) * (100% - 10px)); transition: left 1.2s steps(8);
   }
-  .is-done .packet { opacity: 0; transition: opacity 0.3s; }
+  .is-done .packet { opacity: 0; transition: opacity var(--dur-base); }
 
   .log {
     margin-top: 0.75rem; padding: 0.75rem 0.875rem; min-height: 5.5rem;

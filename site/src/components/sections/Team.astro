@@ -24,7 +24,7 @@ const initials = (name: string) =>
       ) : (
         <ul class="grid" role="list">
           {members.map(({ data }) => (
-            <li class="card member">
+            <li class="card member" data-reveal="pixel">
               {data.photo ? (
                 <img src={data.photo} alt={data.name} width="96" height="96" loading="lazy" class="avatar" />
               ) : (

@@ -4,7 +4,7 @@
  * 120 fotogramas (public/sequence/{desktop,mobile}/NNN.webp, generados con brand/sequence/build_sequence.py)
  * que se dibujan en un <canvas> según el scroll, con 3 títulos encima.
  * - Entre fotograma y fotograma se hace un fundido, y el scroll se suaviza con inercia.
- * - Carga progresiva: empieza a bajar fotogramas cuando la sección está cerca (primero 1 de cada 4).
+ * - Carga progresiva: empieza a bajar fotogramas cuando la sección está cerca (primero 1 de cada 8).
  * - Móvil o "ahorro de datos": versión de 640 px.
  * - Sin JavaScript o con movimiento reducido: "antes" y "después" estáticos, uno al lado del otro.
  */
@@ -44,12 +44,6 @@ const frame = (size: string, i: number) => `/sequence/${size}/${String(i).padSta
 
 <section class="story" data-story data-frames={FRAMES} aria-label={t.s3}>
   <p class="sr-only">{t.sr}</p>
-  <!-- Activa el modo animado antes de que el navegador lea las imágenes estáticas (así no las descarga) -->
-  <script is:inline>
-    if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window)
-      document.currentScript.parentElement.classList.add('is-live');
-  </script>
-
   <!-- Versión estática (sin JS o con movimiento reducido) -->
   <div class="container static">
     <figure>
@@ -63,8 +57,8 @@ const frame = (size: string, i: number) => `/sequence/${size}/${String(i).padSta
   </div>
 
   <!-- Versión animada -->
-  <div class="stage" aria-hidden="true">
-    <canvas></canvas>
+  <div class="stage">
+    <canvas aria-hidden="true"></canvas>
     <div class="captions container">
       <div class="cap" data-cap="0"><h2>{t.s1}</h2><p>{t.s1b}</p></div>
       <div class="cap" data-cap="1"><h2>{t.s2}</h2><p>{t.s2b}</p></div>
@@ -78,17 +72,17 @@ const frame = (size: string, i: number) => `/sequence/${size}/${String(i).padSta
 </section>
 
 <script>
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  import { prefersReducedMotion, onReducedMotionChange } from '../../scripts/motion';
   document.querySelectorAll<HTMLElement>('[data-story]').forEach((root) => {
-    if (reduce || !('IntersectionObserver' in window)) return; // se queda la versión estática
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+    if (prefersReducedMotion() || conn?.saveData || ['2g', 'slow-2g'].includes(conn?.effectiveType ?? '') || !('IntersectionObserver' in window)) return; // se queda la versión estática
     const canvas = root.querySelector('canvas')!;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    root.classList.add('is-live');
+    const background = getComputedStyle(root).getPropertyValue('--color-bg').trim();
 
     const total = Number(root.dataset.frames);
-    const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
-    const size = innerWidth < 768 || conn?.saveData ? 'mobile' : 'desktop';
+    const size = innerWidth < 768 ? 'mobile' : 'desktop';
     const src = (i: number) => `/sequence/${size}/${String(i).padStart(3, '0')}.webp`;
     const imgs: (HTMLImageElement | null)[] = Array(total).fill(null);
     const caps = [...root.querySelectorAll<HTMLElement>('[data-cap]')];
@@ -100,30 +94,60 @@ const frame = (size: string, i: number) => `/sequence/${size}/${String(i).padSta
     let running = false;
     let last = 0;
     let started = false;
+    let stopped = false;
+    let raf = 0;
+    const pending = new Set<() => void>();
+    const stop = () => {
+      stopped = true;
+      cancelAnimationFrame(raf);
+      root.classList.remove('is-live');
+      pending.forEach((cancel) => cancel());
+      pending.clear();
+    };
+    onReducedMotionChange((reduced) => { if (reduced) stop(); });
 
     const load = (i: number) =>
-      new Promise<void>((res) => {
-        if (imgs[i]) return res();
+      new Promise<boolean>((resolve) => {
+        if (stopped) return resolve(false);
+        if (imgs[i]) return resolve(true);
         const im = new Image();
         im.decoding = 'async';
-        im.onload = () => { imgs[i] = im; res(); if (Math.abs(i - shownF) < 2 || shownF < 0) render(true); };
-        im.onerror = () => res();
+        const finish = (loaded: boolean) => {
+          clearTimeout(timeout);
+          pending.delete(cancel);
+          im.onload = im.onerror = null;
+          if (loaded && !stopped) { imgs[i] = im; if (root.classList.contains('is-live')) render(true); }
+          resolve(loaded && !stopped);
+        };
+        const cancel = () => { finish(false); im.removeAttribute('src'); };
+        const timeout = window.setTimeout(cancel, 8000);
+        pending.add(cancel);
+        im.onload = () => finish(true);
+        im.onerror = () => finish(false);
         im.src = src(i);
       });
 
-    // Primero el fotograma 0 y el último, luego 1 de cada 4, luego el resto
+    // Primero los keyframes, se rellenan luego los huecos, con un limite de cuatro peticiones.
     const loadAll = async () => {
-      await Promise.all([load(0), load(total - 1)]);
-      const order: number[] = [];
-      for (let i = 4; i < total - 1; i += 4) order.push(i);
-      for (let i = 1; i < total - 1; i++) if (i % 4) order.push(i);
-      for (let k = 0; k < order.length; k += 6) await Promise.all(order.slice(k, k + 6).map(load));
+      if (!await load(0) || stopped) { stop(); return; }
+      root.classList.add('is-live');
+      fit();
+      onScroll();
+      const keyframes: number[] = [];
+      for (let i = 8; i < total; i += 8) keyframes.push(i);
+      keyframes.push(total - 1);
+      const gaps = Array.from({ length: total - 1 }, (_, i) => i + 1).filter((i) => i % 8 && i !== total - 1);
+      for (const order of [keyframes, gaps]) {
+        for (let k = 0; k < order.length && !stopped; k += 4) {
+          await Promise.all(order.slice(k, k + 4).map(load));
+        }
+      }
     };
 
     const nearest = (i: number) => {
       for (let d = 0; d < total; d++) {
-        if (imgs[i - d]) return imgs[i - d];
-        if (imgs[i + d]) return imgs[i + d];
+        if ((i - d) % 8 === 0 && imgs[i - d]) return imgs[i - d];
+        if (((i + d) % 8 === 0 || i + d === total - 1) && imgs[i + d]) return imgs[i + d];
       }
       return null;
     };
@@ -153,7 +177,7 @@ const frame = (size: string, i: number) => `/sequence/${size}/${String(i).padSta
         // Vertical (celular): banda arriba con casi todo el ancho de la escena; los títulos van debajo
         const s = cw / (im.naturalWidth * 0.82);
         const w = im.naturalWidth * s, h = im.naturalHeight * s;
-        if (alpha === 1) { ctx!.fillStyle = '#0B0B0F'; ctx!.fillRect(0, 0, cw, ch); }
+        if (alpha === 1) { ctx!.fillStyle = background; ctx!.fillRect(0, 0, cw, ch); }
         ctx!.drawImage(im, (cw - w) / 2, ch * 0.13, w, h);
       }
       ctx!.globalAlpha = 1;
@@ -163,7 +187,7 @@ const frame = (size: string, i: number) => `/sequence/${size}/${String(i).padSta
       const p = shown;
       bar.style.transform = `scaleX(${p})`;
       const step = p < 0.32 ? 0 : p < 0.74 ? 1 : 2;
-      caps.forEach((c, i) => c.classList.toggle('on', i === step));
+      caps.forEach((c, i) => { c.classList.toggle('on', i === step); c.inert = i !== step; });
       cta.tabIndex = step === 2 ? 0 : -1;
       // Pausa al inicio (antes) y al final (después) para leer los títulos
       const f = Math.min(1, Math.max(0, (p - 0.1) / 0.72)) * (total - 1);
@@ -179,24 +203,27 @@ const frame = (size: string, i: number) => `/sequence/${size}/${String(i).padSta
 
     // Inercia: el progreso dibujado persigue al scroll real (independiente de los Hz de la pantalla)
     const tick = (now: number) => {
+      if (stopped) return;
       const dt = Math.min(64, now - (last || now));
       last = now;
       const k = 1 - Math.pow(1 - 0.16, dt / 16.67);
       shown += (target - shown) * k;
       if (Math.abs(target - shown) < 0.0004) shown = target;
       render();
-      if (shown !== target) requestAnimationFrame(tick);
+      if (shown !== target) raf = requestAnimationFrame(tick);
       else { running = false; last = 0; }
     };
 
     const onScroll = () => {
+      if (stopped || !root.classList.contains('is-live')) return;
       target = progress();
-      if (!running) { running = true; requestAnimationFrame(tick); }
+      if (!running) { running = true; raf = requestAnimationFrame(tick); }
     };
 
-    new IntersectionObserver(([e]) => {
-      if (e.isIntersecting && !started) { started = true; loadAll(); }
-    }, { rootMargin: '150% 0px' }).observe(root);
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !started) { started = true; io.disconnect(); loadAll(); }
+    }, { rootMargin: '100% 0px' });
+    io.observe(root);
     addEventListener('scroll', onScroll, { passive: true });
     // El lienzo toma su tamaño real cuando ya está visible (y al cambiar el tamaño de ventana)
     shown = target = progress();
@@ -218,23 +245,33 @@ const frame = (size: string, i: number) => `/sequence/${size}/${String(i).padSta
   /* Animada */
   .story.is-live { height: 340vh; }
   .story.is-live .static { display: none; }
-  .story.is-live .stage { display: block; position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--color-bg); }
-  canvas { width: 100%; height: 100%; display: block; }
+  .story.is-live .stage { display: block; position: sticky; top: 0; min-height: 100svh; background: var(--color-bg); }
+  canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   /* Degradado inferior para que los títulos se lean sobre la foto */
   .stage::after {
     content: ''; position: absolute; inset: 45% 0 0; pointer-events: none;
-    background: linear-gradient(to top, rgba(11, 11, 15, 0.95) 0%, rgba(11, 11, 15, 0.8) 40%, rgba(11, 11, 15, 0) 100%);
+    background: linear-gradient(to top, color-mix(in srgb, var(--color-bg) 95%, transparent) 0%, color-mix(in srgb, var(--color-bg) 80%, transparent) 40%, transparent 100%);
   }
-  .captions { position: absolute; inset: auto 0 0; z-index: 1; padding-bottom: clamp(2rem, 1.5rem + 3vw, 4rem); }
-  .cap { position: absolute; left: 20px; right: 20px; bottom: clamp(2rem, 1.5rem + 3vw, 4rem); max-width: 40rem; opacity: 0; transform: translateY(12px); transition: opacity 0.4s, transform 0.4s; pointer-events: none; }
-  .cap.on { opacity: 1; transform: none; pointer-events: auto; }
+  .captions { position: relative; display: grid; min-height: 100svh; align-items: end; padding-top: 40svh; z-index: 1; padding-bottom: clamp(2rem, 1.5rem + 3vw, 4rem); }
+  .cap { grid-area: 1 / 1; align-self: end; visibility: hidden; max-width: 40rem; opacity: 0; transform: translateY(12px); transition: opacity var(--dur-slow), transform var(--dur-slow); pointer-events: none; }
+  .cap.on { visibility: visible; opacity: 1; transform: none; pointer-events: auto; }
   .cap h2 { color: var(--color-text); }
   .cap p { margin-top: 0.6rem; font-size: var(--text-lead); color: var(--color-text-2); }
   .cap .btn { margin-top: 1.25rem; }
-  .progress { position: absolute; z-index: 1; left: 0; right: 0; top: 72px; height: 3px; background: rgba(255, 255, 255, 0.08); }
+  .progress { position: absolute; z-index: 1; left: 0; right: 0; top: 72px; height: 3px; background: var(--color-border); }
   .progress span { display: block; height: 100%; background: var(--color-accent); transform-origin: left; transform: scaleX(0); }
 
-  @media (min-width: 1160px) { .cap { left: calc((100vw - 1160px) / 2 + 20px); } }
+  @media (max-height: 560px) and (orientation: landscape) {
+    .captions { padding-top: 5rem; padding-bottom: 1.5rem; }
+    .cap h2 { font-size: var(--text-h3); }
+    .cap p { font-size: var(--text-small); }
+    .cap .btn { margin-top: 0.75rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .story.is-live { height: auto !important; }
+    .story.is-live .stage { display: none; }
+    .story.is-live .static { display: grid; }
+  }
   @media (max-width: 760px) {
     .static { grid-template-columns: 1fr; }
     .story.is-live { height: 300vh; }
