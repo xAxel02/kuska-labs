@@ -34,7 +34,7 @@ const links = [
 
       <!-- Menú móvil sin JavaScript -->
       <details class="nav-mobile">
-        <summary aria-expanded="false" aria-controls="mobile-navigation" aria-label={t('nav.menu')}>
+        <summary aria-controls="mobile-navigation" aria-label={t('nav.menu')}>
           <span></span><span></span><span></span>
         </summary>
         <nav id="mobile-navigation" aria-label={t('nav.menu')}>
@@ -50,8 +50,7 @@ const links = [
   // Cierra el menú móvil al elegir un enlace
   document.querySelectorAll<HTMLDetailsElement>('.nav-mobile').forEach((d) => {
     const trigger = d.querySelector('summary')!;
-    const close = () => { d.open = false; trigger.setAttribute('aria-expanded', 'false'); trigger.focus(); };
-    d.addEventListener('toggle', () => trigger.setAttribute('aria-expanded', String(d.open)));
+    const close = () => { d.open = false; trigger.focus(); };
     d.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
     document.addEventListener('keydown', (event) => {
       if (!d.open) return;
@@ -64,7 +63,7 @@ const links = [
       }
     });
     matchMedia('(max-width: 1060px)').addEventListener('change', (event) => {
-      if (!event.matches) { d.open = false; trigger.setAttribute('aria-expanded', 'false'); }
+      if (!event.matches) { d.open = false; }
     });
   });
 
