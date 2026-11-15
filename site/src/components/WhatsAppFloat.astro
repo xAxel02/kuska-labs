@@ -11,10 +11,25 @@ const t = useTranslations(lang);
 <a class="wa-float" href={whatsappLink(t('whatsapp.message'))} target="_blank" rel="noopener" aria-label={t('cta.whatsapp')} data-umami-event="whatsapp" data-umami-event-location="float">
   <WhatsAppIcon size={28} />
 </a>
+<script>
+  const float = document.querySelector<HTMLElement>('.wa-float');
+  const obstacles = document.querySelectorAll('#contacto, .site-footer, .btn, form');
+  if (float && 'IntersectionObserver' in window) {
+    const visible = new Set<Element>();
+    const mobile = matchMedia('(max-width: 1060px), (max-height: 560px) and (orientation: landscape)');
+    const update = () => { float.hidden = mobile.matches && visible.size > 0; };
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => { if (entry.isIntersecting) visible.add(entry.target); else visible.delete(entry.target); });
+      update();
+    }, { rootMargin: '0px 0px 96px 0px' });
+    obstacles.forEach((element) => observer.observe(element));
+    mobile.addEventListener('change', update);
+  }
+</script>
 
 <style>
   .wa-float {
-    position: fixed; right: 20px; bottom: 20px; z-index: 40;
+    position: fixed; right: calc(20px + env(safe-area-inset-right, 0px)); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 40;
     width: 56px; height: 56px; border-radius: 50%;
     display: grid; place-items: center;
     background: var(--color-surface-2);
@@ -22,5 +37,9 @@ const t = useTranslations(lang);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
     transition: transform var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
   }
+  .wa-float[hidden] { display: none; }
   .wa-float:hover { transform: translateY(-2px); border-color: var(--color-whatsapp); }
+  @media (max-width: 1060px), (max-height: 560px) and (orientation: landscape) {
+    :global(body:has(.nav-mobile[open])) .wa-float { visibility: hidden; }
+  }
 </style>

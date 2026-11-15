@@ -72,7 +72,7 @@ const stock = {
                   class="shot"
                 />
               ) : (
-                data.image && <Picture src={data.image} alt={data.imageAlt ?? data.title} widths={[400, 800]} formats={['avif', 'webp']} class="shot static" loading="lazy" />
+                data.image && <Picture src={data.image} alt={data.imageAlt ?? data.title} widths={[400, 800]} formats={['avif', 'webp']} class="shot static" loading="lazy" decoding="async" />
               )}
             </div>
           </div>

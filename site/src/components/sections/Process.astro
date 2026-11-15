@@ -137,7 +137,7 @@ const payments = new Set([3, 6]); // índices de "Adelanto del 50 %" y "Pago fin
   .text h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: var(--text-h4); margin-bottom: 0.375rem; color: var(--color-text-3); transition: color var(--dur-base); }
   .text p { font-size: var(--text-small); color: var(--color-text-3); max-width: 46ch; transition: color var(--dur-base); }
   .badge {
-    font-family: var(--font-body); font-size: 0.75rem; font-weight: var(--weight-medium);
+    font-family: var(--font-body); font-size: var(--text-label); font-weight: var(--weight-medium);
     color: var(--color-accent); background: var(--color-accent-soft); padding: 2px 8px; border-radius: 999px;
   }
 
@@ -169,4 +169,5 @@ const payments = new Set([3, 6]); // índices de "Adelanto del 50 %" y "Pago fin
     .step .text h3 { color: var(--color-text); }
     .step .text p { color: var(--color-text-2); }
   }
+  @media (max-height: 560px) and (orientation: landscape) { .intro { position: static; } }
 </style>

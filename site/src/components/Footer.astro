@@ -14,7 +14,7 @@ const services = (await getCollection('services', ({ id }) => id.startsWith(`${l
 <footer class="site-footer">
   <div class="container grid">
     <div>
-      <img src="/brand/kuska-logo.svg" alt="Kuska Labs" width="196" height="52" class="logo" loading="lazy" />
+      <img src="/brand/kuska-logo.svg" alt="Kuska Labs" width="196" height="52" class="logo" loading="lazy" decoding="async" />
       <p class="tagline">{t('footer.tagline')}</p>
       <p class="location">{t('footer.location')}</p>
     </div>

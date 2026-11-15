@@ -121,8 +121,8 @@ const scene = {
   .body { margin-top: 0.25rem; font-size: var(--text-small); color: var(--color-text-3); }
   .service-link { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; margin-top: 0.65rem; font-size: var(--text-small); }
   .price { flex: none; text-align: right; display: flex; flex-direction: column; align-items: flex-end; font-variant-numeric: tabular-nums; }
-  .price .from, .price .unit { font-size: 0.75rem; color: var(--color-text-3); }
-  .price strong { font-family: var(--font-display); font-weight: var(--weight-bold); font-size: 1.25rem; color: var(--color-accent); line-height: 1.2; }
+  .price .from, .price .unit { font-size: var(--text-label); color: var(--color-text-3); }
+  .price strong { font-family: var(--font-display); font-weight: var(--weight-bold); font-size: var(--text-h4); color: var(--color-accent); line-height: 1.2; }
   .price-note { margin-top: 0.5rem; font-size: var(--text-small); color: var(--color-text-3); max-width: 60ch; }
 
   .services-container { container-type: inline-size; container-name: services; }
@@ -153,4 +153,5 @@ const scene = {
     .stage .scene, .stage .msg, .stage .col b, .stage .uptime b { animation: none !important; }
     .group-head h3 { transition: none; }
   }
+  @media (max-height: 560px) and (orientation: landscape) { .stage-wrap { position: static; } }
 </style>

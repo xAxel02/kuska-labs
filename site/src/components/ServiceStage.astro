@@ -45,10 +45,10 @@ const { scene, active = "web" } = Astro.props;
         </div>
 <style>
   .stage {
-    position: relative; aspect-ratio: 4 / 3.4; overflow: hidden;
+    position: relative; display: grid; aspect-ratio: 4 / 3.4; min-height: 22rem; overflow: hidden;
     background: var(--color-surface-1); border: 1px solid var(--color-border); border-radius: var(--radius-lg);
   }
-  .scene { position: absolute; inset: 0; padding: 1.5rem; display: grid; place-items: center; visibility: hidden; }
+  .scene { position: relative; grid-area: 1 / 1; min-width: 0; padding: 1.5rem; display: grid; place-items: center; visibility: hidden; }
   .stage[data-active='web'] .scene-web,
   .stage[data-active='systems'] .scene-systems,
   .stage[data-active='ai'] .scene-ai,
@@ -95,7 +95,7 @@ const { scene, active = "web" } = Astro.props;
   .msg { max-width: 80%; padding: 0.6rem 0.85rem; border-radius: 12px; font-size: var(--text-small); line-height: 1.4; }
   .msg.in { align-self: flex-start; background: var(--color-surface-2); color: var(--color-text); border-bottom-left-radius: 4px; }
   .msg.out { align-self: flex-end; background: var(--color-accent); color: var(--color-on-accent); border-bottom-right-radius: 4px; }
-  .msg.sys { align-self: center; font-size: 0.75rem; color: var(--color-accent); background: var(--color-accent-soft); }
+  .msg.sys { align-self: center; font-size: var(--text-label); color: var(--color-accent); background: var(--color-accent-soft); }
   .stage[data-active='ai'] .msg { animation: px-reveal var(--dur-slow) steps(4, end) both; }
   .stage[data-active='ai'] .msg:nth-child(2) { animation-delay: 0.7s; }
   .stage[data-active='ai'] .msg:nth-child(3) { animation-delay: 1.4s; }
@@ -109,7 +109,7 @@ const { scene, active = "web" } = Astro.props;
   .uptime { justify-self: stretch; display: grid; grid-template-columns: repeat(30, 1fr); gap: 3px; }
   .uptime b { aspect-ratio: 1 / 2.4; border-radius: 2px; background: var(--color-accent); }
   .stage[data-active='care'] .uptime b { animation: weave-in var(--dur-fast) steps(2, end) both; animation-delay: calc(var(--i) * 25ms + var(--dur-base)); }
-  .uptime-label { justify-self: start; font-size: 0.75rem; color: var(--color-text-3); }
+  .uptime-label { justify-self: start; font-size: var(--text-label); color: var(--color-text-3); }
 
 
 @media (prefers-reduced-motion: reduce) { .stage *, .stage .scene { animation: none !important; } }

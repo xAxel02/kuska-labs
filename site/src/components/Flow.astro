@@ -265,7 +265,7 @@ const first = scenarios[0];
     background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-md);
     transition: border-color var(--dur-base), background-color var(--dur-base), transform var(--dur-base);
   }
-  .node strong { color: var(--color-text); font-size: 0.9375rem; font-weight: var(--weight-medium); }
+  .node strong { color: var(--color-text); font-size: clamp(0.88125rem, 0.825rem + 0.2vw, 0.9375rem); font-weight: var(--weight-medium); }
   .step { font-size: var(--text-small); color: var(--color-text-3); line-height: 1.4; transition: color var(--dur-base); }
   .icon svg { width: 22px; height: 22px; fill: none; stroke: var(--color-text-3); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: stroke var(--dur-base); }
   .node.is-on { border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border)); }
@@ -289,7 +289,7 @@ const first = scenarios[0];
   .log {
     margin-top: 0.75rem; padding: 0.75rem 0.875rem; min-height: 5.5rem;
     background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md);
-    font-family: var(--font-mono); font-size: 0.8125rem; color: var(--color-text-2);
+    font-family: var(--font-mono); font-size: var(--text-label); color: var(--color-text-2);
   }
   .line { min-height: 1.5em; }
   .prompt { color: var(--color-accent); }
