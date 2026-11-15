@@ -29,6 +29,10 @@ const payments = new Set([3, 6]); // índices de "Adelanto del 50 %" y "Pago fin
     </div>
 
     <div class="timeline" data-timeline>
+    <svg class="chakana-rail" viewBox="0 0 36 600" preserveAspectRatio="none" aria-hidden="true">
+      <path class="rail-track" d="M18 0V60H30V120H18V180H6V240H18V300H30V360H18V420H6V480H18V600" />
+      <path class="rail-draw" pathLength="1" d="M18 0V60H30V120H18V180H6V240H18V300H30V360H18V420H6V480H18V600" />
+    </svg>
     <span class="rail" aria-hidden="true"><span class="fill"></span></span>
     <ol class="steps-list" role="list">
       {
@@ -92,6 +96,19 @@ const payments = new Set([3, 6]); // índices de "Adelanto del 50 %" y "Pago fin
 </script>
 
 <style>
+  .chakana-rail { position: absolute; left: 0; top: 18px; width: 36px; height: calc(100% - 36px); overflow: visible; }
+  .chakana-rail path { fill: none; stroke-width: 2; vector-effect: non-scaling-stroke; }
+  .rail-track { stroke: var(--color-border); }
+  .rail-draw { stroke: var(--color-accent); stroke-dasharray: 1; stroke-dashoffset: 0; }
+  .timeline .rail { display: none; }
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      #proceso { view-timeline-name: --process-section; }
+      .rail-draw { animation: chakana-draw linear both; animation-timeline: --process-section; animation-range: entry 30% exit 40%; }
+    }
+  }
+  @keyframes chakana-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+
   .layout { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
   .intro { position: sticky; top: 110px; }
   .pay { margin-top: 2rem; max-width: 26rem; }

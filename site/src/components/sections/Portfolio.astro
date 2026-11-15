@@ -53,6 +53,7 @@ const stock = {
     {
       featured.map(({ data }) => (
         <article class="featured" data-reveal>
+          <div class="device-perspective"><div class="device-entry"><div class="device-tilt" data-device>
           <div class="browser" aria-hidden={data.imageFull ? undefined : 'true'}>
             <div class="chrome">
               <i /><i /><i />
@@ -75,6 +76,7 @@ const stock = {
               )}
             </div>
           </div>
+          </div></div></div>
           <div class="body">
             <span class="kind client">{t('portfolio.client')}</span>
             <h3>{data.title}</h3>
@@ -160,7 +162,8 @@ const stock = {
 </section>
 
 <script>
-  import { prefersReducedMotion, onReducedMotionChange } from '../../scripts/motion';
+  import { tilt, prefersReducedMotion, onReducedMotionChange } from '../../scripts/motion';
+  document.querySelectorAll<HTMLElement>('[data-device]').forEach(tilt);
   // Conversación del chatbot: se "escribe" una vez al entrar en pantalla; el botón la repite.
   document.querySelectorAll<HTMLElement>('[data-chat]').forEach((chat) => {
     const msgs = [...chat.querySelectorAll<HTMLElement>('.msg')];
@@ -197,6 +200,17 @@ const stock = {
 </script>
 
 <style>
+  .device-perspective { perspective: 1000px; min-width: 0; }
+  .device-tilt { transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)); transition: transform var(--dur-base) var(--ease-out); }
+  .device-tilt::before { content: ''; position: absolute; inset: 1rem; z-index: -1; border-radius: var(--radius-lg); box-shadow: 0 24px 40px var(--color-header-shadow); transform: translateX(var(--shadow-x, 0px)); transition: transform var(--dur-base) var(--ease-out); }
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .device-entry { animation: device-enter linear both; animation-timeline: view(); animation-range: entry 0% cover 50%; }
+    }
+  }
+  @keyframes device-enter { from { transform: rotateX(8deg) rotateY(-10deg); } to { transform: rotateX(0deg) rotateY(0deg); } }
+  @media (prefers-reduced-motion: reduce) { .device-tilt { transform: none; transition: none; } .device-tilt::before { transform: none; transition: none; } }
+
   /* ---------- Proyecto destacado ---------- */
   .featured {
     display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(1.5rem, 1rem + 3vw, 3.5rem); align-items: center;
