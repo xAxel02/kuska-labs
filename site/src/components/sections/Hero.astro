@@ -2,6 +2,7 @@
 import WhatsAppIcon from '../WhatsAppIcon.astro';
 import Chakana from '../Chakana.astro';
 import Flow from '../Flow.astro';
+import PixelField from '../PixelField.astro';
 import { whatsappLink } from '../../config';
 import { useTranslations, homePath } from '../../i18n/utils';
 import type { Lang } from '../../i18n/ui';
@@ -11,10 +12,11 @@ const t = useTranslations(lang);
 ---
 
 <section class="hero" aria-labelledby="hero-title">
+  <PixelField />
   <div class="container">
     <div class="inner">
       <div class="copy">
-        <h1 id="hero-title">{t('hero.title')}</h1>
+        <h1 id="hero-title" aria-label={t('hero.title')}>{t('hero.title').split(/\s+/).map((word, i) => <><span aria-hidden="true" style={`--word:${i}`}>{word}</span>{' '}</>)}</h1>
         <p class="location">{t('hero.location')}</p>
         <p class="lead">{t('hero.lead')}</p>
         <p class="launch-prices">{t('hero.launchPrices')}</p>
@@ -27,7 +29,7 @@ const t = useTranslations(lang);
         <p class="note">{t('hero.note')}</p>
       </div>
       <div class="mark">
-        <Chakana mode="load" />
+        <Chakana mode="static" />
       </div>
     </div>
 
@@ -39,7 +41,16 @@ const t = useTranslations(lang);
 </section>
 
 <style>
-  .hero { padding-block: clamp(3rem, 1.5rem + 6vw, 7rem) clamp(2rem, 1.5rem + 3vw, 4.5rem); overflow: hidden; }
+  .hero { position: relative; isolation: isolate; padding-block: clamp(3rem, 1.5rem + 6vw, 7rem) clamp(2rem, 1.5rem + 3vw, 4.5rem); overflow: hidden; }
+  .hero > .container { position: relative; z-index: 1; }
+  h1 span { display: inline-block; }
+  @media (prefers-reduced-motion: no-preference) {
+    h1 span { animation: word-in var(--dur-slow) var(--ease-step) both; animation-delay: calc(var(--word) * var(--dur-base) / 4); }
+  }
+  @keyframes word-in {
+    from { clip-path: polygon(0 0, 0 0, 0 33%, 8% 33%, 8% 66%, 16% 66%, 16% 100%, 0 100%); }
+    to { clip-path: polygon(0 0, 100% 0, 100% 33%, 100% 33%, 100% 66%, 100% 66%, 100% 100%, 0 100%); }
+  }
   .inner { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: clamp(2rem, 1rem + 4vw, 5rem); }
   h1 { max-width: 15ch; view-transition-name: hero-title; }
   .lead { margin-top: 1.5rem; max-width: 58ch; font-size: var(--text-lead); }

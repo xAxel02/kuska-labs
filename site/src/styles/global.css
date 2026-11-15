@@ -96,6 +96,11 @@ button, input, select, textarea { font: inherit; color: inherit; }
 @media (prefers-reduced-motion: no-preference) {
   @view-transition { navigation: auto; }
   ::view-transition-old(root) { animation: none; }
-  ::view-transition-new(root) { animation: px-reveal var(--dur-slow) var(--ease-step) both; }
+  ::view-transition-new(root) { animation: none; }
+  ::view-transition-group(*) { animation-duration: var(--dur-slow); animation-timing-function: var(--ease-out); }
 }
 .site-header .logo { view-transition-name: site-logo; }
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}

@@ -96,7 +96,7 @@ const scene = {
                 {g.items.map(({ id, data, Content }) => (
                   <li class="row">
                     <div class="row-main">
-                      <h4><a href={servicePath(lang, slugOf(id))}>{data.title}</a></h4>
+                      <h4><a style={`view-transition-name:svc-${slugOf(id)}`} href={servicePath(lang, slugOf(id))}>{data.title}</a></h4>
                       <p class="summary">{data.summary}</p>
                       <div class="body"><Content /></div>
                       <a class="service-link" href={servicePath(lang, slugOf(id))}>{t('services.view')} →</a>
@@ -225,7 +225,7 @@ const scene = {
   .row h4 a:hover { color: var(--color-accent); }
   .summary { margin-top: 0.25rem; color: var(--color-text-2); }
   .body { margin-top: 0.25rem; font-size: var(--text-small); color: var(--color-text-3); }
-  .service-link { display: inline-block; margin-top: 0.65rem; font-size: var(--text-small); }
+  .service-link { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; margin-top: 0.65rem; font-size: var(--text-small); }
   .price { flex: none; text-align: right; display: flex; flex-direction: column; align-items: flex-end; font-variant-numeric: tabular-nums; }
   .price .from, .price .unit { font-size: 0.75rem; color: var(--color-text-3); }
   .price strong { font-family: var(--font-display); font-weight: var(--weight-bold); font-size: 1.25rem; color: var(--color-accent); line-height: 1.2; }

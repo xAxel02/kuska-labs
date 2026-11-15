@@ -129,11 +129,11 @@ const jsonLd = {
     <WhatsAppFloat lang={lang} />
 
     <script>
-      import { observeReveal } from '../scripts/motion';
+      import { observeReveal, supportsScrollTimeline } from '../scripts/motion';
       document.querySelectorAll<HTMLElement>('.section-head, main .card, .flow-wrap').forEach((el) => {
         if (!el.hasAttribute('data-reveal')) el.dataset.reveal = 'pixel';
       });
-      if (!CSS.supports('animation-timeline: view()')) observeReveal('[data-reveal]');
+      if (!supportsScrollTimeline || !CSS.supports('animation-timeline: view()')) observeReveal('[data-reveal]');
     </script>
   </body>
 </html>
