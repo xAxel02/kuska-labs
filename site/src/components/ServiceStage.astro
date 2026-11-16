@@ -45,7 +45,7 @@ const { scene, active = "web" } = Astro.props;
         </div>
 <style>
   .stage {
-    position: relative; display: grid; aspect-ratio: 4 / 3.4; min-height: 22rem; overflow: hidden;
+    position: relative; display: grid; width: 100%; min-width: 0; aspect-ratio: 4 / 3.4; min-height: 22rem; overflow: hidden;
     background: var(--color-surface-1); border: 1px solid var(--color-border); border-radius: var(--radius-lg);
   }
   .scene { position: relative; grid-area: 1 / 1; min-width: 0; padding: 1.5rem; display: grid; place-items: center; visibility: hidden; }

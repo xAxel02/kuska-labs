@@ -12,6 +12,11 @@ const services = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/services' }),
   schema: z.object({
     title: z.string(),
+    includes: z.array(z.string()).optional(),
+    audience: z.string().optional(),
+    steps: z.array(z.object({ title: z.string(), text: z.string() })).optional(),
+    deliverables: z.array(z.string()).optional(),
+    faqs: z.array(z.object({ q: z.string(), a: z.string() })).optional(),
     summary: z.string(), // una línea, orientada al beneficio
     // web · systems (sistemas a medida) · ai (IA y automatización) · care (mantenimiento)
     group: z.enum(['web', 'systems', 'ai', 'care']),

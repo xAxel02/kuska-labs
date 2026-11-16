@@ -9,6 +9,16 @@ export const defaultLang: Lang = 'es';
 
 export const ui = {
   es: {
+    "audience.title": "Para quién trabajamos",
+    "audience.lead": "Soluciones para tareas diarias de negocios de Trujillo y La Libertad.",
+    "small.title": "Por qué un equipo pequeño",
+    "small.manifesto": "Hablas con quien programa. Revisamos tu forma de trabajar y acordamos qué construir antes de escribir código.",
+    "home.faq": "Antes de empezar",
+    "service.includes": "Qué incluye",
+    "service.audience": "Para quién es",
+    "service.steps": "Cómo trabajamos",
+    "service.delivery": "Qué recibes al final",
+
     'meta.title': 'Software y páginas web en Trujillo | Kuska Labs',
     'meta.description':
       'Desarrollo de software en Trujillo, La Libertad, Perú: sistemas a medida y páginas web con precios accesibles. Agenda tu diagnóstico gratis.',
@@ -124,6 +134,16 @@ export const ui = {
     'notFound.back': 'Volver al inicio',
   },
   en: {
+    "audience.title": "Who we work with",
+    "audience.lead": "Tools for everyday work in businesses across Trujillo and La Libertad.",
+    "small.title": "Why a small team",
+    "small.manifesto": "You talk to the people writing your code. We review how you work and agree on what to build before development starts.",
+    "home.faq": "Before we start",
+    "service.includes": "What’s included",
+    "service.audience": "Who it’s for",
+    "service.steps": "How we work",
+    "service.delivery": "What you receive",
+
     'meta.title': 'Web & software development in Trujillo | Kuska Labs',
     'meta.description':
       'Web and software development in Trujillo, Peru: custom systems and websites with accessible launch pricing. Book your free discovery call today.',
@@ -264,3 +284,54 @@ export const processSteps: Record<Lang, { title: string; text: string }[]> = {
     { title: 'Monthly maintenance', text: 'Optional: support, backups, updates and improvements.' },
   ],
 };
+
+export const audiences = {
+  es: [
+    { title: 'Ferreterías', problem: 'Las compras y las ventas dejan el stock desactualizado.', solution: 'Adaptamos un ERP con inventario, compras y ventas en un solo lugar.' },
+    { title: 'Bodegas y minimarkets', problem: 'El cuaderno y las hojas sueltas dificultan revisar existencias.', solution: 'Construimos un sistema web para registrar movimientos y consultar inventario.' },
+    { title: 'Clínicas y consultorios', problem: 'Las citas quedan repartidas entre mensajes y agendas.', solution: 'Creamos una agenda web y un chatbot de WhatsApp para gestionar reservas.' },
+    { title: 'Talleres', problem: 'Cuesta saber qué cliente espera una respuesta o una cotización.', solution: 'Adaptamos un CRM con seguimiento, recordatorios y oportunidades.' },
+    { title: 'Restaurantes', problem: 'Responder las mismas preguntas interrumpe la atención.', solution: 'Creamos una web informativa y flujos de WhatsApp para consultas y pedidos.' },
+    { title: 'Academias', problem: 'Revisar matrículas en varias hojas toma trabajo manual.', solution: 'Construimos un sistema web de matrículas y automatizamos notificaciones.' },
+  ],
+  en: [
+    { title: 'Hardware stores', problem: 'Purchases and sales leave stock records out of date.', solution: 'We adapt an ERP with inventory, purchasing and sales in one place.' },
+    { title: 'Grocers and minimarkets', problem: 'Notebooks and loose spreadsheets make stock hard to check.', solution: 'We build a web system to record movements and check inventory.' },
+    { title: 'Clinics and practices', problem: 'Appointments are scattered across messages and calendars.', solution: 'We build a web calendar and a WhatsApp chatbot to manage bookings.' },
+    { title: 'Repair shops', problem: 'It is hard to track who is waiting for a reply or a quote.', solution: 'We adapt a CRM with follow-ups, reminders and opportunities.' },
+    { title: 'Restaurants', problem: 'Answering repeated questions interrupts service.', solution: 'We build an information website and WhatsApp flows for questions and orders.' },
+    { title: 'Academies', problem: 'Checking enrolments across spreadsheets takes manual work.', solution: 'We build a web enrolment system and automate notifications.' },
+  ],
+} as const;
+export const smallTeam = {
+  es: [
+    { title: 'Trato directo', text: 'El responsable de tu proyecto participa en el desarrollo. Le explicas el problema y revisas los avances con él.' },
+    { title: 'Propuesta por escrito', text: 'Antes de empezar acordamos alcance y costo. Sabes qué incluye la entrega y qué queda fuera.' },
+    { title: 'Código y datos tuyos', text: 'El código que desarrollamos y tus datos son tuyos. Acordamos la entrega de accesos y distinguimos las herramientas de terceros.' },
+    { title: 'Soporte después de entregar', text: 'Puedes contratar mantenimiento mensual con soporte, copias de seguridad, actualizaciones y pequeñas mejoras.' },
+  ],
+  en: [
+    { title: 'Direct contact', text: 'Your project lead takes part in development. You explain the problem and review progress with them.' },
+    { title: 'A written proposal', text: 'We agree on scope and cost before starting. You know what delivery includes and what falls outside it.' },
+    { title: 'Your code and data', text: 'The code we develop and your data belong to you. We agree on access handover and identify third-party tools separately.' },
+    { title: 'Support after delivery', text: 'You can choose monthly maintenance with support, backups, updates and small improvements.' },
+  ],
+} as const;
+export const homeFaqs = {
+  es: [
+    { q: '¿Cómo es el diagnóstico gratis?', a: 'Conversamos durante 30 minutos sobre tu operación, el problema que quieres resolver y las herramientas que usas. Después definimos una propuesta con alcance y costo, sin compromiso.' },
+    { q: '¿Qué necesito preparar?', a: 'Trae un ejemplo de la tarea que te cuesta resolver y cuenta quién la realiza. Puedes mostrar una hoja de Excel sin datos personales; no necesitas una especificación técnica.' },
+    { q: '¿Puedo empezar pequeño?', a: 'Sí. Podemos delimitar una primera etapa que resuelva una tarea concreta. Dejamos por escrito lo que incluye y evaluamos las siguientes etapas por separado.' },
+    { q: '¿Qué pasa con mis datos de Excel?', a: 'Revisamos tus archivos y sus columnas antes de proponer una importación. Acordamos qué datos trasladar y cómo validar el resultado; conserva una copia del original.' },
+    { q: '¿Cómo pago y qué comprobante recibo?', a: 'Para proyectos, pagas la mitad al empezar y la otra mitad cuando funciona. Cada profesional emite recibo por honorarios electrónico. El mantenimiento es mensual y los costos de terceros se pagan aparte.' },
+    { q: '¿Trabajan fuera de Trujillo?', a: 'Sí. Trabajamos de forma remota para todo el Perú y el extranjero. Revisamos avances y coordinamos reuniones en línea.' },
+  ],
+  en: [
+    { q: 'What happens in the free discovery call?', a: 'We spend 30 minutes discussing your operation, the problem you want to solve and the tools you use. We then define a proposal with scope and cost, with no obligation.' },
+    { q: 'What should I prepare?', a: 'Bring an example of the task you need help with and explain who does it. You can show a spreadsheet without personal data; no technical specification is needed.' },
+    { q: 'Can I start small?', a: 'Yes. We can define a first stage that solves one specific task. We document what it includes and assess later stages separately.' },
+    { q: 'What happens to my Excel data?', a: 'We review your files and columns before proposing an import. We agree on what to transfer and how to validate the result; keep a copy of the original.' },
+    { q: 'How do I pay and what receipt do I get?', a: 'For projects, you pay half upfront and half when it works. Each professional issues an electronic fee receipt (recibo por honorarios). Maintenance is monthly and third-party costs are separate.' },
+    { q: 'Do you work outside Trujillo?', a: 'Yes. We work remotely across Peru and abroad. We review progress and coordinate meetings online.' },
+  ],
+} as const;
