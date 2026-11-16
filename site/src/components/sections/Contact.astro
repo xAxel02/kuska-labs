@@ -102,7 +102,11 @@ const waHref = whatsappLink(t('whatsapp.message'));
         <p class="note">{mode === 'api' ? t('form.noteApi') : t('form.note')}</p>
       </form>
 
-      <div class="success" hidden tabindex="-1">
+      <div class="success" hidden tabindex="-1" aria-live="polite" role="status">
+        <svg class="confirmation" viewBox="0 0 64 64" aria-hidden="true">
+          <path class="success-chakana" d="M24 4H40V12H48V24H60V40H48V48H40V60H24V48H16V40H4V24H16V12H24Z" />
+          <path class="success-check" d="M21 32L29 40L44 24" />
+        </svg>
         <h3>{t('form.successTitle')}</h3>
         <p>{t('form.successText')}</p>
         <a class="btn btn-secondary" href={waHref} target="_blank" rel="noopener" data-umami-event="whatsapp" data-umami-event-location="form-success">
@@ -116,6 +120,9 @@ const waHref = whatsappLink(t('whatsapp.message'));
 {mode === 'api' && <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}
 
 <script>
+  import { magnetic } from '../../scripts/motion';
+  document.querySelectorAll<HTMLElement>('#contacto .btn').forEach(magnetic);
+
   type Field = HTMLInputElement | HTMLTextAreaElement;
   declare global {
     interface Window {
@@ -217,6 +224,15 @@ const waHref = whatsappLink(t('whatsapp.message'));
 </script>
 
 <style>
+  .btn { transition: translate var(--dur-base) var(--ease-spring); }
+  .confirmation { width: 64px; height: 64px; color: var(--color-accent); overflow: visible; }
+  .confirmation path { fill: none; stroke: currentColor; stroke-width: 2; }
+  .success:not([hidden]) .success-chakana { animation: assemble var(--dur-slow) var(--ease-step) both; transform-origin: center; }
+  .success:not([hidden]) .success-check { animation: confirm-check var(--dur-slow) var(--ease-out) both; animation-delay: var(--dur-fast); }
+  @keyframes assemble { from { opacity: 0; transform: scale(.6) translateY(8px); } to { opacity: 1; transform: none; } }
+  @keyframes confirm-check { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
+  @media (prefers-reduced-motion: reduce) { .btn { translate: none !important; transition: none; } .success:not([hidden]) .confirmation path { animation: none; } }
+
   .inner { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 3rem; align-items: start; }
   .contact-mark { margin-bottom: 1.5rem; }
   .direct { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 2rem; }

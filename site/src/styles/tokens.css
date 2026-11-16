@@ -10,6 +10,20 @@
    https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap */
 
 :root {
+  --dur-instant: 100ms;
+  --dur-fast: 180ms;
+  --dur-base: 280ms;
+  --dur-slow: 480ms;
+  --dur-xslow: 800ms;
+  --ease-out: cubic-bezier(.22,1,.36,1);
+  --ease-in-out: cubic-bezier(.65,0,.35,1);
+  --ease-step: steps(6, end);
+  --ease-spring: linear(0, .5 15%, .9 30%, 1.03 45%, 1 60%, 1);
+  --text-h4: clamp(1.125rem, 1.08rem + 0.2vw, 1.25rem);
+  --color-header-bg: color-mix(in srgb, var(--color-bg) 85%, transparent);
+  --color-header-shadow: rgba(0, 0, 0, 0.5);
+  --color-viewport-bg: #fff;
+
   /* ---------- Tipografía ---------- */
   --font-display: "Space Grotesk", "Inter", system-ui, sans-serif; /* títulos */
   --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; /* texto e interfaz */

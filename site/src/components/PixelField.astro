@@ -1,0 +1,127 @@
+<canvas class="pixel-field" aria-hidden="true"></canvas>
+
+<script>
+  import { prefersReducedMotion, onReducedMotionChange } from '../scripts/motion';
+
+  document.querySelectorAll<HTMLCanvasElement>('.pixel-field').forEach((canvas) => {
+    const hero = canvas.parentElement!;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const fine = matchMedia('(pointer: fine)');
+    let width = 0, height = 0, cell = 28, frame = 0, timer = 0;
+    let visible = false, inside = false, last = 0, waveStart = 0;
+    let x = -1000, y = -1000;
+    let border = '', gold = '', fade = 400, waveDuration = 2400, wavePeriod = 6000;
+    let cells: { x: number; y: number; level: number; at: number }[] = [];
+    const allowed = () => visible && !document.hidden && !prefersReducedMotion();
+    const quantize = (value: number) => Math.ceil(Math.max(0, Math.min(1, value)) * 4) / 4;
+
+    function draw(now: number) {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, width, height);
+      let active = false;
+      const wave = allowed() && !fine.matches && waveStart > 0 && now - waveStart < waveDuration;
+      const front = ((now - waveStart) / waveDuration) * (width + height + 320) - 160;
+      for (const point of cells) {
+        ctx.globalAlpha = 0.5;
+        ctx.fillStyle = border;
+        ctx.fillRect(point.x - 1, point.y - 1, 2, 2);
+        let level = 0;
+        if (allowed() && fine.matches) {
+          const distance = Math.hypot(point.x - x, point.y - y);
+          const lit = inside && distance < 160;
+          if (lit) {
+            point.level = quantize(1 - distance / 160);
+            point.at = now;
+          }
+          level = quantize(point.level * Math.max(0, 1 - (now - point.at) / fade));
+          active ||= level > 0 && !lit;
+        } else if (wave) {
+          level = quantize(1 - Math.abs(point.x + point.y - front) / 160);
+        }
+        if (level > 0) {
+          ctx.fillStyle = gold;
+          ctx.globalAlpha = level * 0.55;
+          ctx.fillRect(point.x - 2, point.y - 2, 4, 4);
+        }
+      }
+      ctx.globalAlpha = 1;
+      last = now;
+      return active || wave;
+    }
+    function tick(now: number) {
+      frame = 0;
+      const active = draw(now);
+      if (allowed() && active) frame = requestAnimationFrame(tick);
+      else if (allowed() && !fine.matches) scheduleWave();
+    }
+    function wake() {
+      if (allowed() && !frame) frame = requestAnimationFrame(tick);
+    }
+    function scheduleWave() {
+      clearTimeout(timer);
+      timer = window.setTimeout(() => { waveStart = performance.now(); wake(); }, Math.max(0, wavePeriod - (last - waveStart)));
+    }
+    function reset() {
+      cancelAnimationFrame(frame); frame = 0;
+      clearTimeout(timer);
+      inside = false; waveStart = 0;
+      cells.forEach((point) => { point.level = 0; });
+      draw(performance.now());
+      if (allowed() && !fine.matches) {
+        timer = window.setTimeout(() => { waveStart = performance.now(); wake(); }, wavePeriod);
+      }
+    }
+    function resize() {
+      const styles = getComputedStyle(canvas);
+      border = styles.getPropertyValue('--color-border').trim();
+      gold = styles.getPropertyValue('--color-accent').trim();
+      const duration = (name: string) => {
+        const value = styles.getPropertyValue(name).trim();
+        return parseFloat(value) * (value.endsWith('ms') ? 1 : 1000);
+      };
+      fade = duration('--dur-slow') * 5 / 6;
+      waveDuration = duration('--dur-xslow') * 3;
+      wavePeriod = duration('--dur-xslow') * 7.5;
+      width = hero.clientWidth; height = hero.clientHeight;
+      cell = width < 600 ? 22 : 28;
+      const dpr = Math.min(devicePixelRatio || 1, 1.5);
+      canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr);
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      cells = [];
+      for (let py = cell / 2; py < height; py += cell)
+        for (let px = cell / 2; px < width; px += cell) cells.push({ x: px, y: py, level: 0, at: 0 });
+      reset();
+    }
+    hero.addEventListener('pointermove', (event) => {
+      if (!fine.matches || event.pointerType === 'touch' || !allowed()) return;
+      const rect = canvas.getBoundingClientRect();
+      x = event.clientX - rect.left; y = event.clientY - rect.top;
+      inside = true; wake();
+    });
+    hero.addEventListener('pointerleave', () => {
+      const now = performance.now();
+      cells.forEach((point) => { if (inside && Math.hypot(point.x - x, point.y - y) < 160) point.at = now; });
+      inside = false; wake();
+    });
+    fine.addEventListener('change', reset);
+    document.addEventListener('visibilitychange', reset);
+    onReducedMotionChange(reset);
+    const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; reset(); });
+    observer.observe(hero);
+    const resizer = new ResizeObserver(resize);
+    resizer.observe(hero);
+    // Stop observers and pending work before a document navigation.
+    window.addEventListener('pagehide', () => { visible = false; reset(); });
+    window.addEventListener('pageshow', () => { visible = hero.getBoundingClientRect().bottom > 0 && hero.getBoundingClientRect().top < innerHeight; reset(); });
+    resize();
+  });
+</script>
+
+<style>
+  .pixel-field {
+    position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none;
+    opacity: 0.65;
+    mask-image: radial-gradient(ellipse at 25% 35%, transparent 0%, color-mix(in srgb, var(--color-bg) 25%, transparent) 40%, var(--color-bg) 85%);
+  }
+</style>

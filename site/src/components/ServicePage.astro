@@ -36,7 +36,7 @@ const heading = lang === 'es'
   ? `${service.data.title} en Trujillo`
   : `${service.data.title} in Trujillo, Peru`;
 
-const faqs = lang === 'es'
+const generalFaqs = lang === 'es'
   ? [
       { q: `¿Cuánto cuesta el servicio de ${service.data.title.toLowerCase()} en Trujillo?`, a: SHOW_PRICES ? `El precio referencial empieza en ${formatPrice(lang, service.data.priceFrom)}. El monto final depende del alcance y lo acordamos por escrito después del diagnóstico gratis.` : 'El monto depende del alcance. Después del diagnóstico gratis te enviamos una propuesta clara por escrito.' },
       { q: '¿Cuánto demora el proyecto?', a: 'El plazo depende del alcance y las integraciones. Después del diagnóstico te entregamos un cronograma por etapas antes de empezar.' },
@@ -49,6 +49,8 @@ const faqs = lang === 'es'
       { q: 'Do you work with clients outside Trujillo?', a: 'Yes. We work remotely with clients across Peru and abroad, using online meetings and regular progress reviews.' },
       { q: 'What payment document do you issue?', a: 'Each independent professional on the team issues an electronic fee receipt (recibo por honorarios) for their work on the project.' },
     ];
+
+const faqs = [...(service.data.faqs ?? []), ...generalFaqs];
 
 const areaServed = [
   { '@type': 'City', name: 'Trujillo' },
@@ -87,10 +89,11 @@ const breadcrumbJsonLd = {
   alternates={{ es: esPath, en: enPath }}
   structuredData={[serviceJsonLd, faqJsonLd, breadcrumbJsonLd]}
 >
+  <div class="reading-progress" aria-hidden="true"></div>
   <article class="service-page">
     <header class="service-hero container">
       <a class="back" href={`${homePath(lang)}#servicios`}>← {t('service.back')}</a>
-      <h1>{heading}</h1>
+      <h1 style={`view-transition-name:svc-${slug}`}>{heading}</h1>
       <p class="summary">{service.data.summary}</p>
       <div class="actions">
         <a class="btn btn-primary" href={`${homePath(lang)}#contacto`} data-umami-event="cta-diagnosis" data-umami-event-location="service">{t('cta.diagnosis')}</a>
@@ -101,11 +104,15 @@ const breadcrumbJsonLd = {
     <div class="container content-grid">
       <div class="main-copy">
         <section class="body card" aria-label={service.data.title}><Content /></section>
+        {service.data.includes && <section class="service-detail"><h2>{t('service.includes')}</h2><ul>{service.data.includes.map(item => <li>{item}</li>)}</ul></section>}
+        {service.data.audience && <section class="service-detail"><h2>{t('service.audience')}</h2><p>{service.data.audience}</p></section>}
+        {service.data.steps && <section class="service-detail"><h2>{t('service.steps')}</h2><ol class="service-steps">{service.data.steps.map((step, i) => <li data-reveal style={`--step-index:${i}`}><h3>{step.title}</h3><p>{step.text}</p></li>)}</ol></section>}
+        {service.data.deliverables && <section class="service-detail"><h2>{t('service.delivery')}</h2><ul>{service.data.deliverables.map(item => <li>{item}</li>)}</ul></section>}
 
         <section class="faq" aria-labelledby="faq-title">
           <h2 id="faq-title">{t('service.faq')}</h2>
           <div class="faq-list">
-            {faqs.map((faq) => <details><summary>{faq.q}</summary><p>{faq.a}</p></details>)}
+            {faqs.map((faq) => <details><summary>{faq.q}<span class="faq-icon" aria-hidden="true">+</span></summary><p>{faq.a}</p></details>)}
           </div>
         </section>
       </div>
@@ -143,6 +150,26 @@ const breadcrumbJsonLd = {
 </Layout>
 
 <style>
+  .service-detail { margin-top: 3rem; }
+  .service-detail p, .service-detail ul, .service-steps { margin-top: 1rem; }
+  .service-detail ul, .service-steps { padding-inline-start: 1.5rem; }
+  .service-steps li + li { margin-top: 2rem; }
+  .reading-progress { display: none; }
+  @keyframes reading { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @supports (animation-timeline: scroll(root)) {
+    @media (prefers-reduced-motion: no-preference) {
+      .reading-progress { display: block; position: fixed; inset: 0 0 auto; height: 3px; z-index: 100; background: var(--color-accent); transform-origin: left; animation: reading linear both; animation-timeline: scroll(root); }
+    }
+  }
+  @supports not (animation-timeline: view()) {
+    .service-steps [data-reveal] { transition-delay: calc(var(--step-index) * var(--dur-instant)); }
+  }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .service-steps [data-reveal] { animation-range: entry calc(var(--step-index) * 5%) cover calc(30% + var(--step-index) * 5%); }
+    }
+  }
+
   .service-page { padding-block: clamp(3rem, 2rem + 4vw, 6rem); }
   .service-hero { max-width: 900px; margin-bottom: clamp(3rem, 2rem + 3vw, 5rem); }
   .back { display: inline-block; margin-bottom: 1.5rem; font-size: var(--text-small); }
@@ -175,4 +202,5 @@ const breadcrumbJsonLd = {
     .closing { align-items: flex-start; flex-direction: column; }
   }
   @media (max-width: 480px) { .actions .btn, .closing .btn { width: 100%; } }
+  @media (max-height: 560px) and (orientation: landscape) { .price-card { position: static; } }
 </style>

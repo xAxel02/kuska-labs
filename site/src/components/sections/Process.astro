@@ -29,6 +29,10 @@ const payments = new Set([3, 6]); // índices de "Adelanto del 50 %" y "Pago fin
     </div>
 
     <div class="timeline" data-timeline>
+    <svg class="chakana-rail" viewBox="0 0 36 600" preserveAspectRatio="none" aria-hidden="true">
+      <path class="rail-track" d="M18 0V60H30V120H18V180H6V240H18V300H30V360H18V420H6V480H18V600" />
+      <path class="rail-draw" pathLength="1" d="M18 0V60H30V120H18V180H6V240H18V300H30V360H18V420H6V480H18V600" />
+    </svg>
     <span class="rail" aria-hidden="true"><span class="fill"></span></span>
     <ol class="steps-list" role="list">
       {
@@ -51,13 +55,30 @@ const payments = new Set([3, 6]); // índices de "Adelanto del 50 %" y "Pago fin
 </section>
 
 <script>
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  import { prefersReducedMotion, onReducedMotionChange } from '../../scripts/motion';
   document.querySelectorAll<HTMLElement>('[data-timeline]').forEach((tl) => {
     const steps = tl.querySelectorAll<HTMLElement>('.step');
-    if (reduce || !('IntersectionObserver' in window)) {
+    if (prefersReducedMotion() || !('IntersectionObserver' in window)) {
       steps.forEach((s) => s.classList.add('is-lit'));
       return;
     }
+    const fill = tl.querySelector<HTMLElement>('.fill')!;
+    const nativeTimeline = CSS.supports('animation-timeline: view()');
+    const updateProgress = () => {
+      if (prefersReducedMotion()) { fill.style.transform = ''; return; }
+      const rect = tl.getBoundingClientRect();
+      const progress = Math.min(1, Math.max(0, (innerHeight * 0.6 - rect.top) / rect.height));
+      fill.style.transform = `scaleY(${progress})`;
+    };
+    if (!nativeTimeline) {
+      addEventListener('scroll', updateProgress, { passive: true });
+      addEventListener('resize', updateProgress);
+      updateProgress();
+    }
+    onReducedMotionChange((reduced) => {
+      if (reduced) { steps.forEach((s) => s.classList.add('is-lit')); fill.style.transform = ''; }
+      else if (!nativeTimeline) updateProgress();
+    });
     const io = new IntersectionObserver(
       (entries) =>
         entries.forEach((e) => {
@@ -75,6 +96,19 @@ const payments = new Set([3, 6]); // índices de "Adelanto del 50 %" y "Pago fin
 </script>
 
 <style>
+  .chakana-rail { position: absolute; left: 0; top: 18px; width: 36px; height: calc(100% - 36px); overflow: visible; }
+  .chakana-rail path { fill: none; stroke-width: 2; vector-effect: non-scaling-stroke; }
+  .rail-track { stroke: var(--color-border); }
+  .rail-draw { stroke: var(--color-accent); stroke-dasharray: 1; stroke-dashoffset: 0; }
+  .timeline .rail { display: none; }
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      #proceso { view-timeline-name: --process-section; }
+      .rail-draw { animation: chakana-draw linear both; animation-timeline: --process-section; animation-range: entry 30% exit 40%; }
+    }
+  }
+  @keyframes chakana-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+
   .layout { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
   .intro { position: sticky; top: 110px; }
   .pay { margin-top: 2rem; max-width: 26rem; }
@@ -97,13 +131,13 @@ const payments = new Set([3, 6]); // índices de "Adelanto del 50 %" y "Pago fin
     position: absolute; left: -3.25rem; top: 0; width: 36px; height: 36px; display: grid; place-items: center;
     font-family: var(--font-display); font-weight: var(--weight-bold); font-size: var(--text-small);
     color: var(--color-text-3); background: var(--color-bg); border: 2px solid var(--color-border-strong); border-radius: var(--radius-sm);
-    transition: background-color 0.3s steps(3), color 0.3s steps(3), border-color 0.3s steps(3);
+    transition: background-color var(--dur-base) steps(3), color var(--dur-base) steps(3), border-color var(--dur-base) steps(3);
   }
   .text { padding-top: 0.25rem; }
-  .text h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: 1.125rem; margin-bottom: 0.375rem; color: var(--color-text-3); transition: color 0.3s; }
-  .text p { font-size: var(--text-small); color: var(--color-text-3); max-width: 46ch; transition: color 0.3s; }
+  .text h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: var(--text-h4); margin-bottom: 0.375rem; color: var(--color-text-3); transition: color var(--dur-base); }
+  .text p { font-size: var(--text-small); color: var(--color-text-3); max-width: 46ch; transition: color var(--dur-base); }
   .badge {
-    font-family: var(--font-body); font-size: 0.75rem; font-weight: var(--weight-medium);
+    font-family: var(--font-body); font-size: var(--text-label); font-weight: var(--weight-medium);
     color: var(--color-accent); background: var(--color-accent-soft); padding: 2px 8px; border-radius: 999px;
   }
 
@@ -131,5 +165,9 @@ const payments = new Set([3, 6]); // índices de "Adelanto del 50 %" y "Pago fin
   }
   @media (prefers-reduced-motion: reduce) {
     .dot, .text h3, .text p { transition: none; }
+    .step .dot { color: var(--color-on-accent); background: var(--color-accent); border-color: var(--color-accent); }
+    .step .text h3 { color: var(--color-text); }
+    .step .text p { color: var(--color-text-2); }
   }
+  @media (max-height: 560px) and (orientation: landscape) { .intro { position: static; } }
 </style>

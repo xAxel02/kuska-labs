@@ -1,0 +1,74 @@
+---
+import { audiences, smallTeam, homeFaqs, type Lang } from '../../i18n/ui';
+import { useTranslations } from '../../i18n/utils';
+const { lang } = Astro.props as { lang: Lang };
+const t = useTranslations(lang);
+const words = t('small.manifesto').split(' ');
+---
+<section class="section business-fit" aria-labelledby="audience-title">
+  <div class="container">
+    <header class="section-head"><h2 id="audience-title">{t('audience.title')}</h2><p>{t('audience.lead')}</p></header>
+    <div class="sector-stack">
+      {audiences[lang].map((item, i) => <article class="sector" style={`--card-index:${i}`}>
+        <div class="sector-copy" data-reveal><h3>{item.title}</h3><p>{item.problem}</p><p>{item.solution}</p></div>
+      </article>)}
+    </div>
+    <div class="sector-ribbon"><div class="ribbon-track">
+      <ul role="list">{audiences[lang].map(item => <li>{item.title}</li>)}</ul>
+      <ul role="list" aria-hidden="true">{audiences[lang].map(item => <li>{item.title}</li>)}</ul>
+    </div></div>
+    <a class="btn btn-primary" href="#contacto">{t('cta.diagnosis')}</a>
+  </div>
+</section>
+<section class="section small-team container" aria-labelledby="small-title">
+  <header class="section-head"><h2 id="small-title">{t('small.title')}</h2></header>
+  <p class="manifesto">{words.map((word, i) => <><span class="lit-word" style={`--word-start:${i / words.length * 65}%;--word-end:${25 + i / words.length * 65}%`}><span aria-hidden="true" class="word-ink">{word}</span>{word}</span>{' '}</>)}</p>
+  <div class="team-reasons">{smallTeam[lang].map(item => <article data-reveal><h3>{item.title}</h3><p>{item.text}</p></article>)}</div>
+  <a class="btn btn-primary" href="#contacto">{t('cta.diagnosis')}</a>
+</section>
+<section class="section container home-faq" aria-labelledby="home-faq-title">
+  <header class="section-head"><h2 id="home-faq-title">{t('home.faq')}</h2></header>
+  <div class="faq-list">{homeFaqs[lang].map(faq => <details><summary>{faq.q}<span class="faq-icon" aria-hidden="true">+</span></summary><p>{faq.a}</p></details>)}</div>
+  <a class="btn btn-primary" href="#contacto">{t('cta.diagnosis')}</a>
+</section>
+<style>
+  .sector-stack { display: grid; gap: 1rem; view-timeline-name: --sector-stack; view-timeline-axis: block; }
+  .sector { background: var(--color-surface-1); padding: clamp(1.5rem, 4vw, 3rem); border-radius: var(--radius-lg); }
+  .sector-copy { display: grid; gap: 1rem; }
+  .sector p { max-width: 60ch; color: var(--color-text); }
+  .sector p:first-of-type { color: var(--color-text-2); }
+  .sector-ribbon { overflow: hidden; margin-block: 2rem; }
+  .ribbon-track { display: flex; width: max-content; }
+  .ribbon-track ul { display: flex; align-items: center; gap: 2rem; padding-inline-end: 2rem; }
+  .ribbon-track li { white-space: nowrap; color: var(--color-text-3); }
+  .manifesto { font-size: var(--text-h3); line-height: var(--leading-body); max-width: 55ch; color: var(--color-text); view-timeline-name: --manifesto; view-timeline-axis: block; }
+  .lit-word { position: relative; display: inline-block; }
+  .word-ink { display: none; position: absolute; inset: 0; color: var(--color-text); }
+  .team-reasons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; margin-block: 3rem; }
+  .team-reasons p { margin-top: 1rem; color: var(--color-text); text-wrap: pretty; }
+  .home-faq .btn { margin-top: 2rem; }
+  @keyframes ribbon { to { transform: translateX(-50%); } }
+  @keyframes word-light { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes stack-back { to { transform: scale(.96); } }
+  @media (prefers-reduced-motion: no-preference) {
+    .ribbon-track { animation: ribbon calc(var(--dur-xslow) * 50) linear infinite; }
+    .sector-ribbon:hover .ribbon-track, .sector-ribbon:focus-within .ribbon-track { animation-play-state: paused; }
+    @supports (animation-timeline: view()) {
+      .lit-word { color: var(--color-text-3); }
+      .word-ink { display: inline; animation: word-light linear both; animation-timeline: --manifesto; animation-range: entry var(--word-start) cover var(--word-end); }
+      @media (min-width: 900px) and (min-height: 700px) {
+        .sector { position: sticky; top: calc(6rem + var(--card-index) * .75rem); transform-origin: center top; animation: stack-back linear both; animation-timeline: --sector-stack; animation-range: contain calc(var(--card-index) * 16%) contain calc((var(--card-index) + 1) * 16%); }
+        .sector:last-child { animation: none; }
+        .sector-copy { min-height: 12rem; grid-template-columns: 1fr 1fr; align-content: center; }
+        .sector-copy h3 { grid-row: span 2; }
+      }
+    }
+  }
+  @media (max-width: 600px) { .team-reasons { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) {
+    .ribbon-track { width: auto; }
+    .ribbon-track ul { flex-wrap: wrap; gap: 1rem; }
+    .ribbon-track li { white-space: normal; }
+    .ribbon-track [aria-hidden] { display: none; }
+  }
+</style>
